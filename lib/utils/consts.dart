@@ -26,3 +26,29 @@ var ofReport = [
       "Camera": "camera $i"
     }
 ];
+
+
+String fakeHashAndEncrypt(int number) {
+  // Step 1: Fake hash by adding a number and a string
+  String mixed = '${number + 1337}_secret';
+
+  // Step 2: Fake encryption by reversing the string
+  String encrypted = mixed.split('').reversed.join();
+
+  return encrypted;
+}
+var CamearOf = [
+  for (int i = 0; i < 10; i++)
+    {
+      "ID":'ID ${i}',
+
+      "Camera name": "Camera Number $i",
+      "IP": "192.168.1.$i",
+      "Port": 80,
+      "Gate": 'Gate $i',
+      "Licance":fakeHashAndEncrypt(i)
+      ,"RTSP" : 'rtsp://192.168.1.$i:554/mainstream'
+    }
+];
+
+

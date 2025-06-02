@@ -43,7 +43,7 @@ class cameraController extends GetxController {
   var cameras = <Map<String, dynamic>>[].obs;
 
   void startDiscovery() async {
-    final uri = Uri.parse('http://127.0.0.1:8000/get-stream');
+    final uri = Uri.parse('http://127.0.0.1:8000/onvif/get-stream');
     final request = http.Request('GET', uri)
       ..headers['Accept'] = 'text/event-stream';
 
