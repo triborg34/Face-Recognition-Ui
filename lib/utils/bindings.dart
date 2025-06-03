@@ -9,5 +9,6 @@ class MyBindings extends Bindings{
     Get.lazyPut(() => ThemeController(),);
     Get.put(reportController(),);
     Get.lazyPut(() =>  cameraController());
+    Get.lazyPut(() => personController(),);
   }
 }

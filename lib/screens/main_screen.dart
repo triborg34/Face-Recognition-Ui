@@ -1,5 +1,6 @@
 import 'package:faceui/screens/camera_screen.dart';
 import 'package:faceui/screens/home_screen.dart';
+import 'package:faceui/screens/person_screen.dart';
 import 'package:faceui/screens/report_screen.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/coustom_appbar.dart';
@@ -14,12 +15,13 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List<String> tabs = ['Home', "Report", "Camera", "Setting"];
+  List<String> tabs = ['Home', "Report", "Camera","Person", "Setting"];
 
   List<IconData> tabsIcon = [
     Icons.home_filled,
     Icons.repartition_outlined,
     Icons.camera_indoor_rounded,
+    Icons.person_add_alt_1,
     Icons.settings
   ];
 
@@ -47,6 +49,8 @@ class _MainScreenState extends State<MainScreen> {
                 case 2:
                   return CameraScreen();
                 case 3:
+                  return PersonScreen();
+                   case 4:
                   return Center(child: Text("Settings Screen"));
                 default:
                   return HomeScreen(mController: controller);

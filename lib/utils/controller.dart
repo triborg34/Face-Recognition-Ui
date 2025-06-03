@@ -1,18 +1,15 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
-class mainController extends GetxController{
-
-  var tabindex=2.obs;
-  var videoIndex=(-1).obs;
-  var personSelector=(-1).obs;
-  var unknownSelector=(-1).obs;
-  var isPersonSelected=false.obs;
-
+class mainController extends GetxController {
+  var tabindex = 3.obs;
+  var videoIndex = (-1).obs;
+  var personSelector = (-1).obs;
+  var unknownSelector = (-1).obs;
+  var isPersonSelected = false.obs;
 }
 
 class ThemeController extends GetxController {
@@ -29,20 +26,20 @@ class ThemeController extends GetxController {
   }
 }
 
-class reportController extends GetxController{
-  var isImage=false.obs;
-  var isName=false.obs;
-  var isGender=false.obs;
-  var genderValue='male'.obs;
-  var isAge=false.obs;
-  var isComplete=false.obs;
-  
+class reportController extends GetxController {
+  var isImage = false.obs;
+  var isName = false.obs;
+  var isGender = false.obs;
+  var genderValue = 'male'.obs;
+  var isAge = false.obs;
+  var isComplete = false.obs;
 }
 
 class cameraController extends GetxController {
   var cameras = <Map<String, dynamic>>[].obs;
 
   void startDiscovery() async {
+    cameras.clear();
     final uri = Uri.parse('http://127.0.0.1:8000/onvif/get-stream');
     final request = http.Request('GET', uri)
       ..headers['Accept'] = 'text/event-stream';
@@ -60,5 +57,23 @@ class cameraController extends GetxController {
         cameras.add(data);
       }
     });
+  }
+}
+
+class personController extends GetxController {
+  RxBool isVisible = true.obs;
+  RxBool isHover=false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    Future.delayed(Duration(milliseconds:100), () {
+      isVisible.value = true;
+    });
+  }
+  @override
+  void onClose() {
+     isVisible.value = false;
+    super.onClose();
   }
 }

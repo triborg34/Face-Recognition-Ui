@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CameraScreen extends StatelessWidget {
-  final cameraController ccontroller = Get.put(cameraController());
+  final cameraController ccontroller = Get.find<cameraController>();
+
+  
 
   @override
   Widget build(BuildContext context) {
