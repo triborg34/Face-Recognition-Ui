@@ -2,6 +2,7 @@ import 'package:faceui/screens/camera_screen.dart';
 import 'package:faceui/screens/home_screen.dart';
 import 'package:faceui/screens/person_screen.dart';
 import 'package:faceui/screens/report_screen.dart';
+import 'package:faceui/screens/setting_screen.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/coustom_appbar.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
                 case 3:
                   return PersonScreen();
                    case 4:
-                  return Center(child: Text("Settings Screen"));
+                  return SettingScreen();
                 default:
                   return HomeScreen(mController: controller);
               }

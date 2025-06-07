@@ -49,7 +49,7 @@ class RegistredBox extends StatelessWidget {
                 runSpacing: 10,
                 children: [
                   for (int i = 0; i < ofRegistred.length; i++)
-                    Obx(() => GestureDetector(
+                    Obx(() => InkWell(
                           onTap: () {
                             mController.personSelector.value = i;
                             mController.unknownSelector.value = -1;

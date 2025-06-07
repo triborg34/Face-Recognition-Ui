@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
 class mainController extends GetxController {
-  var tabindex = 3.obs;
+  var tabindex = 4.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -61,7 +61,7 @@ class cameraController extends GetxController {
 }
 
 class personController extends GetxController {
-  RxBool isVisible = true.obs;
+  RxBool isVisible = false.obs;
   RxBool isHover=false.obs;
 
   @override

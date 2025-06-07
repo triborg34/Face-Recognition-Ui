@@ -48,7 +48,7 @@ class UnknowBox extends StatelessWidget {
                 runSpacing: 10,
                 children: [
                   for (int i = 0; i < ofUnknown.length; i++)
-                    Obx(() => GestureDetector(
+                    Obx(() => InkWell(
                           onTap: () {
                             mController.unknownSelector.value = i;
                             mController.isPersonSelected.value = true;

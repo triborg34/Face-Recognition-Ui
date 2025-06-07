@@ -51,13 +51,13 @@ class PersonScreen extends StatelessWidget {
                                 children: [
                                   Align(
                                     alignment: Alignment.topLeft,
-                                      child: Icon(
+                                      child: Icon(   //TODO :ICON BUTTON
                                         Icons.edit,
                                         size: 20,
                                       )),
                                   Align(
                             alignment: Alignment.topRight,
-                                      child: Icon(
+                                      child: Icon(  //TODO:ICON BUTTON
                                         Icons.delete,
                                         size: 20,
                                         color: Colors.red,
@@ -96,7 +96,7 @@ class PersonScreen extends StatelessWidget {
                                         SizedBox(
                                           height: 15,
                                         ),
-                                        Text(ofReport[i]['ID'].toString()),
+                                        Text(ofReport[i]['Time'].toString()),
                                       ],
                                     ),
                                   ),
