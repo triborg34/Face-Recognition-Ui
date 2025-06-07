@@ -6,7 +6,7 @@ List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen())];
 
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 
-List ofCamera = ['Camera 1 ', 'Camera 2 ', "Camera 3", "Camera 4", "Camera 5"];
+var cameras=["rtsp://192.168.1.245:554/stream"];
 
 var ofRegistred = [for (int i = 0; i < 50; i++) "Person ${i}"];
 

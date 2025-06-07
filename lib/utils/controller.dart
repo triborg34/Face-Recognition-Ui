@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 4.obs;
+  var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -74,6 +75,51 @@ class personController extends GetxController {
   @override
   void onClose() {
      isVisible.value = false;
+    super.onClose();
+  }
+}
+
+
+class videoFeedController extends GetxController {
+  final _cameras = <String, html.ImageElement>{}.obs;
+
+  void connect(String url, String viewId) {
+    final imgElement = html.ImageElement()
+      ..src = url
+      ..id = viewId
+      ..style.width = '100%'
+      ..style.height = '100%'
+        
+  
+      ..style.objectFit = 'cover';
+      
+
+    _cameras[viewId] = imgElement;
+  }
+
+  html.ImageElement? getElement(String viewId) => _cameras[viewId];
+
+  void disconnect(String viewId) {
+    print(viewId);
+    final element = _cameras[viewId];
+    if (element != null) {
+      element.src = '';
+      element.remove();
+      _cameras.remove(viewId);
+    }
+  }
+
+  /// 🔌 Disconnects all active camera streams
+  void disconnectAll() {
+    final keys = _cameras.keys.toList(); // Avoid concurrent modification
+    for (final viewId in keys) {
+      disconnect(viewId);
+    }
+  }
+
+  @override
+  void onClose() {
+    disconnectAll();
     super.onClose();
   }
 }

@@ -10,5 +10,6 @@ class MyBindings extends Bindings{
     Get.put(reportController(),);
     Get.lazyPut(() =>  cameraController());
     Get.lazyPut(() => personController(),);
+    Get.put(videoFeedController());
   }
 }

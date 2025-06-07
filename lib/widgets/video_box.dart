@@ -1,5 +1,6 @@
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
+import 'package:faceui/widgets/camera_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,7 +16,7 @@ class VideoBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-         mController.videoIndex.value=-1;
+        mController.videoIndex.value = -1;
       },
       child: Container(
         padding: EdgeInsets.only(top: 20),
@@ -31,7 +32,7 @@ class VideoBox extends StatelessWidget {
             spacing: 15,
             alignment: WrapAlignment.center,
             children: [
-              for (int i = 0; i < ofCamera.length; i++)
+              for (int i = 0; i < cameras.length; i++)
                 Obx(
                   () => InkWell(
                     onTap: () {
@@ -39,17 +40,29 @@ class VideoBox extends StatelessWidget {
                     },
                     child: AnimatedContainer(
                       duration: Duration(milliseconds: 500),
-                      margin:
-                          EdgeInsets.symmetric(vertical: 5, horizontal: 0),
+                      margin: EdgeInsets.symmetric(vertical: 5, horizontal: 0),
                       width: mController.videoIndex.value == i ? 500 : 225,
                       height: mController.videoIndex.value == i ? 300 : 100,
                       decoration: BoxDecoration(
+                          color: Colors.transparent,
                           border: Border.all(
                               color: mController.videoIndex.value == i
                                   ? Colors.indigoAccent
                                   : primaryColor),
                           borderRadius: BorderRadius.circular(10)),
-                      child: Center(child: Text(ofCamera[i])),
+                      child: Stack(
+                        children: [
+                          CameraFeed(
+                              streamUrl:
+                                  'http://127.0.0.1:8000/rt1?source=${cameras[i]}'),
+                          GestureDetector(
+                            onTap: () => mController.videoIndex.value = i,
+                            child: Container(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
