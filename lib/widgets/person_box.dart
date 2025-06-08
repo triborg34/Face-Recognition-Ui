@@ -9,9 +9,11 @@ class PersonBox extends StatelessWidget {
   const PersonBox({
     super.key,
     required this.mController,
+    required this.nController
   });
 
   final mainController mController;
+  final networkController nController;
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +21,9 @@ class PersonBox extends StatelessWidget {
         child: Column(
           textDirection: TextDirection.rtl,
           children: [
-            RegistredBox(mController: mController),
+            RegistredBox(mController: mController,nController: nController,),
             Divider(color: primaryColor,),
-            UnknowBox(mController: mController),
+            UnknowBox(mController: mController,nController: nController,),
           ],
         ),
         width: 50.w,

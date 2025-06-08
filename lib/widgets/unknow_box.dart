@@ -5,12 +5,11 @@ import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class UnknowBox extends StatelessWidget {
-  const UnknowBox({
-    super.key,
-    required this.mController,
-  });
+  const UnknowBox(
+      {super.key, required this.mController, required this.nController});
 
   final mainController mController;
+  final networkController nController;
 
   @override
   Widget build(BuildContext context) {
@@ -47,28 +46,42 @@ class UnknowBox extends StatelessWidget {
                 spacing: 10,
                 runSpacing: 10,
                 children: [
-                  for (int i = 0; i < ofUnknown.length; i++)
+                  for (int i = 0; i < nController.personList.length; i++)
                     Obx(() => InkWell(
                           onTap: () {
                             mController.unknownSelector.value = i;
                             mController.isPersonSelected.value = true;
                             mController.personSelector.value = -1;
+                            mController.globalIndex.value=i;
                           },
-                          child: AnimatedContainer(
-                            duration: Duration(milliseconds: 250),
-                            height: 100,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(
-                                  color: mController.unknownSelector.value == i
-                                      ? Colors.indigo
-                                      : primaryColor,
-                                )),
-                            child: Center(
-                              child: Text(ofUnknown[i]),
-                            ),
-                          ),
+                          child: nController.personList[i].name! != 'unknown'
+                              ? SizedBox.shrink()
+                              : AnimatedContainer(
+                                  duration: Duration(milliseconds: 250),
+                                  height: 100,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15),
+                                      border: Border.all(
+                                        color:
+                                            mController.unknownSelector.value ==
+                                                    i
+                                                ? Colors.indigo
+                                                : primaryColor,
+                                      )),
+                                  child: nController.personList[i].croppedFrame!
+                                              .length ==
+                                          0
+                                      ? Icon(Icons.person)
+                                      : ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(15),
+                                          child: Image.network(
+                                            'http://127.0.0.1:8090/api/files/collection/${nController.personList[i].id}/${nController.personList[i].croppedFrame}',
+                                            fit: BoxFit.fill,
+                                          ),
+                                        ),
+                                ),
                         ))
                 ],
               )

@@ -11,5 +11,6 @@ class MyBindings extends Bindings{
     Get.lazyPut(() =>  cameraController());
     Get.lazyPut(() => personController(),);
     Get.put(videoFeedController());
+    Get.put(networkController());
   }
 }

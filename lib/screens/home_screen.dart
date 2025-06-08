@@ -8,9 +8,11 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({
     super.key,
     required this.mController,
+    required this.nController
   });
 
   final mainController mController;
+  final networkController nController;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +20,8 @@ class HomeScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         VideoBox(mController: mController),
-        PersonBox(mController: mController),
-        DetailsBox(mController: mController)
+        PersonBox(mController: mController,nController: nController,),
+        DetailsBox(mController: mController,nController: nController,)
       ],
     );
   }

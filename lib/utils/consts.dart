@@ -1,9 +1,10 @@
 import 'package:faceui/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen())];
-
+var pb =PocketBase('http://127.0.0.1:8090');
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 
 var cameras=["rtsp://192.168.1.245:554/stream"];

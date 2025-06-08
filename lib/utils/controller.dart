@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:faceui/models/personModels.dart';
+import 'package:faceui/utils/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +13,7 @@ class mainController extends GetxController {
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
   var isPersonSelected = false.obs;
+  var globalIndex=(-1).obs;
 }
 
 class ThemeController extends GetxController {
@@ -63,22 +66,22 @@ class cameraController extends GetxController {
 
 class personController extends GetxController {
   RxBool isVisible = false.obs;
-  RxBool isHover=false.obs;
+  RxBool isHover = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    Future.delayed(Duration(milliseconds:100), () {
+    Future.delayed(Duration(milliseconds: 100), () {
       isVisible.value = true;
     });
   }
+
   @override
   void onClose() {
-     isVisible.value = false;
+    isVisible.value = false;
     super.onClose();
   }
 }
-
 
 class videoFeedController extends GetxController {
   final _cameras = <String, html.ImageElement>{}.obs;
@@ -89,10 +92,7 @@ class videoFeedController extends GetxController {
       ..id = viewId
       ..style.width = '100%'
       ..style.height = '100%'
-        
-  
       ..style.objectFit = 'cover';
-      
 
     _cameras[viewId] = imgElement;
   }
@@ -121,5 +121,35 @@ class videoFeedController extends GetxController {
   void onClose() {
     disconnectAll();
     super.onClose();
+  }
+}
+
+class networkController extends GetxController {
+  var personList = <personClass>[].obs;
+
+  fetchFirstData() async {
+    final records = await pb.collection('collection').getFullList();
+    for (var json in records) {
+      personList.add(personClass.fromJson(json.data));
+    }
+  }
+
+  void startSub() {
+    pb.collection('collection').subscribe(
+      '*',
+      (e) {
+        if (e.action == 'create') {
+          personList.add(personClass.fromJson(e.record!.data));
+        }
+        print(e.record);
+      }, 
+    );
+  }
+
+  @override
+  void onReady() async {
+    await fetchFirstData();
+    startSub();
+    super.onReady();
   }
 }
