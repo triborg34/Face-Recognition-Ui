@@ -50,25 +50,39 @@ class DetailsBox extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 60,
-                        backgroundImage: NetworkImage(
-                            //TODO:MAKE PERSON NOT FOUND IMAGE
-                            'http://127.0.0.1:8090/api/files/collection/${nController.personList[mController.globalIndex.value].id}/${nController.personList[mController.globalIndex.value].croppedFrame}'),
+                        backgroundImage: NetworkImage(nController
+                                    .personList[mController.globalIndex.value]
+                                    .croppedFrame!
+                                    .length ==
+                                0
+                            ? 'assets/images/unknown-person1.png'
+                            : 'http://127.0.0.1:8090/api/files/collection/${nController.personList[mController.globalIndex.value].id}/${nController.personList[mController.globalIndex.value].croppedFrame}'),
                       ),
                       Icon(Icons.arrow_forward),
                       CircleAvatar(
                         backgroundImage: NetworkImage(
-                            'http://127.0.0.1:8090/api/files/collection/${nController.personList[mController.globalIndex.value].id}/${nController.personList[mController.globalIndex.value].croppedFrame}'),
+                          nController
+                                    .personList[mController.globalIndex.value]
+                                    .croppedFrame!
+                                    .length ==
+                                0
+                            ? 'assets/images/unknown-person1.png' :
+                            "http://127.0.0.1:8090/api/files/known_face/${nController.knownList.firstWhere(
+                                  (p0) =>
+                                      p0.name ==
+                                      nController
+                                          .personList[
+                                              mController.globalIndex.value]
+                                          .name,
+                                ).id!}/${nController.knownList.firstWhere(
+                                  (p0) =>
+                                      p0.name ==
+                                      nController
+                                          .personList[
+                                              mController.globalIndex.value]
+                                          .name,
+                                ).image!}"),
                         radius: 60,
-                        // child: nController
-                        //             .personList[mController.globalIndex.value]
-                        //             .frame!
-                        //             .length ==
-                        //         0
-                        //     ? Center(child: Icon(Icons.person))
-                        //     : Image.network(
-                        //         'http://127.0.0.1:8090/api/files/collection/${nController.personList[mController.globalIndex.value].id}/${nController.personList[mController.globalIndex.value].croppedFrame}',
-                        //         fit: BoxFit.cover,
-                        //       ),
                       )
                     ],
                   ),

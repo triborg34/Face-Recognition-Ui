@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/models/personModels.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ class mainController extends GetxController {
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
   var isPersonSelected = false.obs;
-  var globalIndex=(-1).obs;
+  var globalIndex = (-1).obs;
 }
 
 class ThemeController extends GetxController {
@@ -126,11 +127,18 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
+  var knownList=<knowPerson>[].obs;
 
   fetchFirstData() async {
-    final records = await pb.collection('collection').getFullList();
-    for (var json in records) {
+    final mList = await pb.collection('collection').getFullList();
+    for (var json in mList) {
       personList.add(personClass.fromJson(json.data));
+    }
+
+    final kList=await pb.collection('known_face').getFullList();
+    for (var json in kList){
+      knownList.add(knowPerson.fromJson(json.data));
+
     }
   }
 
@@ -142,7 +150,7 @@ class networkController extends GetxController {
           personList.add(personClass.fromJson(e.record!.data));
         }
         print(e.record);
-      }, 
+      },
     );
   }
 
