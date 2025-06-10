@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'package:faceui/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,6 +8,34 @@ import 'package:pocketbase/pocketbase.dart';
 List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen())];
 var pb =PocketBase('http://127.0.0.1:8090');
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
+
+
+Future<Uint8List?> uploadAndGetImage(List<int> fileBytes, String filename) async {
+  try {
+    final uri = Uri.parse('http://127.0.0.1:8000/upload');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(http.MultipartFile.fromBytes(
+        'file',
+        fileBytes,
+        filename: filename,
+      ));
+
+    final response = await request.send();
+    
+    if (response.statusCode == 200) {
+      // Convert stream to bytes directly
+      final bytes = await response.stream.toBytes();
+      return Uint8List.fromList(bytes);
+    } else {
+      print('Error: ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    print('Error uploading file: $e');
+    return null;
+  }
+}
+
 
 var cameras=["rtsp://192.168.1.245:554/stream"];
 

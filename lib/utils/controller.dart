@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/models/personModels.dart';
@@ -9,7 +10,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 0.obs;
+  var tabindex = 1.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -38,6 +39,9 @@ class reportController extends GetxController {
   var genderValue = 'male'.obs;
   var isAge = false.obs;
   var isComplete = false.obs;
+
+  var filename='انتخاب'.obs;
+ var filepath= Rxn<Uint8List>(Uint8List(0));
 }
 
 class cameraController extends GetxController {
@@ -67,7 +71,6 @@ class cameraController extends GetxController {
 
 class personController extends GetxController {
   RxBool isVisible = false.obs;
-  RxBool isHover = false.obs;
 
   @override
   void onInit() {

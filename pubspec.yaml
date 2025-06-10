@@ -41,6 +41,7 @@ dependencies:
   pocketbase: ^0.21.0
   shared_preferences: ^2.5.3
   easy_image_viewer: ^1.5.1
+  file_picker: ^10.1.9
   
 
 dev_dependencies:

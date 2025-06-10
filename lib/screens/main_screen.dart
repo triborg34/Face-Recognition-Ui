@@ -33,9 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => print(Get.find<networkController>().personList.length),
-      ),
+
       appBar: PreferredSize(
           preferredSize: Size(MediaQuery.of(context).size.width, 50),
           child: CoustomAppbar(
