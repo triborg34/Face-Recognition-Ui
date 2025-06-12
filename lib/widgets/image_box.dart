@@ -15,7 +15,7 @@ class ImageBox extends StatelessWidget {
     return Obx(() => Container(
           width: 300,
           height: 300,
-          child: rcontroller.filepath.value!.length == 0
+          child: rcontroller.filepath.value!.length == 0 
               ? SizedBox.shrink()
               : ClipRRect(
                 borderRadius: BorderRadius.circular(15),

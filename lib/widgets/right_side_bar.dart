@@ -19,6 +19,14 @@ class RightSideBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    try {
+      Get.find<reportController>().isImage.value = false;
+      Get.find<reportController>().filename.value = "انتخاب";
+      Get.find<reportController>().filepath.value = Uint8List(0);
+    } catch (e) {
+      ScaffoldMessenger.maybeOf(context)!
+          .showSnackBar(SnackBar(content: Text("Somthing Went Wrong")));
+    }
     return GetX<reportController>(
       builder: (rcontroller) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +39,18 @@ class RightSideBar extends StatelessWidget {
                 : CrossFadeState.showSecond,
             secondChild: SizedBox.shrink(),
             firstChild: Center(
-              child: ImageBox(rcontroller: rcontroller,),
+              child: rcontroller.filepath.value == null
+                  ? Container(
+                      width: 300,
+                      height: 300,
+                      decoration: BoxDecoration(
+                          border: Border.all(color: primaryColor),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Center(child: Text("خطا دوباره امتحان کنید")),
+                    )
+                  : ImageBox(
+                      rcontroller: rcontroller,
+                    ),
             ),
           ),
           SizedBox(
@@ -45,8 +64,8 @@ class RightSideBar extends StatelessWidget {
                       IconButton(
                         onPressed: () {
                           rcontroller.isImage.value = false;
-                          rcontroller.filename.value="انتخاب";
-                          rcontroller.filepath.value=Uint8List(0);
+                          rcontroller.filename.value = "انتخاب";
+                          rcontroller.filepath.value = Uint8List(0);
                         },
                         icon: Icon(
                           Icons.close,
@@ -68,25 +87,26 @@ class RightSideBar extends StatelessWidget {
                                   result.files.single.name;
 
                               try {
-                               rcontroller.filepath.value= await uploadAndGetImage(fileBytes,
-                                    result.files.single.name,);
-                                
-                    
+                                rcontroller.filepath.value =
+                                    await uploadAndGetImage(
+                                  fileBytes,
+                                  result.files.single.name,
+                                );
+                                print("HERE");
                               } catch (e) {
                                 print(e);
-                                await ScaffoldMessenger.maybeOf(context)!
+                                await ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(
                                         content: Directionality(
                                             textDirection: TextDirection.rtl,
                                             child: Text("خطا در ارسال داده"))));
                               }
-                            }
-                            else{
-                                       await ScaffoldMessenger.maybeOf(context)!
-                                    .showSnackBar(SnackBar(
-                                        content: Directionality(
-                                            textDirection: TextDirection.rtl,
-                                            child: Text("خطا در انتخاب عکس"))));
+                            } else {
+                              await ScaffoldMessenger.maybeOf(context)!
+                                  .showSnackBar(SnackBar(
+                                      content: Directionality(
+                                          textDirection: TextDirection.rtl,
+                                          child: Text("خطا در انتخاب عکس"))));
                             }
                           },
                           child: Text(

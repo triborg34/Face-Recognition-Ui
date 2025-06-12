@@ -76,7 +76,7 @@ class DetailsBox extends StatelessWidget {
   Widget _buildDetectedAvatar() {
     final person = nController.personList[mController.globalIndex.value];
     final hasImage = person.croppedFrame?.isNotEmpty ?? false;
-    
+
     return CircleAvatar(
       radius: 60,
       backgroundImage: NetworkImage(
@@ -90,7 +90,7 @@ class DetailsBox extends StatelessWidget {
   Widget _buildKnownAvatar() {
     final person = nController.personList[mController.globalIndex.value];
     final hasImage = person.croppedFrame?.isNotEmpty ?? false;
-    
+
     if (!hasImage) {
       return CircleAvatar(
         radius: 60,
@@ -112,7 +112,7 @@ class DetailsBox extends StatelessWidget {
 
   Widget _buildPersonDetails() {
     final person = nController.personList[mController.globalIndex.value];
-    
+
     return Column(
       children: [
         CoustomRow(title: "ID", substring: person.id!),
@@ -131,7 +131,7 @@ class DetailsBox extends StatelessWidget {
   Widget _buildFullImage() {
     final person = nController.personList[mController.globalIndex.value];
     final hasFrame = person.frame?.isNotEmpty ?? false;
-    
+
     return Expanded(
       child: Container(
         decoration: BoxDecoration(
