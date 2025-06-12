@@ -18,11 +18,14 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) =>  GetMaterialApp(
         darkTheme: ThemeData(
+          
+           fontFamily: 'nazanin',
           brightness: Brightness.dark,
           primarySwatch: Colors.indigo,
           
         ),
         theme: ThemeData(
+          fontFamily: 'nazanin',
           brightness: Brightness.light,
           primarySwatch: Colors.indigo,
         ),

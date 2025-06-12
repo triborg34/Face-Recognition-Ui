@@ -38,6 +38,7 @@ class NameBox extends StatelessWidget {
                 SizedBox(
                     width: 125,
                     child: CoustomTextField(
+                      tcontroller: rcontroller.familyController,
                       hint: "نام خانوادگی",
                     )),
                 SizedBox(
@@ -46,6 +47,7 @@ class NameBox extends StatelessWidget {
                 SizedBox(
                     width: 125,
                     child: CoustomTextField(
+                      tcontroller: rcontroller.nameController,
                       hint: "نام",
                     )),
               ],

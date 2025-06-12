@@ -42,6 +42,13 @@ class reportController extends GetxController {
 
   var filename='انتخاب'.obs;
  var filepath= Rxn<Uint8List>(Uint8List(0));
+var fromDate=''.obs;
+var untilDate=''.obs;
+var fromTime=''.obs;
+var untilTime=''.obs;
+ TextEditingController nameController=TextEditingController();
+ TextEditingController familyController=TextEditingController();
+ TextEditingController ageController=TextEditingController();
 }
 
 class cameraController extends GetxController {

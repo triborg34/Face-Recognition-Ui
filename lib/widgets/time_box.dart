@@ -1,5 +1,7 @@
 import 'package:faceui/utils/consts.dart';
+import 'package:faceui/utils/controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class TimeBox extends StatelessWidget {
   const TimeBox({
@@ -8,18 +10,30 @@ class TimeBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Obx(() =>  Row(
       textDirection: TextDirection.rtl,
       children: [
         Expanded(
             child: ElevatedButton(
                 style: TextButton.styleFrom(backgroundColor: primaryColor),
-                onPressed: () {
-
+                onPressed: () async {
+                  var picked = await showTimePicker(
+                    context: context,
+                    builder: (context, child) {
+                      return MediaQuery(
+                          data: MediaQuery.of(context)
+                              .copyWith(alwaysUse24HourFormat: true),
+                          child: child!);
+                    },
+                    initialEntryMode: TimePickerEntryMode.input,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  Get.find<reportController>().fromTime.value="${picked!.hour}:${picked.minute}";
+                 
                 },
                 child: Text(
-                  "از ساعت",
-                  style: TextStyle(color: Colors.white),
+                Get.find<reportController>().fromTime.value=='' ?   "از ساعت" : Get.find<reportController>().fromTime.value,
+                  style: TextStyle(color: Colors.white,fontSize: 18),
                 ))),
         SizedBox(
           width: 15,
@@ -31,12 +45,25 @@ class TimeBox extends StatelessWidget {
         Expanded(
             child: ElevatedButton(
                 style: TextButton.styleFrom(backgroundColor: primaryColor),
-                onPressed: () {},
+                onPressed: () async {
+                  var picked = await showTimePicker(
+                    context: context,
+                    builder: (context, child) {
+                      return MediaQuery(
+                          data: MediaQuery.of(context)
+                              .copyWith(alwaysUse24HourFormat: true),
+                          child: child!);
+                    },
+                    initialEntryMode: TimePickerEntryMode.input,
+                    initialTime: TimeOfDay.now(),
+                  );
+                  Get.find<reportController>().untilTime.value="${picked!.hour}:${picked.minute}";
+                },
                 child: Text(
-                  "تا ساعت",
-                  style: TextStyle(color: Colors.white),
+                 Get.find<reportController>().untilTime.value == '' ? "تا ساعت" : Get.find<reportController>().untilTime.value,
+                  style: TextStyle(color: Colors.white,fontSize: 18),
                 )))
       ],
-    );
+    ));
   }
 }

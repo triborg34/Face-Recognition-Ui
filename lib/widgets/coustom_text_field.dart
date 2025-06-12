@@ -4,16 +4,18 @@ import 'package:flutter/material.dart';
 class CoustomTextField extends StatelessWidget {
   CoustomTextField({
     required this.hint,
+    required this.tcontroller,
     super.key,
   });
 
   final String hint;
+  final TextEditingController tcontroller;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       textDirection: TextDirection.rtl,
-      controller: TextEditingController(),
+      controller: tcontroller,
       decoration: InputDecoration(
           hintText: hint,
           hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
