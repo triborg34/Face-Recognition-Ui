@@ -29,7 +29,7 @@ class TimeBox extends StatelessWidget {
                     initialTime: TimeOfDay.now(),
                   );
                   Get.find<reportController>().fromTime.value="${picked!.hour}:${picked.minute}";
-                 
+                 Get.find<reportController>().isTime.value=true;
                 },
                 child: Text(
                 Get.find<reportController>().fromTime.value=='' ?   "از ساعت" : Get.find<reportController>().fromTime.value,
@@ -58,6 +58,7 @@ class TimeBox extends StatelessWidget {
                     initialTime: TimeOfDay.now(),
                   );
                   Get.find<reportController>().untilTime.value="${picked!.hour}:${picked.minute}";
+                  Get.find<reportController>().isTime.value=true;
                 },
                 child: Text(
                  Get.find<reportController>().untilTime.value == '' ? "تا ساعت" : Get.find<reportController>().untilTime.value,

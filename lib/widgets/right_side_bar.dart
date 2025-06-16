@@ -154,11 +154,13 @@ class RightSideBar extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                   style: TextButton.styleFrom(backgroundColor: primaryColor),
-                  onPressed: () {
+                  onPressed: () async {
+                    await getResuilt(rcontroller);
+
                     rcontroller.isComplete.value = true;
                   },
                   child: Text(
-                    "جستسجو",
+                    "جستجو",
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   )),
             ),
@@ -166,5 +168,23 @@ class RightSideBar extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<bool> getResuilt(reportController rcontroller) async {
+//TODO:ADD TRACK ID AND IMAGE
+    if (rcontroller.isAge.value &&
+        rcontroller.isGender.value &&
+        rcontroller.isName.value &&
+        rcontroller.isTime.value &&
+        rcontroller.isDate.value) {
+      final records = await pb.collection('collection').getFullList(
+          filter:
+              '${int.parse(rcontroller.sageController.text)}<=age && age<${int.parse(rcontroller.eageController.text)} && gender="${rcontroller.genderValue.value}" && name="${rcontroller.nameController.text}${rcontroller.familyController.text}"');
+      print(records);
+    }
+
+    // final records = await pb.collection('collection').getFullList(filter: '');
+    // print(records);
+    return true;
   }
 }

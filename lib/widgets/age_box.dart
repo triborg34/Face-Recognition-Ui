@@ -27,11 +27,11 @@ class AgeBox extends StatelessWidget {
             visible: rcontroller.isAge.value,
             child: Row(
               children: [
-                SizedBox(width: 60, child: CoustomTextField(hint: '27',tcontroller: rcontroller.ageController,)),
+                SizedBox(width: 60, child: CoustomTextField(hint: '27',tcontroller: rcontroller.eageController,)),
                 SizedBox(width: 15,),
                 Icon(Icons.arrow_back),
                 SizedBox(width: 15,)
-                ,SizedBox(width: 60, child: CoustomTextField(hint: '19',tcontroller: rcontroller.ageController,))
+                ,SizedBox(width: 60, child: CoustomTextField(hint: '19',tcontroller: rcontroller.sageController,))
               ],
             ))
       ],

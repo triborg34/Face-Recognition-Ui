@@ -42,6 +42,7 @@ class DateBox extends StatelessWidget {
                   var date =
                       "${picked!.toGregorian().year}/${picked.toGregorian().month}/${picked.toGregorian().day}";
                   Get.find<reportController>().fromDate.value=date;
+                  Get.find<reportController>().isDate.value=true;
                 },
                 child: Text(
                 Get.find<reportController>().fromDate.value=="" ?'از تاریخ' :  Get.find<reportController>().fromDate.value.toPersianDate(),
@@ -81,6 +82,7 @@ class DateBox extends StatelessWidget {
                   var date =
                       "${picked!.toGregorian().year}/${picked.toGregorian().month}/${picked.toGregorian().day}";
                   Get.find<reportController>().untilDate.value=date;
+                   Get.find<reportController>().isDate.value=true;
                   print(date);
                 },
                 child: Text(

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/models/personModels.dart';
+import 'package:faceui/models/reportClass.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -39,6 +40,8 @@ class reportController extends GetxController {
   var genderValue = 'male'.obs;
   var isAge = false.obs;
   var isComplete = false.obs;
+  var isDate=false.obs;
+  var isTime=false.obs;
 
   var filename='انتخاب'.obs;
  var filepath= Rxn<Uint8List>(Uint8List(0));
@@ -48,7 +51,8 @@ var fromTime=''.obs;
 var untilTime=''.obs;
  TextEditingController nameController=TextEditingController();
  TextEditingController familyController=TextEditingController();
- TextEditingController ageController=TextEditingController();
+ TextEditingController sageController=TextEditingController();
+ TextEditingController eageController=TextEditingController();
 }
 
 class cameraController extends GetxController {
@@ -138,6 +142,8 @@ class videoFeedController extends GetxController {
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
   var knownList=<knowPerson>[].obs;
+  var reportList=<reportClass>[].obs;
+
 
   fetchFirstData() async {
     final mList = await pb.collection('collection').getFullList();
