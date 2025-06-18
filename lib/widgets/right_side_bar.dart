@@ -24,6 +24,14 @@ class RightSideBar extends StatelessWidget {
       Get.find<reportController>().isImage.value = false;
       Get.find<reportController>().filename.value = "انتخاب";
       Get.find<reportController>().filepath.value = Uint8List(0);
+      Get.find<reportController>().fromDate = ''.obs;
+      Get.find<reportController>().untilDate = ''.obs;
+      Get.find<reportController>().fromTime = ''.obs;
+      Get.find<reportController>().untilTime = ''.obs;
+      Get.find<reportController>().nameController.text = '';
+      Get.find<reportController>().familyController.text = '';
+      Get.find<reportController>().sageController.text = '';
+      Get.find<reportController>().eageController.text = '';
     } catch (e) {
       ScaffoldMessenger.maybeOf(context)!
           .showSnackBar(SnackBar(content: Text("Somthing Went Wrong")));
@@ -155,8 +163,9 @@ class RightSideBar extends StatelessWidget {
               child: ElevatedButton(
                   style: TextButton.styleFrom(backgroundColor: primaryColor),
                   onPressed: () async {
+                    rcontroller.reportList.clear();
                     try {
-                      await getResuilt(rcontroller);
+                      await getResult(rcontroller);
                       rcontroller.isComplete.value = true;
                     } catch (e) {
                       ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
@@ -177,244 +186,94 @@ class RightSideBar extends StatelessWidget {
     );
   }
 
-  Future<bool> getResuilt(reportController rcontroller) async {
-//TODO:ADD TRACK ID AND IMAGE
-    if (rcontroller.isAge.value &&
-        rcontroller.isGender.value &&
-        rcontroller.isName.value &&
-        rcontroller.isTime.value &&
-        rcontroller.isDate.value) {
-      final records = await pb.collection('collection').getFullList(
-          filter:
-              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+  Future<bool> getResult(reportController rcontroller) async {
+    // Build the filter string based on active filters
+    List<String> filters = [];
 
-      print(
-          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
-
-      var tempList = records.where(
-        (element) {
-          DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
-          DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
-          DateTime initDate = DateTime.parse(element.data['date']);
-          final isDate;
-          if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
-              rcontroller.untilDate.value == '') {
-            isDate = element.data['date'] == rcontroller.fromDate.value;
-          } else {
-            isDate = initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
-          }
-
-          TimeOfDay fromTime = TimeOfDay(
-              hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
-          TimeOfDay untilTime = TimeOfDay(
-              hour: int.parse(rcontroller.untilTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.untilTime.value.split(':')[1]));
-          TimeOfDay initTime = TimeOfDay(
-              hour: int.parse(element.data['time'].split(':')[0]),
-              minute: int.parse(element.data['time'].split(':')[1]));
-
-          bool isTime;
-          if (rcontroller.fromTime.value == rcontroller.untilTime) {
-            isTime = element.data['time'] == rcontroller.fromTime.value;
-          } else {
-            isTime = getTime(fromTime, untilTime, initTime);
-          }
-          print(isTime);
-          print(isDate);
-          return isDate && isTime;
-        },
-      ).toList();
-
-      for (var json in tempList) {
-        rcontroller.reportList.add(reportClass.fromJson(json.data));
-      }
-          return true;
-    }
-    else if(
-      rcontroller.isAge.value &&
-        rcontroller.isGender.value &&
-        rcontroller.isName.value &&
-        rcontroller.isTime.value &&
-        rcontroller.isDate.value==false
-    ){
-            final records = await pb.collection('collection').getFullList(
-          filter:
-              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
-
-      print(
-          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
-
-      var tempList = records.where(
-        (element) {
-
-          TimeOfDay fromTime = TimeOfDay(
-              hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
-          TimeOfDay untilTime = TimeOfDay(
-              hour: int.parse(rcontroller.untilTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.untilTime.value.split(':')[1]));
-          TimeOfDay initTime = TimeOfDay(
-              hour: int.parse(element.data['time'].split(':')[0]),
-              minute: int.parse(element.data['time'].split(':')[1]));
-
-          bool isTime;
-          if (rcontroller.fromTime.value == rcontroller.untilTime) {
-            isTime = element.data['time'] == rcontroller.fromTime.value;
-          } else {
-            isTime = getTime(fromTime, untilTime, initTime);
-          }
-
-          return isTime;
-        },
-      ).toList();
-
-      for (var json in tempList) {
-        rcontroller.reportList.add(reportClass.fromJson(json.data));
-      }
-          return true;
+    // Add age filter
+    if (rcontroller.isAge.value) {
+      filters.add(
+          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())}');
     }
 
-    else if(      rcontroller.isAge.value &&
-        rcontroller.isGender.value &&
-        rcontroller.isName.value &&
-        rcontroller.isTime.value==false &&
-        rcontroller.isDate.value){
+    // Add gender filter
+    if (rcontroller.isGender.value) {
+      filters.add('gender="${rcontroller.genderValue.value}"');
+    }
 
-          final records = await pb.collection('collection').getFullList(
-          filter:
-              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+    // Add name filter
+    if (rcontroller.isName.value) {
+      if (rcontroller.isUnknown.value) {
+        filters.add('name ~ "unknown"');
+      } else {
+        filters.add(
+            'name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+      }
+    }
 
-      print(
-          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+    // Build the complete filter string
+    String filterString = filters.join(' && ');
 
-      var tempList = records.where(
-        (element) {
-          DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
-          DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
-          DateTime initDate = DateTime.parse(element.data['date']);
-          final isDate;
-          if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
-              rcontroller.untilDate.value == '') {
-            isDate = element.data['date'] == rcontroller.fromDate.value;
-          } else {
-            isDate = initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
-          }
-
- 
-          return isDate;
-        },
-      ).toList();
-
-      for (var json in tempList) {
+    // If no filters are active, return empty result
+    if (filterString.isEmpty) {
+      final records = await pb.collection('collection').getFullList();
+      for (var json in records) {
         rcontroller.reportList.add(reportClass.fromJson(json.data));
       }
-          return true;
+      return true;
+    }
 
+    // Fetch records from database
+    final records =
+        await pb.collection('collection').getFullList(filter: filterString);
+    print('Filter: $filterString');
+
+    // Apply date and time filters in memory
+    var tempList = records.where((element) {
+      bool passesDateFilter = true;
+      bool passesTimeFilter = true;
+
+      // Apply date filter if active
+      if (rcontroller.isDate.value) {
+        DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
+        DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
+        DateTime initDate = DateTime.parse(element.data['date']);
+
+        if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
+            rcontroller.untilDate.value == '') {
+          passesDateFilter = element.data['date'] == rcontroller.fromDate.value;
+        } else {
+          passesDateFilter =
+              initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
         }
-        else if(
-          rcontroller.isAge.value &&
-        rcontroller.isGender.value &&
-        rcontroller.isName.value==false &&
-        rcontroller.isTime.value &&
-        rcontroller.isDate.value
-        ){
-
-          final records = await pb.collection('collection').getFullList(
-          filter:
-              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}"');
-
-      print(
-          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}"');
-
-      var tempList = records.where(
-        (element) {
-          DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
-          DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
-          DateTime initDate = DateTime.parse(element.data['date']);
-          final isDate;
-          if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
-              rcontroller.untilDate.value == '') {
-            isDate = element.data['date'] == rcontroller.fromDate.value;
-          } else {
-            isDate = initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
-          }
-
-          TimeOfDay fromTime = TimeOfDay(
-              hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
-          TimeOfDay untilTime = TimeOfDay(
-              hour: int.parse(rcontroller.untilTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.untilTime.value.split(':')[1]));
-          TimeOfDay initTime = TimeOfDay(
-              hour: int.parse(element.data['time'].split(':')[0]),
-              minute: int.parse(element.data['time'].split(':')[1]));
-
-          bool isTime;
-          if (rcontroller.fromTime.value == rcontroller.untilTime) {
-            isTime = element.data['time'] == rcontroller.fromTime.value;
-          } else {
-            isTime = getTime(fromTime, untilTime, initTime);
-          }
-          return isDate && isTime;
-        },
-      ).toList();
-
-      for (var json in tempList) {
-        rcontroller.reportList.add(reportClass.fromJson(json.data));
       }
-          return true;
+
+      // Apply time filter if active
+      if (rcontroller.isTime.value) {
+        TimeOfDay fromTime = TimeOfDay(
+            hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
+            minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
+        TimeOfDay untilTime = TimeOfDay(
+            hour: int.parse(rcontroller.untilTime.value.split(':')[0]),
+            minute: int.parse(rcontroller.untilTime.value.split(':')[1]));
+        TimeOfDay initTime = TimeOfDay(
+            hour: int.parse(element.data['time'].split(':')[0]),
+            minute: int.parse(element.data['time'].split(':')[1]));
+
+        if (rcontroller.fromTime.value == rcontroller.untilTime.value) {
+          passesTimeFilter = element.data['time'] == rcontroller.fromTime.value;
+        } else {
+          passesTimeFilter = getTime(fromTime, untilTime, initTime);
         }
-        else if(rcontroller.isAge.value &&
-        rcontroller.isGender.value==false &&
-        rcontroller.isName.value &&
-        rcontroller.isTime.value &&
-        rcontroller.isDate.value){
-          final records = await pb.collection('collection').getFullList(
-          filter:
-              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
-
-      print(
-          '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
-
-      var tempList = records.where(
-        (element) {
-          DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
-          DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
-          DateTime initDate = DateTime.parse(element.data['date']);
-          final isDate;
-          if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
-              rcontroller.untilDate.value == '') {
-            isDate = element.data['date'] == rcontroller.fromDate.value;
-          } else {
-            isDate = initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
-          }
-
-          TimeOfDay fromTime = TimeOfDay(
-              hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
-          TimeOfDay untilTime = TimeOfDay(
-              hour: int.parse(rcontroller.untilTime.value.split(':')[0]),
-              minute: int.parse(rcontroller.untilTime.value.split(':')[1]));
-          TimeOfDay initTime = TimeOfDay(
-              hour: int.parse(element.data['time'].split(':')[0]),
-              minute: int.parse(element.data['time'].split(':')[1]));
-
-          bool isTime;
-          if (rcontroller.fromTime.value == rcontroller.untilTime) {
-            isTime = element.data['time'] == rcontroller.fromTime.value;
-          } else {
-            isTime = getTime(fromTime, untilTime, initTime);
-          }
-          return isDate && isTime;
-        },
-      ).toList();
-
-      for (var json in tempList) {
-        rcontroller.reportList.add(reportClass.fromJson(json.data));
       }
-          return true;
-        }
+
+      return passesDateFilter && passesTimeFilter;
+    }).toList();
+
+    // Add results to report list
+    for (var json in tempList) {
+      rcontroller.reportList.add(reportClass.fromJson(json.data));
+    }
 
     return true;
   }

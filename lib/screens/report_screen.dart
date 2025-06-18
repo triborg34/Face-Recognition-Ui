@@ -10,7 +10,7 @@ class ReportScreen extends StatelessWidget {
   ReportScreen({
     super.key,
   });
-
+//TODO:EXPORT AND MAYBE DETILS SCREEN 
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -165,7 +165,8 @@ class ReportScreen extends StatelessWidget {
                                                         color: primaryColor))),
                                             width: 150,
                                             child: Center(
-                                              child: Text(index.toString()),
+                                              child:
+                                                  Text((index + 1).toString()),
                                             ),
                                           ),
                                           Container(
@@ -179,13 +180,22 @@ class ReportScreen extends StatelessWidget {
                                                       .reportList[index]
                                                       .croppedFrame!
                                                       .isNotEmpty
-                                                  ? ClipRRect(
-                                                      child: Image.network(
-                                                        'http://127.0.0.1:8090/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',fit: BoxFit.fill,
+                                                  ? Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    width: 150,
+                                                    child: ClipRRect(
+                                                        child: Image.network(
+                                                          'http://127.0.0.1:8090/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
+                                                          fit: BoxFit.fill,
+                                                        ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                                0),
                                                       ),
-                                                      borderRadius: BorderRadius.circular(15),
-                                                    )
-                                                  :  Center(child: Icon(Icons.person)),
+                                                  )
+                                                  : Center(
+                                                      child:
+                                                          Icon(Icons.person)),
                                             ),
                                           ),
                                           Container(
@@ -196,8 +206,14 @@ class ReportScreen extends StatelessWidget {
                                             width: 150,
                                             child: Center(
                                               child: Text(rcontroller
-                                                  .reportList[index].name!
-                                                  .toString()),
+                                                          .reportList[index]
+                                                          .name!
+                                                          .toString() ==
+                                                      'unknown'
+                                                  ? "ناشناس"
+                                                  : rcontroller
+                                                      .reportList[index].name!
+                                                      .toString()),
                                             ),
                                           ),
                                           Container(
@@ -208,8 +224,12 @@ class ReportScreen extends StatelessWidget {
                                             width: 150,
                                             child: Center(
                                               child: Text(rcontroller
-                                                  .reportList[index].gender
-                                                  .toString()),
+                                                          .reportList[index]
+                                                          .gender
+                                                          .toString() ==
+                                                      'male'
+                                                  ? "مرد"
+                                                  : "زن"),
                                             ),
                                           ),
                                           Container(

@@ -56,7 +56,7 @@ class DetailsBox extends StatelessWidget {
     final person = nController.personList[mController.globalIndex.value];
     return Center(
       child: Text(
-        person.name!,
+        person.name! =="unknown" ? "ناشناس" :person.name! ,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
       ),
     );
@@ -115,15 +115,15 @@ class DetailsBox extends StatelessWidget {
 
     return Column(
       children: [
-        CoustomRow(title: "ID", substring: person.id!),
+        CoustomRow(title: "شناسه", substring: person.id!),
         SizedBox(height: 10),
-        CoustomRow(title: "Track_ID", substring: person.trackId!),
+        CoustomRow(title: "شماره شناسایی", substring: person.trackId!),
         SizedBox(height: 10),
-        CoustomRow(title: "Gender", substring: person.gender!),
+        CoustomRow(title: "جنسیت", substring: person.gender! == 'male' ? "مرد" : "زن"),
         SizedBox(height: 10),
-        CoustomRow(title: "Age", substring: person.age!),
+        CoustomRow(title: "سن", substring: person.age!),
         SizedBox(height: 10),
-        CoustomRow(title: "Confidence", substring: "${person.score}%"),
+        CoustomRow(title: "اطمینان", substring: "${person.score}%"),
       ],
     );
   }

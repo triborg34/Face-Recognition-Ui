@@ -7,7 +7,7 @@ class CoustomRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      textDirection: TextDirection.rtl,
+      textDirection: TextDirection.ltr,
       children: [Text(substring), Spacer(), Text(title)],
     );
   }

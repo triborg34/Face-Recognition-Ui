@@ -42,6 +42,7 @@ class reportController extends GetxController {
   var isComplete = false.obs;
   var isDate=false.obs;
   var isTime=false.obs;
+  var isUnknown=false.obs;
 
   var filename='انتخاب'.obs;
  var filepath= Rxn<Uint8List>(Uint8List(0));
