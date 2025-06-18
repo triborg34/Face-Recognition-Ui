@@ -20,7 +20,7 @@ class GenderBox extends StatelessWidget {
               rcontroller.isGender.value = !rcontroller.isGender.value,
         ),
         Text(
-          "جسنیت",
+          "جنسیت",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         SizedBox(

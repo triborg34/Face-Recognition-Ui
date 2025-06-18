@@ -92,7 +92,7 @@ class RightSideBar extends StatelessWidget {
                                   fileBytes,
                                   result.files.single.name,
                                 );
-                                print("HERE");
+                    
                               } catch (e) {
                                 print(e);
                                 await ScaffoldMessenger.of(context)
@@ -179,8 +179,27 @@ class RightSideBar extends StatelessWidget {
         rcontroller.isDate.value) {
       final records = await pb.collection('collection').getFullList(
           filter:
-              '${int.parse(rcontroller.sageController.text)}<=age && age<${int.parse(rcontroller.eageController.text)} && gender="${rcontroller.genderValue.value}" && name="${rcontroller.nameController.text}${rcontroller.familyController.text}"');
-      print(records);
+              '${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+     
+     print('${int.parse(rcontroller.sageController.text.trim())}<=age && age<${int.parse(rcontroller.eageController.text.trim())} && gender="${rcontroller.genderValue.value}" && name ~ "${rcontroller.nameController.text.trim()} ${rcontroller.familyController.text.trim()}"');
+
+      print(records.where((element) {
+        print(rcontroller.fromDate.value);
+        DateTime fromDate=DateTime.parse(rcontroller.fromDate.value);
+        DateTime untilDate=DateTime.parse(rcontroller.untilDate.value);
+        DateTime initDate=DateTime.parse(element.data['date']);
+        final isDate;
+        if(rcontroller.fromDate.value==rcontroller.untilDate.value || rcontroller.untilDate.value==''){
+          isDate=element.data['date']==rcontroller.fromDate.value;
+        }else{
+         isDate= initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
+        }
+
+
+        return  isDate;
+      },).toList());
+
+
     }
 
     // final records = await pb.collection('collection').getFullList(filter: '');

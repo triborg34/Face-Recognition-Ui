@@ -28,7 +28,20 @@ class TimeBox extends StatelessWidget {
                     initialEntryMode: TimePickerEntryMode.input,
                     initialTime: TimeOfDay.now(),
                   );
-                  Get.find<reportController>().fromTime.value="${picked!.hour}:${picked.minute}";
+                  final time;
+                  if(picked!.hour > 9 && picked.minute >9){
+                      time="${picked.hour}:${picked.minute}";
+                  }  
+                  else if(picked.hour >9 && picked.minute <=9){
+                    time="${picked.hour}:0${picked.minute}";
+                  }
+                  else if(picked.hour <=9 && picked.minute >9 ){
+                    time="0${picked.hour}:${picked.minute}";
+                  }
+                  else{
+                    
+                  }
+                  Get.find<reportController>().fromTime.value="${picked.hour}:${picked.minute}";
                  Get.find<reportController>().isTime.value=true;
                 },
                 child: Text(
