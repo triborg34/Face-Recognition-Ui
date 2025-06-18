@@ -28,6 +28,7 @@ class TimeBox extends StatelessWidget {
                     initialEntryMode: TimePickerEntryMode.input,
                     initialTime: TimeOfDay.now(),
                   );
+                  
                   final time;
                   if(picked!.hour > 9 && picked.minute >9){
                       time="${picked.hour}:${picked.minute}";
@@ -39,9 +40,9 @@ class TimeBox extends StatelessWidget {
                     time="0${picked.hour}:${picked.minute}";
                   }
                   else{
-                    
+                    time="0${picked.hour}:0${picked.minute}";
                   }
-                  Get.find<reportController>().fromTime.value="${picked.hour}:${picked.minute}";
+                  Get.find<reportController>().fromTime.value=time;
                  Get.find<reportController>().isTime.value=true;
                 },
                 child: Text(
@@ -70,7 +71,24 @@ class TimeBox extends StatelessWidget {
                     initialEntryMode: TimePickerEntryMode.input,
                     initialTime: TimeOfDay.now(),
                   );
-                  Get.find<reportController>().untilTime.value="${picked!.hour}:${picked.minute}";
+                     if (picked==null){
+                    picked=TimeOfDay.now();
+                  }
+               
+                     final time;
+                  if(picked.hour > 9 && picked.minute >9){
+                      time="${picked.hour}:${picked.minute}";
+                  }  
+                  else if(picked.hour >9 && picked.minute <=9){
+                    time="${picked.hour}:0${picked.minute}";
+                  }
+                  else if(picked.hour <=9 && picked.minute >9 ){
+                    time="0${picked.hour}:${picked.minute}";
+                  }
+                  else{
+                    time="0${picked.hour}:0${picked.minute}";
+                  }
+                  Get.find<reportController>().untilTime.value=time;
                   Get.find<reportController>().isTime.value=true;
                 },
                 child: Text(

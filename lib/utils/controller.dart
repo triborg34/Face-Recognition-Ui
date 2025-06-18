@@ -53,6 +53,8 @@ var untilTime=''.obs;
  TextEditingController familyController=TextEditingController();
  TextEditingController sageController=TextEditingController();
  TextEditingController eageController=TextEditingController();
+
+  var reportList=<reportClass>[].obs;
 }
 
 class cameraController extends GetxController {
@@ -142,7 +144,7 @@ class videoFeedController extends GetxController {
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
   var knownList=<knowPerson>[].obs;
-  var reportList=<reportClass>[].obs;
+ 
 
 
   fetchFirstData() async {
