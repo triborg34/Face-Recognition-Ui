@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 1.obs;
+  var tabindex = 2.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -58,8 +58,13 @@ var untilTime=''.obs;
   var reportList=<reportClass>[].obs;
 }
 
+
+
+
 class cameraController extends GetxController {
   var cameras = <Map<String, dynamic>>[].obs;
+  var gateWayc='entre'.obs;
+  var isRtspEnabled = false.obs;
 
   void startDiscovery() async {
     cameras.clear();

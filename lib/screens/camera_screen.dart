@@ -1,12 +1,13 @@
+import 'package:faceui/screens/rtsp_on.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
+import 'package:faceui/widgets/coustom_text_field.dart';
+import 'package:faceui/widgets/rtsp_off.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class CameraScreen extends StatelessWidget {
   final cameraController ccontroller = Get.find<cameraController>();
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +27,7 @@ class CameraScreen extends StatelessWidget {
           children: [
             Expanded(
                 child: Container(
-              padding: EdgeInsets.all(15),
+              padding: EdgeInsets.all(25),
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                   border: Border.all(color: primaryColor),
@@ -40,7 +41,146 @@ class CameraScreen extends StatelessWidget {
                       style: TextButton.styleFrom(
                           backgroundColor: primaryColor,
                           textStyle: TextStyle(color: Colors.white)),
-                      onPressed: () {
+                      onPressed: () async {
+                        await showAdaptiveDialog(
+                          context: context,
+                          builder: (context) {
+                            return Center(
+                              child: Material(
+                                child: Container(
+                                  padding: EdgeInsets.all(15),
+                                  decoration: BoxDecoration(
+                                      color: Colors.indigo,
+                                      border: Border.all(color: primaryColor),
+                                      borderRadius: BorderRadius.circular(15)),
+                                  width: 400,
+                                  height: 400,
+                                  child: Directionality(
+                                    textDirection: TextDirection.rtl,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            "اضافه کردن دوربین",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Row(
+                                          textDirection: TextDirection.rtl,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                                width: 150,
+                                                child: CoustomTextField2(
+                                                    hint: 'نام',
+                                                    tcontroller:
+                                                        TextEditingController())),
+                                            SizedBox(
+                                              width: 40,
+                                            ),
+                                            Obx(() => SizedBox(
+                                                  width: 150,
+                                                  child: Directionality(
+                                                    textDirection:
+                                                        TextDirection.rtl,
+                                                    child:
+                                                        DropdownButtonFormField(
+                                                            decoration: InputDecoration(
+                                                                focusColor: Colors
+                                                                    .transparent,
+                                                                fillColor:
+                                                                    primaryColor,
+                                                                filled: true,
+                                                                focusedBorder: OutlineInputBorder(
+                                                                    borderSide: BorderSide(
+                                                                        color: Colors
+                                                                            .transparent)),
+                                                                enabledBorder: OutlineInputBorder(
+                                                                    borderSide: BorderSide(
+                                                                        color: Colors
+                                                                            .transparent)),
+                                                                border: OutlineInputBorder(
+                                                                    borderSide: BorderSide(
+                                                                        color: Colors
+                                                                            .transparent))),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        15),
+                                                            value: ccontroller
+                                                                .gateWayc.value,
+                                                            items: [
+                                                              DropdownMenuItem(
+                                                                  value:
+                                                                      "entre",
+                                                                  child: Text(
+                                                                      "ورود")),
+                                                              DropdownMenuItem(
+                                                                  value: "exit",
+                                                                  child: Text(
+                                                                      "خروج"))
+                                                            ],
+                                                            onChanged: (value) =>
+                                                                ccontroller
+                                                                    .gateWayc
+                                                                    .value = value!),
+                                                  ),
+                                                ))
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Obx(() => AnimatedCrossFade(
+                                              firstChild: RtspOff(
+                                                  ccontroller: ccontroller),
+                                              secondChild: RtspOn(
+                                                  ccontroller: ccontroller),
+                                              crossFadeState: ccontroller
+                                                          .isRtspEnabled
+                                                          .value ==
+                                                      false
+                                                  ? CrossFadeState.showFirst
+                                                  : CrossFadeState.showSecond,
+                                              duration:
+                                                  Duration(milliseconds: 300),
+                                            )),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          textDirection: TextDirection.rtl,
+                                          children: [
+                                            SizedBox(
+                                                width: 125,
+                                                child: CoustomTextField2(
+                                                    hint: 'username',
+                                                    tcontroller:
+                                                        TextEditingController())),
+                                                                    SizedBox(
+                                                width: 125,
+                                                child: CoustomTextField2(
+                                                    hint: 'password',
+                                                    tcontroller:
+                                                        TextEditingController()))
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+
                         //TODO:SHOW A SCREEN THAT PROMT FOR ADD
                       },
                       child: Text(
@@ -229,33 +369,32 @@ class CameraScreen extends StatelessWidget {
                                       border: Border(
                                           left:
                                               BorderSide(color: primaryColor))),
-                                              
                                 ),
-                                               Container(
+                                Container(
                                   width: 100,
                                   height: 50,
                                   child: Center(
-                                      child: Text(
-                                          ccontroller.cameras[index]['port'].toString())),
+                                      child: Text(ccontroller.cameras[index]
+                                              ['port']
+                                          .toString())),
                                   decoration: BoxDecoration(
                                       border: Border(
                                           left:
                                               BorderSide(color: primaryColor))),
-                                              
-                                              
                                 ),
-                                               Container(
+                                Container(
                                   width: 100,
                                   height: 50,
                                   child: Center(
-                                      child: IconButton(onPressed: (){
-                                        //TODO:ADD TO RTSP AND SO ON
-                                      }, icon: Icon(Icons.add))),
+                                      child: IconButton(
+                                          onPressed: () {
+                                            //TODO:ADD TO RTSP AND SO ON
+                                          },
+                                          icon: Icon(Icons.add))),
                                   decoration: BoxDecoration(
                                       border: Border(
                                           left:
                                               BorderSide(color: primaryColor))),
-                                              
                                 ),
                               ],
                             ),

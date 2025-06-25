@@ -17,7 +17,7 @@ class CoustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedOpacity(
       duration: Duration(milliseconds: 350),
-      opacity: Get.find<reportController>().isUnknown.value ? 0.2 : 1.0 ,
+      opacity: Get.find<reportController>().isUnknown.value ? 0.2 : 1.0,
       child: TextField(
         readOnly: Get.find<reportController>().isUnknown.value,
         textDirection: TextDirection.rtl,
@@ -34,6 +34,43 @@ class CoustomTextField extends StatelessWidget {
               borderSide: BorderSide(color: primaryColor, width: 3.0),
             )),
       ),
+    );
+  }
+}
+
+class CoustomTextField2 extends StatelessWidget {
+  CoustomTextField2({
+    required this.hint,
+    required this.tcontroller,
+    super.key,
+  });
+
+  final String hint;
+  final TextEditingController tcontroller;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      textDirection: hint.toLowerCase() != 'نام'
+          ? TextDirection.ltr
+          : TextDirection.rtl,
+      controller: tcontroller,
+      style: TextStyle(fontFamily: 'robot'),
+      decoration: InputDecoration(
+          filled: true,
+          fillColor: primaryColor,
+          hintText: hint,
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)),
+          hintTextDirection:hint.toLowerCase() != 'نام'
+              ? TextDirection.ltr
+              : TextDirection.rtl,
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.transparent, width: 3.0)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(color: Colors.transparent, width: 3.0),
+          )),
     );
   }
 }
