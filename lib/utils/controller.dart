@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 2.obs;
+  var tabindex = 3.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -133,10 +133,38 @@ class cameraController extends GetxController {
 
 class personController extends GetxController {
   RxBool isVisible = false.obs;
+  var knownList = <knowPerson>[].obs;
 
+
+
+  var roleP='approve'.obs;
+  var genterP='male'.obs;
+  var filename=''.obs;
+   var filepath = Rxn<Uint8List>(Uint8List(0));
+
+  TextEditingController name=TextEditingController();
+  TextEditingController lastName=TextEditingController();
+  TextEditingController socialNumber=TextEditingController();
+  TextEditingController ageNumber=TextEditingController();
+
+  fetchFirstData()async {
+        final kList = await pb.collection('known_face').getFullList();
+    for (var json in kList) {
+      knownList.add(knowPerson.fromJson(json.data));
+    }
+  }
+
+
+@override
+  void onReady()async {
+   await fetchFirstData();
+    super.onReady();
+  }
   @override
   void onInit() {
+    
     super.onInit();
+
     Future.delayed(Duration(milliseconds: 100), () {
       isVisible.value = true;
     });
@@ -192,7 +220,7 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
-  var knownList = <knowPerson>[].obs;
+  
 
   fetchFirstData() async {
     final mList = await pb.collection('collection').getFullList();
@@ -200,10 +228,7 @@ class networkController extends GetxController {
       personList.add(personClass.fromJson(json.data));
     }
 
-    final kList = await pb.collection('known_face').getFullList();
-    for (var json in kList) {
-      knownList.add(knowPerson.fromJson(json.data));
-    }
+
   }
 
   void startSub() {

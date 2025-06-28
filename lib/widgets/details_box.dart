@@ -98,7 +98,7 @@ class DetailsBox extends StatelessWidget {
       );
     }
 
-    final knownPerson = nController.knownList.firstWhere(
+    final knownPerson = Get.find<personController>().knownList.firstWhere(
       (p) => p.name == person.name,
     );
 

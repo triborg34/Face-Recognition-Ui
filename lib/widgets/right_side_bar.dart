@@ -96,11 +96,11 @@ class RightSideBar extends StatelessWidget {
                                   result.files.single.name;
 
                               try {
-                                rcontroller.filepath.value =
-                                    await uploadAndGetImage(
+                                Map<String, dynamic>? data = await uploadFile(
                                   fileBytes,
                                   result.files.single.name,
                                 );
+                                rcontroller.filepath.value = data!['imageData'];
                               } catch (e) {
                                 print(e);
                                 await ScaffoldMessenger.of(context)
