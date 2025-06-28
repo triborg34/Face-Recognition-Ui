@@ -23,7 +23,7 @@ class RtspOn extends StatelessWidget {
         SizedBox(
           width: 300,
           child: CoustomTextField2(
-              hint: "RTSP URL", tcontroller: TextEditingController()),
+              hint: "RTSP URL", tcontroller: ccontroller.rtspController),
         ),
         SizedBox(
           width: 40,

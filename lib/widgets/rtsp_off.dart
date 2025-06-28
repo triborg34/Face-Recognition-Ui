@@ -35,17 +35,17 @@ class RtspOff extends StatelessWidget {
         SizedBox(
           width: 130,
           child: CoustomTextField2(
-              hint: "Rtsp Name", tcontroller: TextEditingController()),
+              hint: "Rtsp Name", tcontroller: ccontroller.rtspNameController),
         ),SizedBox(width: 10,),
         SizedBox(
           width: 60,
           child: CoustomTextField2(
-              hint: "Port", tcontroller: TextEditingController()),
+              hint: "Port", tcontroller: ccontroller.portController),
         ),SizedBox(width: 10,),
         SizedBox(
           width: 100,
           child: CoustomTextField2(
-              hint: "IP", tcontroller: TextEditingController()),
+              hint: "IP", tcontroller: ccontroller.ipController),
         )
       ],
     );

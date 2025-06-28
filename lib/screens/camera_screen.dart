@@ -1,8 +1,10 @@
-import 'package:faceui/screens/rtsp_on.dart';
+import 'dart:convert';
+
+import 'package:faceui/models/cameraClass.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
-import 'package:faceui/widgets/coustom_text_field.dart';
-import 'package:faceui/widgets/rtsp_off.dart';
+import 'package:faceui/widgets/add_or_edit_camera.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -44,144 +46,22 @@ class CameraScreen extends StatelessWidget {
                       onPressed: () async {
                         await showAdaptiveDialog(
                           context: context,
-                          builder: (context) {
-                            return Center(
-                              child: Material(
-                                child: Container(
-                                  padding: EdgeInsets.all(15),
-                                  decoration: BoxDecoration(
-                                      color: Colors.indigo,
-                                      border: Border.all(color: primaryColor),
-                                      borderRadius: BorderRadius.circular(15)),
-                                  width: 400,
-                                  height: 400,
-                                  child: Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            "اضافه کردن دوربین",
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Row(
-                                          textDirection: TextDirection.rtl,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            SizedBox(
-                                                width: 150,
-                                                child: CoustomTextField2(
-                                                    hint: 'نام',
-                                                    tcontroller:
-                                                        TextEditingController())),
-                                            SizedBox(
-                                              width: 40,
-                                            ),
-                                            Obx(() => SizedBox(
-                                                  width: 150,
-                                                  child: Directionality(
-                                                    textDirection:
-                                                        TextDirection.rtl,
-                                                    child:
-                                                        DropdownButtonFormField(
-                                                            decoration: InputDecoration(
-                                                                focusColor: Colors
-                                                                    .transparent,
-                                                                fillColor:
-                                                                    primaryColor,
-                                                                filled: true,
-                                                                focusedBorder: OutlineInputBorder(
-                                                                    borderSide: BorderSide(
-                                                                        color: Colors
-                                                                            .transparent)),
-                                                                enabledBorder: OutlineInputBorder(
-                                                                    borderSide: BorderSide(
-                                                                        color: Colors
-                                                                            .transparent)),
-                                                                border: OutlineInputBorder(
-                                                                    borderSide: BorderSide(
-                                                                        color: Colors
-                                                                            .transparent))),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        15),
-                                                            value: ccontroller
-                                                                .gateWayc.value,
-                                                            items: [
-                                                              DropdownMenuItem(
-                                                                  value:
-                                                                      "entre",
-                                                                  child: Text(
-                                                                      "ورود")),
-                                                              DropdownMenuItem(
-                                                                  value: "exit",
-                                                                  child: Text(
-                                                                      "خروج"))
-                                                            ],
-                                                            onChanged: (value) =>
-                                                                ccontroller
-                                                                    .gateWayc
-                                                                    .value = value!),
-                                                  ),
-                                                ))
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Obx(() => AnimatedCrossFade(
-                                              firstChild: RtspOff(
-                                                  ccontroller: ccontroller),
-                                              secondChild: RtspOn(
-                                                  ccontroller: ccontroller),
-                                              crossFadeState: ccontroller
-                                                          .isRtspEnabled
-                                                          .value ==
-                                                      false
-                                                  ? CrossFadeState.showFirst
-                                                  : CrossFadeState.showSecond,
-                                              duration:
-                                                  Duration(milliseconds: 300),
-                                            )),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          textDirection: TextDirection.rtl,
-                                          children: [
-                                            SizedBox(
-                                                width: 125,
-                                                child: CoustomTextField2(
-                                                    hint: 'username',
-                                                    tcontroller:
-                                                        TextEditingController())),
-                                                                    SizedBox(
-                                                width: 125,
-                                                child: CoustomTextField2(
-                                                    hint: 'password',
-                                                    tcontroller:
-                                                        TextEditingController()))
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                          builder: (context) => AddOrEditCamera(
+                            ccontroller: ccontroller,
+                            context: context,
+                            name: '',
+                            ip: '',
+                            port: '',
+                            isRtsp: false,
+                            gate: 'entre',
+                            password: '',
+                            rtsp: '',
+                            rtspName: '',
+                            username: '',
+                            isDiscovery: false,
+                            isEditing: false,
+                          ),
                         );
-
-                        //TODO:SHOW A SCREEN THAT PROMT FOR ADD
                       },
                       child: Text(
                         "اضافه کردن",
@@ -190,121 +70,197 @@ class CameraScreen extends StatelessWidget {
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    height: 300,
-                    color: Colors.transparent,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) {
-                        return Container(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            textDirection: TextDirection.rtl,
-                            children: [
-                              Container(
-                                width: 50,
-                                height: 50,
-                                child: Center(child: Text(index.toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 50,
-                                height: 50,
-                                child: Center(
-                                    child:
-                                        Text(CamearOf[index]['ID'].toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 150,
-                                height: 50,
-                                child: Center(
-                                    child: Text(CamearOf[index]['Camera name']
-                                        .toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 150,
-                                height: 50,
-                                child: Center(
-                                    child:
-                                        Text(CamearOf[index]['IP'].toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 150,
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        CamearOf[index]['Port'].toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 150,
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        CamearOf[index]['Gate'].toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 250,
-                                height: 50,
-                                child: Center(
-                                    child: Text(
-                                        CamearOf[index]['RTSP'].toString())),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 50,
-                                height: 50,
-                                child: Center(
-                                    child: IconButton(
-                                        onPressed: () {},
-                                        icon: Icon(Icons.edit))),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
-                              ),
-                              Container(
-                                width: 50,
-                                height: 50,
-                                child: Center(
-                                    child: IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.redAccent,
+                  Obx(() => Container(
+                        height: 300,
+                        color: Colors.transparent,
+                        child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                textDirection: TextDirection.rtl,
+                                children: [
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text((index + 1).toString())),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
                                   ),
-                                  onPressed: () {},
-                                )),
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        left: BorderSide(color: primaryColor))),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text(
+                                      ccontroller.cameras[index].id.toString(),
+                                      style: TextStyle(fontFamily: 'robot'),
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text(ccontroller
+                                            .cameras[index].name
+                                            .toString())),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text(
+                                      ccontroller.cameras[index].ip.toString(),
+                                      style: TextStyle(fontFamily: 'robot'),
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text(
+                                      ccontroller.cameras[index].port
+                                          .toString(),
+                                      style: TextStyle(fontFamily: 'robot'),
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                      child: Text(
+                                        ccontroller.cameras[index].gate
+                                                    .toString() ==
+                                                "entre"
+                                            ? "ورود"
+                                            : "خروج",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 250,
+                                    height: 50,
+                                    padding: EdgeInsets.symmetric(horizontal: 5),
+                                    child: Center(
+                                        child: Text(
+                                      ccontroller.cameras[index].rtspUrl
+                                          .toString(),overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(fontFamily: 'robot'),
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 150,
+                                    height: 50,
+                                    child: Center(
+                                        child: Text(
+                                      ccontroller.cameras[index].username!
+                                          .toString(),
+                                      style: TextStyle(fontFamily: 'robot'),
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    child: Center(
+                                        child: IconButton(
+                                            onPressed: () async {
+                                              cameraClass data =
+                                                  ccontroller.cameras[index];
+                                              await showAdaptiveDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AddOrEditCamera(
+                                                        ccontroller:
+                                                            ccontroller,
+                                                        context: context,
+                                                        name: data.name!,
+                                                        ip: data.ip!,
+                                                        port: data.port!,
+                                                        rtsp: data.rtspUrl!,
+                                                        rtspName: data.rtspName!,
+                                                        username:
+                                                            data.username!,
+                                                        password: utf8.decode(
+                                                            base64.decode(data
+                                                                .password!)),
+                                                        isRtsp: data.isRtsp!,
+                                                        gate: data.gate!,
+                                                        id: data.id,
+                                                        isEditing: true,
+                                                        isDiscovery: false),
+                                              );
+                                            },
+                                            icon: Icon(Icons.edit))),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                  Container(
+                                    width: 50,
+                                    height: 50,
+                                    child: Center(
+                                        child: IconButton(
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.redAccent,
+                                      ),
+                                      onPressed: () async {
+                                        await pb.collection('cameras').delete(
+                                            ccontroller.cameras[index].id!);
+                                        ScaffoldMessenger.maybeOf(context)!
+                                            .showSnackBar(SnackBar(
+                                                content: Text(
+                                                    "Camera Number ${ccontroller.cameras[index].id!} is Deleted")));
+                                      },
+                                    )),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            left: BorderSide(
+                                                color: primaryColor))),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          margin: EdgeInsets.symmetric(vertical: 0),
-                          height: 50,
-                          decoration: BoxDecoration(
-                              border: Border.all(color: primaryColor)),
-                        );
-                      },
-                      itemCount: CamearOf.length,
-                    ),
-                  )
+                              margin: EdgeInsets.symmetric(vertical: 0),
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: primaryColor)),
+                            );
+                          },
+                          itemCount: ccontroller.cameras.length,
+                        ),
+                      ))
                 ],
               ),
             )),
@@ -363,8 +319,8 @@ class CameraScreen extends StatelessWidget {
                                   width: 100,
                                   height: 50,
                                   child: Center(
-                                      child: Text(
-                                          ccontroller.cameras[index]['ip'])),
+                                      child: Text(ccontroller
+                                          .searchCameras[index]['ip'])),
                                   decoration: BoxDecoration(
                                       border: Border(
                                           left:
@@ -374,8 +330,8 @@ class CameraScreen extends StatelessWidget {
                                   width: 100,
                                   height: 50,
                                   child: Center(
-                                      child: Text(ccontroller.cameras[index]
-                                              ['port']
+                                      child: Text(ccontroller
+                                          .searchCameras[index]['port']
                                           .toString())),
                                   decoration: BoxDecoration(
                                       border: Border(
@@ -388,7 +344,30 @@ class CameraScreen extends StatelessWidget {
                                   child: Center(
                                       child: IconButton(
                                           onPressed: () {
-                                            //TODO:ADD TO RTSP AND SO ON
+                                            showAdaptiveDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AddOrEditCamera(
+                                                      ccontroller: ccontroller,
+                                                      context: context,
+                                                      name: '',
+                                                      ip: ccontroller
+                                                          .searchCameras[index]
+                                                              ['ip']
+                                                          .toString(),
+                                                      port: ccontroller
+                                                          .searchCameras[index]
+                                                              ['port']
+                                                          .toString(),
+                                                      isRtsp: false,
+                                                      gate: 'entre',
+                                                      password: '',
+                                                      rtsp: '',
+                                                      rtspName: 'stream',
+                                                      username: '',
+                                                      isDiscovery: true,
+                                                      isEditing: false,
+                                                    ));
                                           },
                                           icon: Icon(Icons.add))),
                                   decoration: BoxDecoration(
@@ -400,7 +379,7 @@ class CameraScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        itemCount: ccontroller.cameras.length)),
+                        itemCount: ccontroller.searchCameras.length)),
                   )
                 ],
               ),

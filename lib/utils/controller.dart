@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:faceui/models/cameraClass.dart';
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/models/personModels.dart';
 import 'package:faceui/models/reportClass.dart';
@@ -40,34 +41,76 @@ class reportController extends GetxController {
   var genderValue = 'male'.obs;
   var isAge = false.obs;
   var isComplete = false.obs;
-  var isDate=false.obs;
-  var isTime=false.obs;
-  var isUnknown=false.obs;
+  var isDate = false.obs;
+  var isTime = false.obs;
+  var isUnknown = false.obs;
 
-  var filename='انتخاب'.obs;
- var filepath= Rxn<Uint8List>(Uint8List(0));
-var fromDate=''.obs;
-var untilDate=''.obs;
-var fromTime=''.obs;
-var untilTime=''.obs;
- TextEditingController nameController=TextEditingController();
- TextEditingController familyController=TextEditingController();
- TextEditingController sageController=TextEditingController();
- TextEditingController eageController=TextEditingController();
+  var filename = 'انتخاب'.obs;
+  var filepath = Rxn<Uint8List>(Uint8List(0));
+  var fromDate = ''.obs;
+  var untilDate = ''.obs;
+  var fromTime = ''.obs;
+  var untilTime = ''.obs;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController familyController = TextEditingController();
+  TextEditingController sageController = TextEditingController();
+  TextEditingController eageController = TextEditingController();
 
-  var reportList=<reportClass>[].obs;
+  var reportList = <reportClass>[].obs;
 }
 
-
-
-
 class cameraController extends GetxController {
-  var cameras = <Map<String, dynamic>>[].obs;
-  var gateWayc='entre'.obs;
+  var searchCameras = <Map<String, dynamic>>[].obs;
+  var cameras = <cameraClass>[].obs;
+
   var isRtspEnabled = false.obs;
+  var gateWayc = 'entre'.obs;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController ipController = TextEditingController();
+  TextEditingController portController = TextEditingController();
+  TextEditingController rtspNameController=TextEditingController();
+  TextEditingController rtspController=TextEditingController();
+  TextEditingController usernameController=TextEditingController();
+  TextEditingController passwordController=TextEditingController();
+
+  void startSub() {
+    pb.collection('cameras').subscribe(
+      '*',
+      (e) {
+        if (e.action == 'create') {
+          cameras.add(cameraClass.fromJson(e.record!.data));
+        }
+       else if(e.action=='delete'){
+          cameras.removeWhere((element) => element.id==e.record!.id,);
+        }
+        else{
+
+           int index =
+            cameras.indexWhere((element) => element.id == e.record!.id);
+        if (index != -1) {
+          cameras[index] = cameraClass.fromJson(e.record!.toJson());
+        }
+        }
+      },
+    );
+  }
+
+  fetchFirstData() async {
+    final mList = await pb.collection('cameras').getFullList();
+    for (var json in mList) {
+      cameras.add(cameraClass.fromJson(json.data));
+    }
+  }
+
+  @override
+  void onReady() async {
+    await fetchFirstData();
+    startSub();
+    super.onReady();
+  }
 
   void startDiscovery() async {
-    cameras.clear();
+    searchCameras.clear();
     final uri = Uri.parse('http://127.0.0.1:8000/onvif/get-stream');
     final request = http.Request('GET', uri)
       ..headers['Accept'] = 'text/event-stream';
@@ -82,7 +125,7 @@ class cameraController extends GetxController {
       if (line.startsWith('data: ')) {
         final jsonStr = line.replaceFirst('data: ', '');
         final data = jsonDecode(jsonStr);
-        cameras.add(data);
+        searchCameras.add(data);
       }
     });
   }
@@ -149,9 +192,7 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
-  var knownList=<knowPerson>[].obs;
- 
-
+  var knownList = <knowPerson>[].obs;
 
   fetchFirstData() async {
     final mList = await pb.collection('collection').getFullList();
@@ -159,10 +200,9 @@ class networkController extends GetxController {
       personList.add(personClass.fromJson(json.data));
     }
 
-    final kList=await pb.collection('known_face').getFullList();
-    for (var json in kList){
+    final kList = await pb.collection('known_face').getFullList();
+    for (var json in kList) {
       knownList.add(knowPerson.fromJson(json.data));
-
     }
   }
 
@@ -184,4 +224,5 @@ class networkController extends GetxController {
     startSub();
     super.onReady();
   }
+  //TODO:Add other action like modify and delete
 }
