@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:faceui/models/reportClass.dart';
@@ -93,12 +94,12 @@ class RightSideBar extends StatelessWidget {
                             if (result != null) {
                               Uint8List fileBytes = result.files.first.bytes!;
                               rcontroller.filename.value =
-                                  result.files.single.name;
+                                  "${Random().nextInt(999)}.${result.files.single.name}";
 
                               try {
                                 Map<String, dynamic>? data = await uploadFile(
                                   fileBytes,
-                                  result.files.single.name,
+                                  rcontroller.filename.value,
                                 );
                                 rcontroller.filepath.value = data!['imageData'];
                               } catch (e) {

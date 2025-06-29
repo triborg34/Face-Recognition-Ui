@@ -133,6 +133,7 @@ class cameraController extends GetxController {
 
 class personController extends GetxController {
   RxBool isVisible = false.obs;
+  RxBool isLoading=false.obs;
   var knownList = <knowPerson>[].obs;
 
 
@@ -154,10 +155,33 @@ class personController extends GetxController {
     }
   }
 
+  void startSub() {
+    pb.collection('known_face').subscribe(
+      '*',
+      (e) {
+        if (e.action == 'create') {
+          knownList.add(knowPerson.fromJson(e.record!.data));
+        }
+       else if(e.action=='delete'){
+          knownList.removeWhere((element) => element.id==e.record!.id,);
+        }
+        else{
+
+           int index =
+            knownList.indexWhere((element) => element.id == e.record!.id);
+        if (index != -1) {
+          knownList[index] = knowPerson.fromJson(e.record!.toJson());
+        }
+        }
+      },
+    );
+  }
+
 
 @override
   void onReady()async {
    await fetchFirstData();
+   startSub();
     super.onReady();
   }
   @override

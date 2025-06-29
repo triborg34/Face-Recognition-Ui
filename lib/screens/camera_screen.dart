@@ -285,7 +285,7 @@ class CameraScreen extends StatelessWidget {
                           textStyle: TextStyle(color: Colors.white)),
                       onPressed: () {
                         ccontroller.startDiscovery();
-                        //TODO:SHOW A SCREEN THAT PROMT FOR ADD
+               
                       },
                       child: Text(
                         "جستجو",

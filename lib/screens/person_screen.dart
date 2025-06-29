@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:faceui/utils/controller.dart';
-import 'package:faceui/widgets/coustom_text_field.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:faceui/widgets/add_or_edit_person.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:faceui/utils/consts.dart';
@@ -34,281 +34,20 @@ class PersonScreen extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        print(pcontroller.filepath.value);
                         await showAdaptiveDialog(
                           context: context,
-                          builder: (context) => Center(
-                              child: Material(
-                            child: Container(
-                              padding: EdgeInsets.all(15),
-                              height: 400,
-                              width: 500,
-                              decoration: BoxDecoration(
-                                  color: primaryColor,
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "اضافه کردن شخص",
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      InkWell(
-                                        onTap: () async {
-                                          FilePickerResult? result =
-                                              await FilePicker.platform
-                                                  .pickFiles(
-                                                      type: FileType.image);
-                                          if (result != null) {
-                                            Uint8List fileBytes =
-                                                result.files.first.bytes!;
-                                            pcontroller.filename.value =
-                                                result.files.single.name;
-
-                                            try {
-                                              // pcontroller.filepath.value =
-                                                Map<String,dynamic>? data=  await uploadFile(
-                                                fileBytes,
-                                                result.files.single.name,
-                                              );
-                                              pcontroller.filepath.value =data!['imageData'];
-                                              pcontroller.filename.value=data['fileLocation'];
-                                             
-                                    
-                                            } catch (e) {
-                                              print(e);
-                                              await ScaffoldMessenger.of(
-                                                      context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Directionality(
-                                                          textDirection:
-                                                              TextDirection.rtl,
-                                                          child: Text(
-                                                              "خطا در ارسال داده"))));
-                                            }
-                                          } else {
-                                            await ScaffoldMessenger.maybeOf(
-                                                    context)!
-                                                .showSnackBar(SnackBar(
-                                                    content: Directionality(
-                                                        textDirection:
-                                                            TextDirection.rtl,
-                                                        child: Text(
-                                                            "خطا در انتخاب عکس"))));
-                                          }
-                                        },
-                                        child: Obx(() => Container(
-                                              // child: Center(
-                                              //     child: pcontroller.filepath
-                                              //                 .value!.length >
-                                              //             0
-                                              //         ? Image.memory(pcontroller
-                                              //             .filepath.value!)
-                                              //         : Icon(
-                                              //             Icons.person,
-                                              //             size: 36,
-                                              //             color: Colors.indigo,
-                                              //           )),
-                                              width: 128,
-                                              height: 128,
-                                              decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                      image: pcontroller
-                                                                  .filepath
-                                                                  .value!
-                                                                  .length >
-                                                              0
-                                                          ? MemoryImage(
-                                                              pcontroller
-                                                                  .filepath
-                                                                  .value!,
-                                                            )
-                                                          : NetworkImage(
-                                                              'assets/images/unknown-person1.png'),
-                                                      fit: BoxFit.fill),
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
-                                                      color: Colors.indigo)),
-                                            )),
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: 165,
-                                            child: CoustomTextField3(
-                                                hint: 'نام',
-                                                tcontroller: pcontroller.name),
-                                          ),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 165,
-                                            child: CoustomTextField3(
-                                                hint: 'نام خانوادگی',
-                                                tcontroller:
-                                                    pcontroller.lastName),
-                                          ),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
-                                          Obx(() => SizedBox(
-                                                width: 100,
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child:
-                                                      DropdownButtonFormField(
-                                                          decoration: InputDecoration(
-                                                              focusColor: Colors
-                                                                  .transparent,
-                                                              fillColor:
-                                                                  Colors.indigo,
-                                                              filled: true,
-                                                              focusedBorder: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent)),
-                                                              enabledBorder: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent)),
-                                                              border: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent))),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(15),
-                                                          value: pcontroller
-                                                              .genterP.value,
-                                                          items: [
-                                                            DropdownMenuItem(
-                                                                value: "male",
-                                                                child: Text(
-                                                                    "مرد")),
-                                                            DropdownMenuItem(
-                                                                value: "female",
-                                                                child:
-                                                                    Text("زن"))
-                                                          ],
-                                                          onChanged: (value) =>
-                                                              pcontroller
-                                                                      .genterP
-                                                                      .value =
-                                                                  value!),
-                                                ),
-                                              ))
-                                        ],
-                                      ),
-                                      SizedBox(
-                                        height: 15,
-                                      ),
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          SizedBox(
-                                            width: 165,
-                                            child: CoustomTextField3(
-                                                hint: 'کد ملی',
-                                                tcontroller:
-                                                    pcontroller.socialNumber),
-                                          ),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
-                                          SizedBox(
-                                            width: 165,
-                                            child: CoustomTextField3(
-                                                hint: 'سن',
-                                                tcontroller:
-                                                    pcontroller.ageNumber),
-                                          ),
-                                          SizedBox(
-                                            width: 20,
-                                          ),
-                                          Obx(() => SizedBox(
-                                                width: 100,
-                                                child: Directionality(
-                                                  textDirection:
-                                                      TextDirection.rtl,
-                                                  child:
-                                                      DropdownButtonFormField(
-                                                          decoration: InputDecoration(
-                                                              focusColor: Colors
-                                                                  .transparent,
-                                                              fillColor:
-                                                                  Colors.indigo,
-                                                              filled: true,
-                                                              focusedBorder: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent)),
-                                                              enabledBorder: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent)),
-                                                              border: OutlineInputBorder(
-                                                                  borderSide: BorderSide(
-                                                                      color: Colors
-                                                                          .transparent))),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(15),
-                                                          value: pcontroller
-                                                              .roleP.value,
-                                                          items: [
-                                                            DropdownMenuItem(
-                                                                value:
-                                                                    "approve",
-                                                                child: Text(
-                                                                    "مجاز")),
-                                                            DropdownMenuItem(
-                                                                value: "denied",
-                                                                child: Text(
-                                                                    "غیر مجاز"))
-                                                          ],
-                                                          onChanged: (value) =>
-                                                              pcontroller.roleP
-                                                                      .value =
-                                                                  value!),
-                                                ),
-                                              ))
-                                        ],
-                                      ),
-                                      Spacer(),
-                                      Center(
-                                          child: Container(
-                                        width: 300,
-                                        height: 50,
-                                        child: ElevatedButton(
-                                          onPressed: () {},
-                                          child: Text(
-                                            "ثبت",
-                                            style: TextStyle(fontSize: 18),
-                                          ),
-                                          style: TextButton.styleFrom(
-                                              backgroundColor: Colors.indigo),
-                                        ),
-                                      ))
-                                    ],
-                                  )),
-                            ),
-                          )),
+                          builder: (context) => AddOrEditPerson(
+                            pcontroller: pcontroller,
+                            name: '',
+                            lastName: '',
+                            age: '',
+                            filename: '',
+                            filepath: Uint8List(0),
+                            gender: 'male',
+                            role: 'approve',
+                            isEditing: false,
+                            socialnumber: '',
+                          ),
                         );
                       },
                       child: Text(
@@ -320,81 +59,132 @@ class PersonScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 15),
-                    Center(
-                      child: Wrap(
-                        alignment: WrapAlignment.start,
-                        spacing: 15,
-                        runSpacing: 10,
-                        children: [
-                          for (int i = 0; i < ofReport.length; i++)
-                            Container(
-                              child: Stack(
-                                children: [
-                                  Align(
-                                      alignment: Alignment.topLeft,
+                    Wrap(
+                      alignment: WrapAlignment.start,
+                      spacing: 15,
+                      runSpacing: 10,
+                      children: [
+                        for (int i = 0; i < pcontroller.knownList.length; i++)
+                          Container(
+                            child: Stack(
+                              children: [
+                                Align(
+                                    alignment: Alignment.topLeft,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await showAdaptiveDialog(
+                                          context: context,
+                                          builder: (context) => AddOrEditPerson(
+                                              id: pcontroller.knownList[i].id!,
+                                              imagePath: pcontroller
+                                                  .knownList[i].image!,
+                                              pcontroller: pcontroller,
+                                              name: pcontroller
+                                                  .knownList[i].name!
+                                                  .split(' ')[0],
+                                              lastName: pcontroller
+                                                  .knownList[i].name!
+                                                  .split(' ')[1],
+                                              age:
+                                                  pcontroller.knownList[i].age!,
+                                              gender: pcontroller
+                                                  .knownList[i].gender!,
+                                              role: pcontroller
+                                                  .knownList[i].role!,
+                                              socialnumber: pcontroller
+                                                  .knownList[i].socialNumber!,
+                                              isEditing: true),
+                                        );
+                                      },
                                       child: Icon(
-                                        //TODO :ICON BUTTON
                                         Icons.edit,
                                         size: 20,
-                                      )),
-                                  Align(
-                                      alignment: Alignment.topRight,
+                                      ),
+                                    )),
+                                Align(
+                                    alignment: Alignment.topRight,
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await pb
+                                            .collection('known_face')
+                                            .delete(
+                                                pcontroller.knownList[i].id!);
+                                      },
                                       child: Icon(
-                                        //TODO:ICON BUTTON
                                         Icons.delete,
                                         size: 20,
                                         color: Colors.red,
-                                      )),
-                                  InkWell(
-                                    onTap: () => print(i),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          height: 110,
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.person,
-                                              size: 36,
-                                              color: primaryColor,
-                                            ),
-                                          ),
-                                          decoration: BoxDecoration(
-                                            border:
-                                                Border.all(color: primaryColor),
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Text(ofReport[i]['Name'].toString()),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Text(ofReport[i]['Age'].toString()),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Text(ofReport[i]['Gender'].toString()),
-                                        SizedBox(
-                                          height: 15,
-                                        ),
-                                        Text(ofReport[i]['Time'].toString()),
-                                      ],
+                                      ),
+                                    )),
+                                Column(
+                                  children: [
+                                    Container(
+                                      height: 110,
+                                      child: Center(
+                                        child: pcontroller.knownList[i].image!
+                                                    .length >
+                                                0
+                                            ? null
+                                            : Icon(
+                                                Icons.person,
+                                                size: 36,
+                                                color: primaryColor,
+                                              ),
+                                      ),
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage(
+                                                'http://127.0.0.1:8090/api/files/known_face/${pcontroller.knownList[i].id}/${pcontroller.knownList[i].image}'),
+                                            fit: BoxFit.contain),
+                                        border: Border.all(color: primaryColor),
+                                        shape: BoxShape.circle,
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              padding: EdgeInsets.all(10),
-                              height: 300,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                border: Border.all(color: primaryColor),
-                              ),
-                            )
-                        ],
-                      ),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(pcontroller.knownList[i].name!),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(pcontroller.knownList[i].age!),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(pcontroller.knownList[i].gender ==
+                                            'male'
+                                        ? "مرد"
+                                        : "زن"),
+                                    SizedBox(
+                                      height: 15,
+                                    ),
+                                    Text(
+                                        pcontroller.knownList[i].socialNumber!),
+                                    SizedBox(
+                                      height: 4,
+                                    ),
+                                    Icon(
+                                      pcontroller.knownList[i].role == "approve"
+                                          ? Icons.check_box
+                                          : Icons.cancel,
+                                      color: pcontroller.knownList[i].role ==
+                                              "approve"
+                                          ? Colors.green
+                                          : Colors.red,
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
+                            padding: EdgeInsets.all(10),
+                            height: 300,
+                            width: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(color: primaryColor),
+                            ),
+                          )
+                      ],
                     )
                   ],
                 ),
