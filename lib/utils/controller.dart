@@ -275,5 +275,4 @@ class networkController extends GetxController {
     startSub();
     super.onReady();
   }
-  //TODO:Add other action like modify and delete
 }
