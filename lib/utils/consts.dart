@@ -72,26 +72,6 @@ Future<Map<String, dynamic>?> uploadFile(List<int> fileBytes, String filename) a
 
 
 
-var cameras=["rtsp://192.168.1.245:554/stream"];
-
-var ofRegistred = [for (int i = 0; i < 50; i++) "Person ${i}"];
-
-var ofUnknown = [for (int i = 0; i < 50; i++) "Unknown ${i}"];
-
-var ofReport = [
-  for (int i = 0; i < 50; i++)
-    {
-      "Image": "image $i",
-      "Id ${i}": i,
-      "Name": "Name of $i",
-      "Gender": "Gender ${i}",
-      "Age": "age ${i}",
-      "Date": "date ${i}",
-      'Conf': "conf $i",
-      "Time": "time $i",
-      "Camera": "camera $i"
-    }
-];
 
 
 String fakeHashAndEncrypt(int number) {
@@ -103,18 +83,5 @@ String fakeHashAndEncrypt(int number) {
 
   return encrypted;
 }
-var CamearOf = [
-  for (int i = 0; i < 10; i++)
-    {
-      "ID":'ID ${i}',
-
-      "Camera name": "Camera Number $i",
-      "IP": "192.168.1.$i",
-      "Port": 80,
-      "Gate": 'Gate $i',
-      "Licance":fakeHashAndEncrypt(i)
-      ,"RTSP" : 'rtsp://192.168.1.$i:554/mainstream'
-    }
-];
 
 

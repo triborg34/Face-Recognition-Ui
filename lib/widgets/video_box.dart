@@ -12,6 +12,8 @@ class VideoBox extends StatelessWidget {
 
   final mainController mController;
 
+  
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -32,7 +34,7 @@ class VideoBox extends StatelessWidget {
             spacing: 15,
             alignment: WrapAlignment.center,
             children: [
-              for (int i = 0; i < cameras.length; i++)
+              for (int i = 0; i <Get.find<cameraController>().cameras.length; i++)
                 Obx(
                   () => InkWell(
                     onTap: () {
@@ -54,7 +56,7 @@ class VideoBox extends StatelessWidget {
                         children: [
                           CameraFeed(
                               streamUrl:
-                                  'http://127.0.0.1:8000/rt1?source=${cameras[i]}'),
+                                  'http://127.0.0.1:8000/rt1?source=${Get.find<cameraController>().cameras[i].rtspUrl}'),
                           GestureDetector(
                             onTap: () => mController.videoIndex.value = i,
                             child: Container(

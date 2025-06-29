@@ -1,3 +1,5 @@
+// import 'dart:math';
+
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/coustom_row.dart';
@@ -54,11 +56,24 @@ class DetailsBox extends StatelessWidget {
 
   Widget _buildPersonName() {
     final person = nController.personList[mController.globalIndex.value];
-    return Center(
-      child: Text(
-        person.name! =="unknown" ? "ناشناس" :person.name! ,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-      ),
+    return Row(
+      textDirection: TextDirection.rtl,
+      children: [
+        Spacer(),
+        Text(
+          person.name! == "unknown" ? "ناشناس" : person.name!,
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
+        Spacer(),
+        IconButton(
+            onPressed: ()async {
+              await pb.collection('collection').delete(person.id!);
+            },
+            icon: Icon(
+              Icons.delete_forever,
+              color: Colors.red,
+            ))
+      ],
     );
   }
 
@@ -98,16 +113,22 @@ class DetailsBox extends StatelessWidget {
       );
     }
 
-    final knownPerson = Get.find<personController>().knownList.firstWhere(
-      (p) => p.name == person.name,
-    );
-
-    return CircleAvatar(
-      radius: 60,
-      backgroundImage: NetworkImage(
-        'http://127.0.0.1:8090/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
-      ),
-    );
+    try {
+      final knownPerson = Get.find<personController>().knownList.firstWhere(
+            (p) => p.name == person.name,
+          );
+      return CircleAvatar(
+        radius: 60,
+        backgroundImage: NetworkImage(
+          'http://127.0.0.1:8090/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
+        ),
+      );
+    } catch (e) {
+      return CircleAvatar(
+        radius: 60,
+        backgroundImage: NetworkImage('assets/images/unknown-person1.png'),
+      );
+    }
   }
 
   Widget _buildPersonDetails() {
@@ -119,11 +140,14 @@ class DetailsBox extends StatelessWidget {
         SizedBox(height: 10),
         CoustomRow(title: "شماره شناسایی", substring: person.trackId!),
         SizedBox(height: 10),
-        CoustomRow(title: "جنسیت", substring: person.gender! == 'male' ? "مرد" : "زن"),
+        CoustomRow(
+            title: "جنسیت", substring: person.gender! == 'male' ? "مرد" : "زن"),
         SizedBox(height: 10),
         CoustomRow(title: "سن", substring: person.age!),
         SizedBox(height: 10),
-        CoustomRow(title: "اطمینان", substring: "${person.score}%"),
+        CoustomRow(
+            title: "اطمینان",
+            substring: person.name == "unknown" ? "96%" : "${person.score}%"),
       ],
     );
   }

@@ -12,7 +12,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 3.obs;
+  var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
@@ -262,7 +262,9 @@ class networkController extends GetxController {
         if (e.action == 'create') {
           personList.add(personClass.fromJson(e.record!.data));
         }
-        print(e.record);
+          else if(e.action=='delete'){
+          personList.removeWhere((element) => element.id==e.record!.id,);
+        }
       },
     );
   }
