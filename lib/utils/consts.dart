@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:faceui/utils/testpage.dart';
 import 'package:http/http.dart' as http;
 import 'package:faceui/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocketbase/pocketbase.dart';
 
-List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen())];
+List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/test', page:() =>  Test())];
 var pb =PocketBase('http://127.0.0.1:8090');
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 

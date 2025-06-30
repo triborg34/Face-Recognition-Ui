@@ -2,9 +2,11 @@
 
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
+import 'package:faceui/widgets/add_or_edit_person.dart';
 import 'package:faceui/widgets/coustom_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class DetailsBox extends StatelessWidget {
   const DetailsBox({
@@ -40,7 +42,7 @@ class DetailsBox extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildPersonName(),
+                    _buildPersonName(context),
                     SizedBox(height: 15),
                     _buildAvatarComparison(),
                     SizedBox(height: 15),
@@ -54,19 +56,51 @@ class DetailsBox extends StatelessWidget {
           ));
   }
 
-  Widget _buildPersonName() {
+  Widget _buildPersonName(context) {
     final person = nController.personList[mController.globalIndex.value];
+    
+
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       textDirection: TextDirection.rtl,
       children: [
-        Spacer(),
+        person.name != "unknown"
+            ? Icon(
+                Icons.check_sharp,
+                color: Colors.green,
+              )
+            : IconButton(
+                onPressed: () async {
+                  final response = await http.get(Uri.parse(
+                      'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}'));
+
+                  await showAdaptiveDialog(
+                      context: context,
+                      builder: (context) {
+                        return AddOrEditPerson(
+                            filename:
+                                'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}',
+                            filepath: response.bodyBytes,
+                            pcontroller: Get.find<personController>(),
+                            name: '',
+                            lastName: '',
+                            age: person.age!,
+                            gender: person.gender!,
+                            role: 'approve',
+                            socialnumber: '',
+                            isEditing: false);
+                      });
+                },
+                icon: Icon(
+                  Icons.add_circle,
+                  color: Colors.white,
+                )),
         Text(
           person.name! == "unknown" ? "ناشناس" : person.name!,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        Spacer(),
         IconButton(
-            onPressed: ()async {
+            onPressed: () async {
               await pb.collection('collection').delete(person.id!);
             },
             icon: Icon(
