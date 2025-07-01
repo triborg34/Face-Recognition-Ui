@@ -12,6 +12,8 @@ class personClass {
   int? score;
   String? time;
   String? trackId;
+  String? role;
+  String? humancrop;
 
   personClass(
       {this.age,
@@ -26,6 +28,8 @@ class personClass {
       this.name,
       this.score,
       this.time,
+      this.role,
+      this.humancrop,
       this.trackId});
 
   personClass.fromJson(Map<String, dynamic> json) {
@@ -42,6 +46,8 @@ class personClass {
     score = json['score'];
     time = json['time'];
     trackId = json['track_id'];
+    role=json['role'];
+    humancrop=json['humancrop'];
   }
 
   Map<String, dynamic> toJson() {
@@ -59,6 +65,8 @@ class personClass {
     data['score'] = this.score;
     data['time'] = this.time;
     data['track_id'] = this.trackId;
+    data['role']=this.role;
+    data['humancrop']=this.role;
     return data;
   }
 }

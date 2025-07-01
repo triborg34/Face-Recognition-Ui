@@ -29,35 +29,35 @@ class RegistredBox extends StatelessWidget {
 
   Widget _buildPersonCard(int index) {
     final person = nController.personList[index];
-    
+
     if (person.name == 'unknown') {
       return const SizedBox.shrink();
     }
 
     return Obx(() => InkWell(
-      onTap: () => _selectPerson(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        height: 100,
-        width: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: mController.personSelector.value == index
-                ? Colors.indigo
-                : primaryColor,
+          onTap: () => _selectPerson(index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: mController.personSelector.value == index
+                    ? Colors.indigo
+                    : primaryColor,
+              ),
+            ),
+            child: _buildPersonImage(person),
           ),
-        ),
-        child: _buildPersonImage(person),
-      ),
-    ));
+        ));
   }
 
   Widget _buildPersonImage(dynamic person) {
     if (person.croppedFrame?.isEmpty ?? true) {
       return const Icon(Icons.person);
     }
-    
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
@@ -94,13 +94,15 @@ class RegistredBox extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
                 Wrap(
+                  alignment: WrapAlignment.start,
                   textDirection: TextDirection.rtl,
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(
+
                     nController.personList.length,
                     (index) => _buildPersonCard(index),
-                  ),
+                  ).reversed.toList(),
                 ),
               ],
             ),

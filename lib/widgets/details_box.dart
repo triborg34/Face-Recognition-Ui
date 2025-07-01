@@ -58,18 +58,13 @@ class DetailsBox extends StatelessWidget {
 
   Widget _buildPersonName(context) {
     final person = nController.personList[mController.globalIndex.value];
-    
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       textDirection: TextDirection.rtl,
       children: [
-        person.name != "unknown"
-            ? Icon(
-                Icons.check_sharp,
-                color: Colors.green,
-              )
-            : IconButton(
+        person.name == "unknown"
+            ? IconButton(
                 onPressed: () async {
                   final response = await http.get(Uri.parse(
                       'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}'));
@@ -79,7 +74,7 @@ class DetailsBox extends StatelessWidget {
                       builder: (context) {
                         return AddOrEditPerson(
                             filename:
-                                'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}',
+                                'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.humancrop}',
                             filepath: response.bodyBytes,
                             pcontroller: Get.find<personController>(),
                             name: '',
@@ -94,7 +89,14 @@ class DetailsBox extends StatelessWidget {
                 icon: Icon(
                   Icons.add_circle,
                   color: Colors.white,
-                )),
+                ))
+            : person.role=='approve' ? Icon(
+                Icons.check_sharp,
+                color: Colors.green,
+              ):Icon(
+                Icons.cancel,
+                color: Colors.red,
+              ),
         Text(
           person.name! == "unknown" ? "ناشناس" : person.name!,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

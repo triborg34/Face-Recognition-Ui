@@ -100,7 +100,7 @@ class UnknowBox extends StatelessWidget {
                   children: List.generate(
                     nController.personList.length,
                     (index) => _buildUnknownPersonCard(index),
-                  ),
+                  ).reversed.toList(),
                 ),
               ],
             ),
