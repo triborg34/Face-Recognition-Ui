@@ -387,5 +387,5 @@ class CameraScreen extends StatelessWidget {
           ],
         ));
   }
-  //TODO:MAKE IT RTL?? LIKE PERSON KNOWN SCREEN
+
 }

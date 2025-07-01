@@ -66,7 +66,7 @@ class AddOrEditCamera extends StatelessWidget {
           width: 400,
           height: 350,
           child: Directionality(
-            textDirection: TextDirection.rtl,
+            textDirection: TextDirection.ltr,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
