@@ -1,3 +1,5 @@
+
+
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -5,12 +7,15 @@ import 'package:faceui/widgets/right_side_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 
 class ReportScreen extends StatelessWidget {
   ReportScreen({
     super.key,
   });
-//TODO:EXPORT AND MAYBE DETILS SCREEN 
+//TODO:EXPORT AND MAYBE DETILS SCREEN
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -181,18 +186,19 @@ class ReportScreen extends StatelessWidget {
                                                       .croppedFrame!
                                                       .isNotEmpty
                                                   ? Container(
-                                                    padding: EdgeInsets.all(5),
-                                                    width: 150,
-                                                    child: ClipRRect(
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      width: 150,
+                                                      child: ClipRRect(
                                                         child: Image.network(
                                                           'http://127.0.0.1:8090/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
                                                           fit: BoxFit.fill,
                                                         ),
                                                         borderRadius:
-                                                            BorderRadius.circular(
-                                                                0),
+                                                            BorderRadius
+                                                                .circular(0),
                                                       ),
-                                                  )
+                                                    )
                                                   : Center(
                                                       child:
                                                           Icon(Icons.person)),
@@ -308,7 +314,9 @@ class ReportScreen extends StatelessWidget {
                             child: ElevatedButton(
                                 style: TextButton.styleFrom(
                                     backgroundColor: primaryColor),
-                                onPressed: () {},
+                                onPressed: () async {
+                                  await saveFunction(rcontroller);
+                                },
                                 child: Text(
                                   "خروجی گرفتن",
                                   style: TextStyle(color: Colors.white),
@@ -321,5 +329,54 @@ class ReportScreen extends StatelessWidget {
                 ))
       ],
     );
+  }
+
+  Future<void> saveFunction(reportController rcontroller) async {
+    final doc = pw.Document();
+    final ttf = await fontFromAssetBundle('fonts/arial.ttf');
+
+    doc.addPage(pw.MultiPage(
+      margin: pw.EdgeInsets.all(10),
+      orientation: pw.PageOrientation.portrait,
+      textDirection: pw.TextDirection.rtl,
+      // pageFormat: PdfPageFormat(
+      //   2480,
+      //   3508,
+
+      // ),
+      build: (context) {
+        return [
+          for (var person in rcontroller.reportList.reversed)
+            pw.Container(
+                decoration: pw.BoxDecoration(border: pw.Border.all()),
+                height: 50,
+                child: pw.Row(children: [
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                          (rcontroller.reportList.reversed.toList().indexOf(person) + 1)
+                              .toString(),style: pw.TextStyle(font: ttf)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child:  pw.Text(
+                          person.name!
+                         ,style: pw.TextStyle(font: ttf)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                      
+                ])),
+                
+        ];
+      },
+    ));
+
+    await Printing.layoutPdf(
+        format: PdfPageFormat.a4,
+        dynamicLayout: true,
+        usePrinterSettings: true,
+        onLayout: (PdfPageFormat format) async => doc.save());
   }
 }

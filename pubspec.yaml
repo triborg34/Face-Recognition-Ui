@@ -98,6 +98,10 @@ flutter:
         - asset: assets/fonts/robot.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
+
+    - family: arial
+      fonts:
+        - asset: assets/fonts/arial.ttf
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
