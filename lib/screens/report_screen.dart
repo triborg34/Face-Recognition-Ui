@@ -1,5 +1,3 @@
-
-
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -15,7 +13,7 @@ class ReportScreen extends StatelessWidget {
   ReportScreen({
     super.key,
   });
-//TODO:EXPORT AND MAYBE DETILS SCREEN
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -191,7 +189,7 @@ class ReportScreen extends StatelessWidget {
                                                       width: 150,
                                                       child: ClipRRect(
                                                         child: Image.network(
-                                                          'http://127.0.0.1:8090/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
+                                                          'http://127.0.0.1:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
                                                           fit: BoxFit.fill,
                                                         ),
                                                         borderRadius:
@@ -356,18 +354,84 @@ class ReportScreen extends StatelessWidget {
                       width: 60,
                       alignment: pw.Alignment.center,
                       child: pw.Text(
-                          (rcontroller.reportList.reversed.toList().indexOf(person) + 1)
-                              .toString(),style: pw.TextStyle(font: ttf)),
-                      decoration: pw.BoxDecoration(border: pw.Border.all())),  pw.Container(
+                          (rcontroller.reportList.reversed
+                                      .toList()
+                                      .indexOf(person) +
+                                  1)
+                              .toString(),
+                          style: pw.TextStyle(font: ttf)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
                       height: 50,
                       width: 60,
                       alignment: pw.Alignment.center,
-                      child:  pw.Text(
-                          person.name!
-                         ,style: pw.TextStyle(font: ttf)),
+                      child: pw.Image(pw.MemoryImage(person.imageByte!),
+                          fit: pw.BoxFit.fill),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(person.name!,
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(person.date!.toPersianDate(),
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(person.time!.toPersianDigit(),
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(person.gender =='male' ?"مرد" : "زن",
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                  pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                          person.role == 'approve' ? "مجاز" : "غیر مجاز",
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                                   pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                          person.age!,
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
+                        pw.Container(
+                      height: 50,
+                      width: 60,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                          person.role == 'approve' ? "مجاز" : "غیر مجاز",
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
                       
+                                   pw.Container(
+                      height: 50,
+                      width: 30,
+                      alignment: pw.Alignment.center,
+                      child: pw.Text(
+                        
+                          person.camera!,
+                          style: pw.TextStyle(font: ttf, fontSize: 10)),
+                      decoration: pw.BoxDecoration(border: pw.Border.all())),
                 ])),
+                
                 
         ];
       },

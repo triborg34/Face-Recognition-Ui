@@ -7,6 +7,7 @@ import 'package:faceui/widgets/coustom_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:persian_number_utility/persian_number_utility.dart';
 
 class DetailsBox extends StatelessWidget {
   const DetailsBox({
@@ -67,14 +68,14 @@ class DetailsBox extends StatelessWidget {
             ? IconButton(
                 onPressed: () async {
                   final response = await http.get(Uri.parse(
-                      'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}'));
+                      'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}'));
 
                   await showAdaptiveDialog(
                       context: context,
                       builder: (context) {
                         return AddOrEditPerson(
                             filename:
-                                'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.humancrop}',
+                                'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.humancrop}',
                             filepath: response.bodyBytes,
                             pcontroller: Get.find<personController>(),
                             name: '',
@@ -90,13 +91,15 @@ class DetailsBox extends StatelessWidget {
                   Icons.add_circle,
                   color: Colors.white,
                 ))
-            : person.role=='approve' ? Icon(
-                Icons.check_sharp,
-                color: Colors.green,
-              ):Icon(
-                Icons.cancel,
-                color: Colors.red,
-              ),
+            : person.role == 'approve'
+                ? Icon(
+                    Icons.check_sharp,
+                    color: Colors.green,
+                  )
+                : Icon(
+                    Icons.cancel,
+                    color: Colors.red,
+                  ),
         Text(
           person.name! == "unknown" ? "ناشناس" : person.name!,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
@@ -104,6 +107,7 @@ class DetailsBox extends StatelessWidget {
         IconButton(
             onPressed: () async {
               await pb.collection('collection').delete(person.id!);
+              mController.isPersonSelected.value = false;
             },
             icon: Icon(
               Icons.delete_forever,
@@ -132,7 +136,7 @@ class DetailsBox extends StatelessWidget {
       radius: 60,
       backgroundImage: NetworkImage(
         hasImage
-            ? 'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}'
+            ? 'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}'
             : 'assets/images/unknown-person1.png',
       ),
     );
@@ -156,7 +160,7 @@ class DetailsBox extends StatelessWidget {
       return CircleAvatar(
         radius: 60,
         backgroundImage: NetworkImage(
-          'http://127.0.0.1:8090/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
+          'http://127.0.0.1:8091/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
         ),
       );
     } catch (e) {
@@ -172,8 +176,6 @@ class DetailsBox extends StatelessWidget {
 
     return Column(
       children: [
-        CoustomRow(title: "شناسه", substring: person.id!),
-        SizedBox(height: 10),
         CoustomRow(title: "شماره شناسایی", substring: person.trackId!),
         SizedBox(height: 10),
         CoustomRow(
@@ -181,9 +183,11 @@ class DetailsBox extends StatelessWidget {
         SizedBox(height: 10),
         CoustomRow(title: "سن", substring: person.age!),
         SizedBox(height: 10),
-        CoustomRow(
-            title: "اطمینان",
-            substring: person.name == "unknown" ? "96%" : "${person.score}%"),
+        CoustomRow(title: "تاریخ", substring: person.date!.toPersianDate()),
+        SizedBox(height: 10),
+        CoustomRow(title: "زمان", substring: person.time!.toPersianDigit()),
+        SizedBox(height: 10),
+
       ],
     );
   }
@@ -202,7 +206,7 @@ class DetailsBox extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
-                  'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.frame}',
+                  'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.frame}',
                   fit: BoxFit.fill,
                 ),
               )

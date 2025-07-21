@@ -13,6 +13,7 @@ import 'package:faceui/widgets/time_box.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class RightSideBar extends StatelessWidget {
   const RightSideBar({
@@ -219,8 +220,30 @@ class RightSideBar extends StatelessWidget {
     if (filterString.isEmpty) {
       final records = await pb.collection('collection').getFullList();
       for (var json in records) {
-        rcontroller.reportList.add(reportClass.fromJson(json.data));
+        // rcontroller.reportList.add(reportClass.fromJson(json.data));
+        final repsonse= await http.get(Uri.parse(
+                      'http://127.0.0.1:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+        Uint8List tempUint=repsonse.bodyBytes;
+        rcontroller.reportList.add(reportClass(
+            age: json.data['age'],
+            camera: json.data['camera'],
+            collectionId: json.data['collectionId'],
+            collectionName: json.data['collectionName'],
+            created: json.data['created'],
+            croppedFrame: json.data['cropped_frame'],
+            date: json.data['date'],
+            frame: json.data['frame'],
+            gender: json.data['gender'],
+            id: json.data['id'],
+            role: json.data['role'],
+            imageByte: tempUint,
+            name: json.data['name'],
+            score: json.data['score'],
+            time: json.data['time'],
+            trackId: json.data['track_id'],
+            updated: json.data['updated']));
       }
+
       return true;
     }
 

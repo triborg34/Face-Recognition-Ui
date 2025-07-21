@@ -12,5 +12,7 @@ class MyBindings extends Bindings{
     Get.put(personController(),);
     Get.put(videoFeedController());
     Get.put(networkController());
+    Get.put(userController());
+    Get.put(settinController());
   }
 }

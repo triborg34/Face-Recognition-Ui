@@ -134,7 +134,7 @@ class PersonScreen extends StatelessWidget {
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                             image: NetworkImage(
-                                                'http://127.0.0.1:8090/api/files/known_face/${pcontroller.knownList[i].id}/${pcontroller.knownList[i].image}'),
+                                                'http://127.0.0.1:8091/api/files/known_face/${pcontroller.knownList[i].id}/${pcontroller.knownList[i].image}'),
                                             fit: BoxFit.contain),
                                         border: Border.all(color: primaryColor),
                                         shape: BoxShape.circle,

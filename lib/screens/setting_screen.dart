@@ -1,11 +1,18 @@
+import 'package:faceui/screens/general_box_page_two.dart';
+import 'package:faceui/screens/user_box_page_one.dart';
 import 'package:faceui/utils/consts.dart';
+import 'package:faceui/utils/controller.dart';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SettingScreen extends StatelessWidget {
   SettingScreen({
     super.key,
   });
   final PageController _pageController = PageController();
+  userController ucontroller = Get.find<userController>();
+  settinController scontroller = Get.find<settinController>();
 
   @override
   Widget build(BuildContext context) {
@@ -33,68 +40,92 @@ class SettingScreen extends StatelessWidget {
             controller: _pageController,
             scrollDirection: Axis.vertical,
             children: [
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "عمومی",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                    ),
-                    SizedBox(
-                      height: 25,
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                            child: Container(
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 100,
-                                child: Text(
-                                  "ورود خودکار",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )),
-                        Expanded(child: Container())
-                      ],
-                    )
-                  ],
-                ),
+              UserBoxPageOne(ucontroller: ucontroller),
+              GeneralBoxPageTwo(
+                scontroller: scontroller,
               ),
-              Container(
-                child: Center(
-                  child: Text("Page Two"),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: Text("Page Three"),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: Text("Page Four"),
-                ),
-              ),
-              Container(
-                child: Center(
-                  child: Text("Page Five"),
-                ),
-              )
+              InfoBox(),
+
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class InfoBox extends StatelessWidget {
+  const InfoBox({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.all(25),
+      padding: EdgeInsets.all(15),
+      width: Get.width,
+      height: 200,
+      decoration: BoxDecoration(
+          border: Border.all(color: primaryColor), borderRadius: BorderRadius.circular(15),),
+          child: Column(
+            children: [
+              KeyValueRow(
+                    keyString: "BuilDNumber", valueString: "SN/14040430"),
+                Divider(
+                  color: primaryColor,
+                ),
+                KeyValueRow(keyString: "UpdateNo", valueString: "7.21.2025"),
+                Divider(
+                  color: primaryColor,
+                ),
+                KeyValueRow(
+                    keyString: "Last Update",
+                    valueString:
+                        "${DateTime.now().year.toString()}/${DateTime.now().month.toString()}/${DateTime.now().day.toString()}"),
+                Divider(color: primaryColor),
+                KeyValueRow(
+                    keyString: "Train Model Serial",
+                    valueString: "INSIGHTFACE"),
+                Divider(
+                  color: primaryColor,
+                ),
+            ],
+          ),
+    );
+  }
+}
+
+class KeyValueRow extends StatelessWidget {
+  late String keyString;
+  late String valueString;
+  KeyValueRow({required this.keyString, required this.valueString});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          color: Colors.transparent,
+          width: 150,
+          child: Text(
+            keyString + " : ",
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'arial'),
+          ),
+        ),
+        Text(
+          "  " + valueString,
+          style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              fontFamily: "arial"),
+        )
+      ],
     );
   }
 }

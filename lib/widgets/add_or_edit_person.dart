@@ -114,7 +114,7 @@ class AddOrEditPerson extends StatelessWidget {
                                         pcontroller.filepath.value!,
                                       )
                                     : NetworkImage(isEditing
-                                        ? 'http://127.0.0.1:8090/api/files/known_face/${id}/${imagePath}'
+                                        ? 'http://127.0.0.1:8091/api/files/known_face/${id}/${imagePath}'
                                         : 'assets/images/unknown-person1.png'),
                                 fit: BoxFit.fill),
                             shape: BoxShape.circle,

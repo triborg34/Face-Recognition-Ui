@@ -61,7 +61,7 @@ class UnknowBox extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
-        'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}',
+        'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}',
         fit: BoxFit.fill,
       ),
     );
@@ -100,7 +100,7 @@ class UnknowBox extends StatelessWidget {
                   children: List.generate(
                     nController.personList.length,
                     (index) => _buildUnknownPersonCard(index),
-                  ).reversed.toList(),
+                  ),
                 ),
               ],
             ),

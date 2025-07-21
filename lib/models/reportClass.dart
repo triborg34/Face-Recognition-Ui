@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class reportClass {
   String? age;
   String? camera;
@@ -14,6 +16,8 @@ class reportClass {
   String? time;
   String? trackId;
   String? updated;
+  Uint8List? imageByte;
+  String? role;
 
   reportClass(
       {this.age,
@@ -30,7 +34,7 @@ class reportClass {
       this.score,
       this.time,
       this.trackId,
-      this.updated});
+      this.updated,this.imageByte,this.role});
 
   reportClass.fromJson(Map<String, dynamic> json) {
     age = json['age'];
@@ -48,6 +52,7 @@ class reportClass {
     time = json['time'];
     trackId = json['track_id'];
     updated = json['updated'];
+    role=json['role'];
   }
 
   Map<String, dynamic> toJson() {
@@ -67,6 +72,7 @@ class reportClass {
     data['time'] = this.time;
     data['track_id'] = this.trackId;
     data['updated'] = this.updated;
+    data['role']=this.role;
     return data;
   }
 }

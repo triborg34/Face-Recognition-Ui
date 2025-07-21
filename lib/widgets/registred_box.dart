@@ -26,7 +26,7 @@ class RegistredBox extends StatelessWidget {
     mController.isPersonSelected.value = true;
     mController.globalIndex.value = index;
   }
-
+  //TODO: FIX UI
   Widget _buildPersonCard(int index) {
     final person = nController.personList[index];
 
@@ -61,7 +61,7 @@ class RegistredBox extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
-        'http://127.0.0.1:8090/api/files/collection/${person.id}/${person.croppedFrame}',
+        'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}',
         fit: BoxFit.fill,
       ),
     );
@@ -94,15 +94,17 @@ class RegistredBox extends StatelessWidget {
                 ),
                 const SizedBox(height: 15),
                 Wrap(
+
                   alignment: WrapAlignment.start,
                   textDirection: TextDirection.rtl,
                   spacing: 10,
                   runSpacing: 10,
                   children: List.generate(
+                  
 
                     nController.personList.length,
                     (index) => _buildPersonCard(index),
-                  ).reversed.toList(),
+                  ),
                 ),
               ],
             ),

@@ -5,6 +5,8 @@ import 'package:faceui/models/cameraClass.dart';
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/models/personModels.dart';
 import 'package:faceui/models/reportClass.dart';
+import 'package:faceui/models/settingClass.dart';
+import 'package:faceui/models/userClass.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -68,10 +70,10 @@ class cameraController extends GetxController {
   TextEditingController nameController = TextEditingController();
   TextEditingController ipController = TextEditingController();
   TextEditingController portController = TextEditingController();
-  TextEditingController rtspNameController=TextEditingController();
-  TextEditingController rtspController=TextEditingController();
-  TextEditingController usernameController=TextEditingController();
-  TextEditingController passwordController=TextEditingController();
+  TextEditingController rtspNameController = TextEditingController();
+  TextEditingController rtspController = TextEditingController();
+  TextEditingController usernameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
 
   void startSub() {
     pb.collection('cameras').subscribe(
@@ -79,17 +81,16 @@ class cameraController extends GetxController {
       (e) {
         if (e.action == 'create') {
           cameras.add(cameraClass.fromJson(e.record!.data));
-        }
-       else if(e.action=='delete'){
-          cameras.removeWhere((element) => element.id==e.record!.id,);
-        }
-        else{
-
-           int index =
-            cameras.indexWhere((element) => element.id == e.record!.id);
-        if (index != -1) {
-          cameras[index] = cameraClass.fromJson(e.record!.toJson());
-        }
+        } else if (e.action == 'delete') {
+          cameras.removeWhere(
+            (element) => element.id == e.record!.id,
+          );
+        } else {
+          int index =
+              cameras.indexWhere((element) => element.id == e.record!.id);
+          if (index != -1) {
+            cameras[index] = cameraClass.fromJson(e.record!.toJson());
+          }
         }
       },
     );
@@ -133,23 +134,21 @@ class cameraController extends GetxController {
 
 class personController extends GetxController {
   RxBool isVisible = false.obs;
-  RxBool isLoading=false.obs;
+  RxBool isLoading = false.obs;
   var knownList = <knowPerson>[].obs;
 
+  var roleP = 'approve'.obs;
+  var genterP = 'male'.obs;
+  var filename = ''.obs;
+  var filepath = Rxn<Uint8List>(Uint8List(0));
 
+  TextEditingController name = TextEditingController();
+  TextEditingController lastName = TextEditingController();
+  TextEditingController socialNumber = TextEditingController();
+  TextEditingController ageNumber = TextEditingController();
 
-  var roleP='approve'.obs;
-  var genterP='male'.obs;
-  var filename=''.obs;
-   var filepath = Rxn<Uint8List>(Uint8List(0));
-
-  TextEditingController name=TextEditingController();
-  TextEditingController lastName=TextEditingController();
-  TextEditingController socialNumber=TextEditingController();
-  TextEditingController ageNumber=TextEditingController();
-
-  fetchFirstData()async {
-        final kList = await pb.collection('known_face').getFullList();
+  fetchFirstData() async {
+    final kList = await pb.collection('known_face').getFullList();
     for (var json in kList) {
       knownList.add(knowPerson.fromJson(json.data));
     }
@@ -161,32 +160,30 @@ class personController extends GetxController {
       (e) {
         if (e.action == 'create') {
           knownList.add(knowPerson.fromJson(e.record!.data));
-        }
-       else if(e.action=='delete'){
-          knownList.removeWhere((element) => element.id==e.record!.id,);
-        }
-        else{
-
-           int index =
-            knownList.indexWhere((element) => element.id == e.record!.id);
-        if (index != -1) {
-          knownList[index] = knowPerson.fromJson(e.record!.toJson());
-        }
+        } else if (e.action == 'delete') {
+          knownList.removeWhere(
+            (element) => element.id == e.record!.id,
+          );
+        } else {
+          int index =
+              knownList.indexWhere((element) => element.id == e.record!.id);
+          if (index != -1) {
+            knownList[index] = knowPerson.fromJson(e.record!.toJson());
+          }
         }
       },
     );
   }
 
-
-@override
-  void onReady()async {
-   await fetchFirstData();
-   startSub();
+  @override
+  void onReady() async {
+    await fetchFirstData();
+    startSub();
     super.onReady();
   }
+
   @override
   void onInit() {
-    
     super.onInit();
 
     Future.delayed(Duration(milliseconds: 100), () {
@@ -244,15 +241,13 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
-  
 
   fetchFirstData() async {
-    final mList = await pb.collection('collection').getFullList();
+    final mList =
+        await pb.collection('collection').getFullList(sort: '-created');
     for (var json in mList) {
       personList.add(personClass.fromJson(json.data));
     }
-
-
   }
 
   void startSub() {
@@ -260,10 +255,11 @@ class networkController extends GetxController {
       '*',
       (e) {
         if (e.action == 'create') {
-          personList.add(personClass.fromJson(e.record!.data));
-        }
-          else if(e.action=='delete'){
-          personList.removeWhere((element) => element.id==e.record!.id,);
+          personList.insert(0, personClass.fromJson(e.record!.data));
+        } else if (e.action == 'delete') {
+          personList.removeWhere(
+            (element) => element.id == e.record!.id,
+          );
         }
       },
     );
@@ -274,5 +270,130 @@ class networkController extends GetxController {
     await fetchFirstData();
     startSub();
     super.onReady();
+  }
+}
+
+class userController extends GetxController {
+  var users = <UsersClass>[].obs;
+  TextEditingController name = TextEditingController();
+  TextEditingController lastName = TextEditingController();
+  TextEditingController email = TextEditingController();
+  TextEditingController username = TextEditingController();
+  TextEditingController password = TextEditingController();
+  var role = 'admin'.obs;
+
+  fetchFirstData() async {
+    final kList = await pb.collection('users').getFullList();
+    for (var json in kList) {
+      users.add(UsersClass.fromJson(json.data));
+    }
+  }
+
+  void startSub() {
+    pb.collection('users').subscribe(
+      '*',
+      (e) {
+        if (e.action == 'create') {
+          users.add(UsersClass.fromJson(e.record!.data));
+        } else if (e.action == 'delete') {
+          users.removeWhere(
+            (element) => element.id == e.record!.id,
+          );
+        } else {
+          int index = users.indexWhere((element) => element.id == e.record!.id);
+          if (index != -1) {
+            users[index] = UsersClass.fromJson(e.record!.toJson());
+          }
+        }
+      },
+    );
+  }
+
+  @override
+  void onInit() async {
+    await fetchFirstData();
+    startSub();
+
+    super.onInit();
+  }
+}
+
+class settinController extends GetxController {
+  var settings = <SettingClass>[].obs;
+
+  var padding = 0.obs;
+  var score = 0.0.obs;
+  var quality = 0.0.obs;
+
+  var isRfid = false.obs;
+  TextEditingController rfipController = TextEditingController();
+  TextEditingController rfportConroller = TextEditingController();
+  var isrlOne = false.obs;
+  var isrlTwo = false.obs;
+  var rfconnect = false.obs;
+
+  var isAlarm = false.obs;
+
+  fetchFirstData() async {
+    final kList = await pb.collection('setting').getFullList();
+    for (var json in kList) {
+      settings.add(SettingClass.fromJson(json.data));
+    }
+  }
+
+  void startSub() {
+    pb.collection('setting').subscribe(
+      '*',
+      (e) {
+        if (e.action == 'create') {
+          settings.add(SettingClass.fromJson(e.record!.data));
+        } else if (e.action == 'delete') {
+          settings.removeWhere(
+            (element) => element.id == e.record!.id,
+          );
+        } else {
+          int index =
+              settings.indexWhere((element) => element.id == e.record!.id);
+          if (index != -1) {
+            settings[index] = SettingClass.fromJson(e.record!.toJson());
+          }
+        }
+      },
+    );
+  }
+
+  firstIniliazed() async {
+    score.value = settings.first.score!;
+    padding.value = settings.first.padding!;
+    quality.value = settings.first.quality!.toDouble();
+    isRfid.value = settings.first.isRfid!;
+    rfipController.text = settings.first.rfidip!;
+    rfportConroller.text = settings.first.rfidport!.toString();
+    isrlOne.value = settings.first.rl1!;
+    isrlTwo.value = settings.first.rl2!;
+    rfconnect.value = settings.first.rfconnect!;
+    isAlarm.value = settings.first.isAlarm!;
+  }
+
+  checkForConnect() async {
+    if (isRfid.value && rfconnect.value) {
+      Uri uri = Uri.parse(
+          'http://127.0.0.1:8000/iprelay?ip=${rfipController.text}&port=${rfportConroller.text}');
+
+      await http.post(
+        uri,
+        body: {"isconnect": true},
+      );
+    }
+  }
+
+  @override
+  void onInit() async {
+    await fetchFirstData();
+    await firstIniliazed();
+    await checkForConnect();
+    startSub();
+
+    super.onInit();
   }
 }

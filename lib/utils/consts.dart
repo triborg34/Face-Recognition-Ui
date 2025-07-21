@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 import 'package:pocketbase/pocketbase.dart';
 
 List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/test', page:() =>  Test())];
-var pb =PocketBase('http://127.0.0.1:8090');
+var pb =PocketBase('http://127.0.0.1:8091');
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 
 
