@@ -26,7 +26,6 @@ class RegistredBox extends StatelessWidget {
     mController.isPersonSelected.value = true;
     mController.globalIndex.value = index;
   }
-  //TODO: FIX UI
   Widget _buildPersonCard(int index) {
     final person = nController.personList[index];
 

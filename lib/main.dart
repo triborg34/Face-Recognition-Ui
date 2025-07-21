@@ -1,4 +1,5 @@
 import 'package:faceui/utils/consts.dart';
+import 'package:faceui/utils/network_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -16,13 +17,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResponsiveSizer(
-      builder: (context, orientation, screenType) =>  GetMaterialApp(
+      builder: (context, orientation, screenType) => GetMaterialApp(
         darkTheme: ThemeData(
-          
-           fontFamily: 'nazanin',
+          fontFamily: 'nazanin',
           brightness: Brightness.dark,
           primarySwatch: Colors.indigo,
-          
         ),
         theme: ThemeData(
           fontFamily: 'nazanin',
@@ -33,10 +32,12 @@ class MyApp extends StatelessWidget {
         initialBinding: MyBindings(),
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
-            
-        
+        onInit: () {
+          var host = getNetworkInfo();
+          url = host['hostname'];
+          port = host['port'];
+        },
       ),
     );
   }
-  //TODO:SETTING SCREEN???
 }
