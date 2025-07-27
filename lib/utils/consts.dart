@@ -7,13 +7,14 @@ import 'package:faceui/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pocketbase/pocketbase.dart';
-// import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 
 String role = '';
 String email = '';
 String url = '127.0.0.1';
 String port = "8000";
+String username='';
 
 
 List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/test', page:() =>  Test())];
@@ -80,25 +81,25 @@ void onRelayTwo() async {
   await http.get(uri);
 }
 
-// void alarmPlay(personClass entry) {
-//   if (Get.find<settinController>().isAlarm.value) {
-//     AudioPlayer audioPlayer = AudioPlayer();
-//     if (Get.find<personController>()
-//         .knownList
-//         .where(
-//           (element) => element.name != entry.name,
-//         )
-//         .isNotEmpty) {
-//       audioPlayer.play(UrlSource('assets/alarm.mp3'));
-//     }
+void alarmPlay(personClass entry) {
+  if (Get.find<settinController>().isAlarm.value) {
+    AudioPlayer audioPlayer = AudioPlayer();
+    if (Get.find<personController>()
+        .knownList
+        .where(
+          (element) => element.name != entry.name,
+        )
+        .isNotEmpty) {
+      audioPlayer.play(UrlSource('assets/alarm.mp3'));
+    }
 
-//     http.post(Uri.parse('http://127.0.0.1:8000/email?email=${email}'), body: {
-//       "plateNumber": entry.name,
-//       "eDate": entry.date,
-//       "eTime": entry.time
-//     });
-//   }
-// }
+    http.post(Uri.parse('http://127.0.0.1:8000/email?email=${email}'), body: {
+      "plateNumber": entry.name,
+      "eDate": entry.date,
+      "eTime": entry.time
+    });
+  }
+}
 
 void relayAutomatic(personClass entry) {
   if (Get.find<settinController>().isRfid.value) {

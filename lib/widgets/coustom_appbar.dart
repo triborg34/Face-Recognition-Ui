@@ -22,10 +22,11 @@ class CoustomAppbar extends StatelessWidget {
       height: 50,
       color: primaryColor,
       child: Row(
+        textDirection: TextDirection.rtl,
         children: [
-          FlutterLogo(
-            style: FlutterLogoStyle.horizontal,
-            size: 150,
+          Image.asset(
+           'assets/images/mainlogo2.png'
+           
           ),
           SizedBox(
             width: 15,

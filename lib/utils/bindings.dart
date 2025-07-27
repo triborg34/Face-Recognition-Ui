@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 class MyBindings extends Bindings{
   @override
   void dependencies() {
-    Get.lazyPut(() => mainController(),);
+    Get.put( mainController(),);
     Get.lazyPut(() => ThemeController(),);
     Get.put(reportController(),);
     Get.put( cameraController());

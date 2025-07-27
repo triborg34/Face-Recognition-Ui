@@ -17,7 +17,7 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  List<String> tabs = ['Home', "Report", "Camera", "Person", "Setting"];
+  List<String> tabs = ['خانه', "گزارش", "دوربین", "افراد", "تنظیمات"];
 
   List<IconData> tabsIcon = [
     Icons.home_filled,

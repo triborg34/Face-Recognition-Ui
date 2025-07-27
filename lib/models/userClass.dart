@@ -9,6 +9,7 @@ class UsersClass {
   String? role;
   String? created;
   String? updated;
+  bool? remember_me;
 
   UsersClass(
       {this.collectionId,
@@ -20,6 +21,7 @@ class UsersClass {
       this.email,
       this.role,
       this.created,
+      this.remember_me,
       this.updated});
 
   UsersClass.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class UsersClass {
     role = json['role'];
     created = json['created'];
     updated = json['updated'];
+    remember_me=json['remember_me'];
   }
 
   Map<String, dynamic> toJson() {
@@ -47,6 +50,7 @@ class UsersClass {
     data['role'] = this.role;
     data['created'] = this.created;
     data['updated'] = this.updated;
+    data['remember_me']=this.remember_me;
     return data;
   }
 }

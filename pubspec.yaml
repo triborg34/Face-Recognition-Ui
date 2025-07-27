@@ -46,6 +46,8 @@ dependencies:
   persian_datetime_picker: 3.0.0
   flutter_localization: ^0.3.2
   printing: ^5.14.2
+  audioplayers: ^6.0.0
+  splash_view: ^2.0.1
   
   
 

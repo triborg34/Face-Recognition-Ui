@@ -1,3 +1,4 @@
+import 'package:faceui/screens/splash_screen.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/network_util.dart';
 import 'package:flutter/material.dart';
@@ -31,13 +32,15 @@ class MyApp extends StatelessWidget {
         getPages: pages,
         initialBinding: MyBindings(),
         debugShowCheckedModeBanner: false,
-        initialRoute: '/',
+       home: SplashScreen(),
         onInit: () {
           var host = getNetworkInfo();
           url = host['hostname'];
           port = host['port'];
+
         },
       ),
     );
   }
+  //TODO:SPASH SCREEN LOGIN SCREEN AND FOR BACKEND FIX THE LOAD MODEL AND MAKE IT MORE DISIMPLENT
 }
