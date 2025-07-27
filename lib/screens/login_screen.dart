@@ -34,7 +34,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
       if (user.remember_me!) {
         role=user.role!;
         email=user.email!;
-              username=user.username!;
+              unames=user.username!;
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => MainScreen()),
         );
@@ -68,7 +68,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.purple.shade900,
+                primaryColor,
                 Colors.black,
               ],
             ),
@@ -135,7 +135,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                   controller: _usernameController,
                                   decoration: InputDecoration(
                                     prefixIcon: Icon(Icons.person,
-                                        color: Colors.purple),
+                                        color: Colors.white),
                                     hintText: 'نام کاربری',
                                     filled: true,
                                     fillColor: Colors.white.withOpacity(0.1),
@@ -150,7 +150,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide(
-                                          color: Colors.purple, width: 2),
+                                          color: primaryColor, width: 2),
                                     ),
                                     hintStyle: TextStyle(color: Colors.white54),
                                   ),
@@ -170,7 +170,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                   obscureText: true,
                                   decoration: InputDecoration(
                                     prefixIcon:
-                                        Icon(Icons.lock, color: Colors.purple),
+                                        Icon(Icons.lock, color: Colors.white),
                                     hintText: 'رمز عبور',
                                     filled: true,
                                     fillColor: Colors.white.withOpacity(0.1),
@@ -185,7 +185,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(15),
                                       borderSide: BorderSide(
-                                          color: Colors.purple, width: 2),
+                                          color: primaryColor, width: 2),
                                     ),
                                     hintStyle: TextStyle(color: Colors.white54),
                                   ),
@@ -205,7 +205,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                   children: [
                                     Checkbox(
                                       value: _rememberMe,
-                                      activeColor: Colors.purple,
+                                      activeColor: primaryColor,
                                       checkColor: Colors.white,
                                       side: BorderSide(color: Colors.white54),
                                       onChanged: (bool? value) {
@@ -230,7 +230,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                     await _login();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.purple,
+                                    backgroundColor: primaryColor,
                                     padding: EdgeInsets.symmetric(vertical: 15),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15),
@@ -256,15 +256,11 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                       height: 600,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15),
-                        child: kIsWeb
-                            ? Image.network(
+                        child:Image.network(
                                 'assets/images/ban.jpg',
                                 fit: BoxFit.fill,
                               )
-                            : Image.asset(
-                                'assets/images/ban.jpg',
-                                fit: BoxFit.fill,
-                              ),
+                       
                       ),
                     ),
                   ],
@@ -295,7 +291,7 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
             _passwordController.text) {
               role=user.role!;
               email=user.email!;
-              username=user.username!;
+              unames=user.username!;
           Get.to(() => MainScreen());
         }
       } catch (e) {

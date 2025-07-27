@@ -14,7 +14,7 @@ String role = '';
 String email = '';
 String url = '127.0.0.1';
 String port = "8000";
-String username='';
+String unames='';
 
 
 List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/test', page:() =>  Test())];

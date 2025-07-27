@@ -17,6 +17,7 @@ class CoustomAppbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15),
       height: 50,
@@ -68,7 +69,7 @@ class CoustomAppbar extends StatelessWidget {
           SizedBox(
             width: 10,
           ),
-          Text("Admin"),
+          Text(unames.capitalizeFirst!),
           Container(
             margin: EdgeInsets.only(left: 10),
             width: 90,
