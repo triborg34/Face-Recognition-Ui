@@ -222,7 +222,7 @@ class RightSideBar extends StatelessWidget {
       for (var json in records) {
         // rcontroller.reportList.add(reportClass.fromJson(json.data));
         final repsonse= await http.get(Uri.parse(
-                      'http://127.0.0.1:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+                      'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
         Uint8List tempUint=repsonse.bodyBytes;
         rcontroller.reportList.add(reportClass(
             age: json.data['age'],

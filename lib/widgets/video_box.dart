@@ -56,7 +56,7 @@ class VideoBox extends StatelessWidget {
                         children: [
                           CameraFeed(
                               streamUrl:
-                                  'http://127.0.0.1:8000/rt1?source=${Get.find<cameraController>().cameras[i].rtspUrl}'),
+                                  'http://${url}:${port}/rt${i+1}?source=${Get.find<cameraController>().cameras[i].rtspUrl}'),
                           GestureDetector(
                             onTap: () => mController.videoIndex.value = i,
                             child: Container(

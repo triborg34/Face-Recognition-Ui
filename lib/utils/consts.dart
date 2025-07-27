@@ -27,7 +27,7 @@ Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 
 Future<Map<String, dynamic>?> uploadFile(List<int> fileBytes, String filename) async {
     try {
-          final uri = Uri.parse('http://127.0.0.1:8000/upload');
+          final uri = Uri.parse('http://${url}:${port}/upload');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(http.MultipartFile.fromBytes(
         'file',
@@ -93,7 +93,7 @@ void alarmPlay(personClass entry) {
       audioPlayer.play(UrlSource('assets/alarm.mp3'));
     }
 
-    http.post(Uri.parse('http://127.0.0.1:8000/email?email=${email}'), body: {
+    http.post(Uri.parse('http://${url}:${port}/email?email=${email}'), body: {
       "plateNumber": entry.name,
       "eDate": entry.date,
       "eTime": entry.time

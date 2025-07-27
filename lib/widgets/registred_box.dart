@@ -60,7 +60,7 @@ class RegistredBox extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
-        'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}',
+        'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}',
         fit: BoxFit.fill,
       ),
     );

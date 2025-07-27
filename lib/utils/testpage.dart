@@ -1,3 +1,4 @@
+import 'package:faceui/utils/consts.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class Test extends StatelessWidget {
             await getData();
           },
           child: Image.network(
-              'http://127.0.0.1:8090/api/files/pbc_50156962/voz31f4be4y2164/ssrv2ednqh8_igawrh00mo.unknown_186.jpg'),
+              'http://${url}:8090/api/files/pbc_50156962/voz31f4be4y2164/ssrv2ednqh8_igawrh00mo.unknown_186.jpg'),
         ),
       ),
     );
@@ -24,7 +25,7 @@ class Test extends StatelessWidget {
 
   getData() async {
     String src =
-        'http://127.0.0.1:8090/api/files/pbc_50156962/voz31f4be4y2164/ssrv2ednqh8_igawrh00mo.unknown_186.jpg';
+        'http://${url}:8090/api/files/pbc_50156962/voz31f4be4y2164/ssrv2ednqh8_igawrh00mo.unknown_186.jpg';
 
         final response = await http.get(Uri.parse(src));
         if (response.statusCode==200){

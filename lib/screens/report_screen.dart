@@ -189,7 +189,7 @@ class ReportScreen extends StatelessWidget {
                                                       width: 150,
                                                       child: ClipRRect(
                                                         child: Image.network(
-                                                          'http://127.0.0.1:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
+                                                          'http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
                                                           fit: BoxFit.fill,
                                                         ),
                                                         borderRadius:

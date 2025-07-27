@@ -112,7 +112,7 @@ class cameraController extends GetxController {
 
   void startDiscovery() async {
     searchCameras.clear();
-    final uri = Uri.parse('http://127.0.0.1:8000/onvif/get-stream');
+    final uri = Uri.parse('http://${url}:${port}/onvif/get-stream');
     final request = http.Request('GET', uri)
       ..headers['Accept'] = 'text/event-stream';
 
@@ -378,7 +378,7 @@ class settinController extends GetxController {
   checkForConnect() async {
     if (isRfid.value && rfconnect.value) {
       Uri uri = Uri.parse(
-          'http://127.0.0.1:8000/iprelay?ip=${rfipController.text}&port=${rfportConroller.text}');
+          'http://${url}:${port}/iprelay?ip=${rfipController.text}&port=${rfportConroller.text}');
 
       await http.post(
         uri,

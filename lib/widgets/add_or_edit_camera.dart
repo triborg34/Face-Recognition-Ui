@@ -17,7 +17,7 @@ class AddOrEditCamera extends StatelessWidget {
     required this.context,
     required this.name,
     required this.ip,
-    required this.port,
+    required this.cport,
     required this.rtsp,
     required this.rtspName,
     required this.username,
@@ -33,7 +33,7 @@ class AddOrEditCamera extends StatelessWidget {
   final dynamic context;
   final String name;
   final String ip;
-  final String port;
+  final String cport;
   final String rtsp;
   final String rtspName;
   final String username;
@@ -48,7 +48,7 @@ class AddOrEditCamera extends StatelessWidget {
   Widget build(BuildContext context) {
     ccontroller.nameController.text = name;
     ccontroller.ipController.text = ip;
-    ccontroller.portController.text = port;
+    ccontroller.portController.text = cport;
     ccontroller.rtspController.text = rtsp;
     ccontroller.rtspNameController.text = rtspName;
     ccontroller.usernameController.text = username;
@@ -169,8 +169,8 @@ class AddOrEditCamera extends StatelessWidget {
                           TextButton.styleFrom(backgroundColor: primaryColor),
                       onPressed: () async {
                         if (isDiscovery) {
-                          var url =
-                              Uri.parse('http://127.0.0.1:8000/onvif/get-rtsp');
+                          var uri =
+                              Uri.parse('http://${url}:${port}/onvif/get-rtsp');
                           final Map<String, dynamic> body = {
                             "ip": "${ccontroller.ipController.text}",
                             "port": "${ccontroller.portController.text}",
@@ -179,7 +179,7 @@ class AddOrEditCamera extends StatelessWidget {
                             "password": "${ccontroller.passwordController.text}"
                           };
 
-                          await http.post(url,
+                          await http.post(uri,
                               body: jsonEncode(body),
                               headers: {
                                 'Content-Type': "application/json"

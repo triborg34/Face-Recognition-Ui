@@ -65,7 +65,7 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                ipFunction("آدرس شبکه", "127.0.0.1"),
+                                ipFunction("آدرس شبکه", url),
                                 SizedBox(
                                   height: 10,
                                 ),
@@ -223,7 +223,7 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                                 .isRfid
                                                 .value) {
                                               Uri uri = Uri.parse(
-                                                  'http://127.0.0.1:8000/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
+                                                  'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
 
                                               var res = await http.post(
                                                 uri,
@@ -244,7 +244,7 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                                                   .rtl)));
                                             } else {
                                               Uri uri = Uri.parse(
-                                                  'http://127.0.0.1:8000/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
+                                                  'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
 
                                               var res = await http.post(
                                                 uri,

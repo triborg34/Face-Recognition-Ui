@@ -68,14 +68,14 @@ class DetailsBox extends StatelessWidget {
             ? IconButton(
                 onPressed: () async {
                   final response = await http.get(Uri.parse(
-                      'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}'));
+                      'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}'));
 
                   await showAdaptiveDialog(
                       context: context,
                       builder: (context) {
                         return AddOrEditPerson(
                             filename:
-                                'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.humancrop}',
+                                'http://${url}:8091/api/files/collection/${person.id}/${person.humancrop}',
                             filepath: response.bodyBytes,
                             pcontroller: Get.find<personController>(),
                             name: '',
@@ -136,7 +136,7 @@ class DetailsBox extends StatelessWidget {
       radius: 60,
       backgroundImage: NetworkImage(
         hasImage
-            ? 'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.croppedFrame}'
+            ? 'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}'
             : 'assets/images/unknown-person1.png',
       ),
     );
@@ -160,7 +160,7 @@ class DetailsBox extends StatelessWidget {
       return CircleAvatar(
         radius: 60,
         backgroundImage: NetworkImage(
-          'http://127.0.0.1:8091/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
+          'http://${url}:8091/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
         ),
       );
     } catch (e) {
@@ -206,7 +206,7 @@ class DetailsBox extends StatelessWidget {
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: Image.network(
-                  'http://127.0.0.1:8091/api/files/collection/${person.id}/${person.frame}',
+                  'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
                   fit: BoxFit.fill,
                 ),
               )
