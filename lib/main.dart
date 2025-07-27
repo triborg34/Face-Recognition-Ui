@@ -1,6 +1,7 @@
 import 'package:faceui/screens/splash_screen.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/network_util.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';

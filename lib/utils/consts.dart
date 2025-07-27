@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:faceui/models/personModels.dart';
+import 'package:faceui/screens/splash_screen.dart';
 import 'package:faceui/utils/controller.dart';
-import 'package:faceui/utils/testpage.dart';
 import 'package:http/http.dart' as http;
 import 'package:faceui/screens/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +17,7 @@ String port = "8000";
 String unames='';
 
 
-List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/test', page:() =>  Test())];
+List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/splash', page:() =>  SplashScreen())];
 var pb =PocketBase('http://${url}:8091');
 Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 

@@ -14,7 +14,7 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-  var tabindex = 1.obs;
+  var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
