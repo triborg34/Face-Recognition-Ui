@@ -25,9 +25,9 @@ Color primaryColor = Color.fromARGB(255, 25, 32, 71);
 
 
 
-Future<Map<String, dynamic>?> uploadFile(List<int> fileBytes, String filename) async {
+Future<Map<String, dynamic>?> uploadFile(List<int> fileBytes, String filename,String isSearch) async {
     try {
-          final uri = Uri.parse('http://${url}:${port}/upload');
+          final uri = Uri.parse('http://${url}:${port}/upload?isSearch=${isSearch}');
     final request = http.MultipartRequest('POST', uri)
       ..files.add(http.MultipartFile.fromBytes(
         'file',

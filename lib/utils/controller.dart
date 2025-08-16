@@ -20,6 +20,7 @@ class mainController extends GetxController {
   var unknownSelector = (-1).obs;
   var isPersonSelected = false.obs;
   var globalIndex = (-1).obs;
+  
 }
 
 class ThemeController extends GetxController {
@@ -49,6 +50,7 @@ class reportController extends GetxController {
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
+  var filelocation=''.obs;
   var fromDate = ''.obs;
   var untilDate = ''.obs;
   var fromTime = ''.obs;

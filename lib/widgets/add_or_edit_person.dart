@@ -84,7 +84,7 @@ class AddOrEditPerson extends StatelessWidget {
                         // pcontroller.filepath.value =
                         Map<String, dynamic>? data = await uploadFile(
                           fileBytes,
-                          "${Random().nextInt(999)}.${pcontroller.filename.value}",
+                          "${Random().nextInt(999)}.${pcontroller.filename.value}",'False'
                         );
                         pcontroller.filepath.value = data!['imageData'];
                         pcontroller.filename.value = data['fileLocation'];
@@ -242,7 +242,7 @@ class AddOrEditPerson extends StatelessWidget {
                       onPressed: () async {
                         pcontroller.isLoading.value = true;
                         Uri uri =
-                            Uri.parse('http:/${url}:${port}/insertKToDp');
+                            Uri.parse('http://${url}:${port}/insertKToDp');
                         Map<String, dynamic> body = {
                           "name":
                               "${pcontroller.name.text} ${pcontroller.lastName.text}",

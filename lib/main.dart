@@ -37,7 +37,10 @@ class MyApp extends StatelessWidget {
         onInit: () {
           var host = getNetworkInfo();
           url = host['hostname'];
+          url='127.0.0.1';
+          print(url);
           port = host['port'];
+          port="8000";
 
         },
       ),
@@ -45,4 +48,5 @@ class MyApp extends StatelessWidget {
   }
   //TODO: THE LOAD MODEL AND MAKE IT MORE DISIMPLENT
   //TODO:ADD NAZER STRERM
+  //TODO:FIRST NAZER SYSTEM AND THEN BUILD FOR BACKEND
 }

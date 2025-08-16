@@ -1,3 +1,5 @@
+
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -99,10 +101,11 @@ class RightSideBar extends StatelessWidget {
 
                               try {
                                 Map<String, dynamic>? data = await uploadFile(
-                                  fileBytes,
-                                  rcontroller.filename.value,
-                                );
+                                    fileBytes,
+                                    rcontroller.filename.value,
+                                    "True");
                                 rcontroller.filepath.value = data!['imageData'];
+                                rcontroller.filelocation.value=data['fileLocation'];
                               } catch (e) {
                                 print(e);
                                 await ScaffoldMessenger.of(context)
@@ -135,28 +138,39 @@ class RightSideBar extends StatelessWidget {
                       style: TextStyle(color: Colors.white),
                     )),
           ),
-          SizedBox(
-            height: 20,
+          IgnorePointer(
+            ignoring: rcontroller.isImage.value,
+            child: AnimatedOpacity(
+              duration: Duration(milliseconds: 350),
+              opacity: rcontroller.isImage.value ? 0.5 : 1,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  NameBox(
+                    rcontroller: rcontroller,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  GenderBox(rcontroller: rcontroller),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  AgeBox(rcontroller: rcontroller),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  DateBox(),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TimeBox(),
+                ],
+              ),
+            ),
           ),
-          NameBox(
-            rcontroller: rcontroller,
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          GenderBox(rcontroller: rcontroller),
-          SizedBox(
-            height: 15,
-          ),
-          AgeBox(rcontroller: rcontroller),
-          SizedBox(
-            height: 15,
-          ),
-          DateBox(),
-          SizedBox(
-            height: 15,
-          ),
-          TimeBox(),
           Spacer(),
           Center(
             child: SizedBox(
@@ -167,7 +181,11 @@ class RightSideBar extends StatelessWidget {
                   onPressed: () async {
                     rcontroller.reportList.clear();
                     try {
-                      await getResult(rcontroller);
+                      if (rcontroller.isImage.value) {
+                        await getImages(rcontroller);
+                      } else {
+                        await getResult(rcontroller);
+                      }
                       rcontroller.isComplete.value = true;
                     } catch (e) {
                       ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
@@ -188,6 +206,38 @@ class RightSideBar extends StatelessWidget {
     );
   }
 
+Future<bool> getImages(reportController rcontroller ) async {
+  var response=await http.get(Uri.parse("http://${url}:${port}/util/imageSearch?fileLocation=${rcontroller.filelocation}"));
+
+  for (String data in jsonDecode(response.body)){
+    final json = await pb.collection('collection').getFirstListItem('id="$data"');
+     final request = await http.get(Uri.parse(
+            'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+        Uint8List tempUint = request.bodyBytes;
+        rcontroller.reportList.add(reportClass(
+         age: json.data['age'],
+            camera: json.data['camera'],
+            collectionId: json.data['collectionId'],
+            collectionName: json.data['collectionName'],
+            created: json.data['created'],
+            croppedFrame: json.data['cropped_frame'],
+            date: json.data['date'],
+            frame: json.data['frame'],
+            gender: json.data['gender'],
+            id: json.data['id'],
+            role: json.data['role'],
+            imageByte: tempUint,
+            name: json.data['name'],
+            score: json.data['score'],
+            time: json.data['time'],
+            trackId: json.data['track_id'],
+            updated: json.data['updated']));
+        ;
+  }
+
+  
+  return true;
+}
   Future<bool> getResult(reportController rcontroller) async {
     // Build the filter string based on active filters
     List<String> filters = [];
@@ -221,9 +271,9 @@ class RightSideBar extends StatelessWidget {
       final records = await pb.collection('collection').getFullList();
       for (var json in records) {
         // rcontroller.reportList.add(reportClass.fromJson(json.data));
-        final repsonse= await http.get(Uri.parse(
-                      'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
-        Uint8List tempUint=repsonse.bodyBytes;
+        final repsonse = await http.get(Uri.parse(
+            'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+        Uint8List tempUint = repsonse.bodyBytes;
         rcontroller.reportList.add(reportClass(
             age: json.data['age'],
             camera: json.data['camera'],
@@ -309,4 +359,6 @@ class RightSideBar extends StatelessWidget {
 
     return ftMin < itMin && itMin <= ltMin;
   }
+
+  //TODO:CHECK TIME AND DATE WITH ANPR TO BE RIGHT
 }
