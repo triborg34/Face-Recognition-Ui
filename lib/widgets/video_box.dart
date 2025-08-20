@@ -16,6 +16,7 @@ class VideoBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onTap: () {
         mController.videoIndex.value = -1;
@@ -56,7 +57,7 @@ class VideoBox extends StatelessWidget {
                         children: [
                           CameraFeed(
                               streamUrl:
-                                  'http://${url}:${port}/rt${i+1}?source=${Get.find<cameraController>().cameras[i].rtspUrl}'),
+                               role=='observer' ? 'http://${url}:${port}/rt${i+1}?source=${Get.find<cameraController>().cameras[i].rtspUrl}&role=True':   'http://${url}:${port}/rt${i+1}?source=${Get.find<cameraController>().cameras[i].rtspUrl}&role=False'),
                           GestureDetector(
                             onTap: () => mController.videoIndex.value = i,
                             child: Container(
