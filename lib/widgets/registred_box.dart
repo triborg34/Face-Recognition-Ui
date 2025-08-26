@@ -29,9 +29,7 @@ class RegistredBox extends StatelessWidget {
   Widget _buildPersonCard(int index) {
     final person = nController.personList[index];
 
-    if (person.name == 'unknown') {
-      return const SizedBox.shrink();
-    }
+   
 
     return Obx(() => InkWell(
           onTap: () => _selectPerson(index),
@@ -98,12 +96,12 @@ class RegistredBox extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(
-                  
-
-                    nController.personList.length,
-                    (index) => _buildPersonCard(index),
-                  ),
+                  children:  nController.personList
+      .asMap()
+      .entries
+      .where((entry) => entry.value.name != 'unknown') // Filter out unknown
+      .map((entry) => _buildPersonCard(entry.key))
+      .toList(),
                 ),
               ],
             ),

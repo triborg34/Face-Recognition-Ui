@@ -21,6 +21,7 @@ class UnknowBox extends StatelessWidget {
   }
 
   void _selectUnknownPerson(int index) {
+    print(index);
     mController.unknownSelector.value = index;
     mController.isPersonSelected.value = true;
     mController.personSelector.value = -1;
@@ -30,9 +31,7 @@ class UnknowBox extends StatelessWidget {
   Widget _buildUnknownPersonCard(int index) {
     final person = nController.personList[index];
     
-    if (person.name != 'unknown') {
-      return const SizedBox.shrink();
-    }
+
 
     return Obx(() => InkWell(
       onTap: () => _selectUnknownPerson(index),
@@ -97,11 +96,12 @@ class UnknowBox extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   spacing: 10,
                   runSpacing: 10,
-                  children: List.generate(
-                    nController.personList.length,
-                    (index) => _buildUnknownPersonCard(index),
-                  ),
-                ),
+                  children:  nController.personList
+      .asMap()
+      .entries
+      .where((entry) => entry.value.name == 'unknown') // Filter out unknown
+      .map((entry) => _buildUnknownPersonCard(entry.key))
+      .toList(),)
               ],
             ),
           ),
