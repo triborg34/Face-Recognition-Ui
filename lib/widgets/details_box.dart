@@ -173,7 +173,6 @@ class DetailsBox extends StatelessWidget {
 
   Widget _buildPersonDetails() {
     final person = nController.personList[mController.globalIndex.value];
-    print(person);
 
     return Column(
       children: [

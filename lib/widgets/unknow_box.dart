@@ -21,7 +21,6 @@ class UnknowBox extends StatelessWidget {
   }
 
   void _selectUnknownPerson(int index) {
-    print(index);
     mController.unknownSelector.value = index;
     mController.isPersonSelected.value = true;
     mController.personSelector.value = -1;
@@ -30,37 +29,52 @@ class UnknowBox extends StatelessWidget {
 
   Widget _buildUnknownPersonCard(int index) {
     final person = nController.personList[index];
-    
-
 
     return Obx(() => InkWell(
-      onTap: () => _selectUnknownPerson(index),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        height: 100,
-        width: 100,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(
-            color: mController.unknownSelector.value == index
-                ? Colors.indigo
-                : primaryColor,
+          onTap: () => _selectUnknownPerson(index),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(
+                color: mController.unknownSelector.value == index
+                    ? Colors.indigo
+                    : primaryColor,
+              ),
+            ),
+            child: _buildPersonImage(person),
           ),
-        ),
-        child: _buildPersonImage(person),
-      ),
-    ));
+        ));
   }
 
   Widget _buildPersonImage(dynamic person) {
     if (person.croppedFrame?.isEmpty ?? true) {
       return const Icon(Icons.person);
     }
-    
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
         'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}',
+        loadingBuilder: (BuildContext context, Widget child,
+      ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) {
+      // Image fully loaded
+      return child;
+    } else {
+      // Still loading → show progress
+      return Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+                  (loadingProgress.expectedTotalBytes ?? 1)
+              : null,
+        ),
+      );
+    }
+  },
         fit: BoxFit.fill,
       ),
     );
@@ -96,12 +110,14 @@ class UnknowBox extends StatelessWidget {
                   textDirection: TextDirection.rtl,
                   spacing: 10,
                   runSpacing: 10,
-                  children:  nController.personList
-      .asMap()
-      .entries
-      .where((entry) => entry.value.name == 'unknown') // Filter out unknown
-      .map((entry) => _buildUnknownPersonCard(entry.key))
-      .toList(),)
+                  children: nController.personList
+                      .asMap()
+                      .entries
+                      .where((entry) =>
+                          entry.value.name == 'unknown') // Filter out unknown
+                      .map((entry) => _buildUnknownPersonCard(entry.key))
+                      .toList(),
+                )
               ],
             ),
           ),

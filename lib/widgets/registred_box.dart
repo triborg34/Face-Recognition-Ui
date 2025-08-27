@@ -59,6 +59,23 @@ class RegistredBox extends StatelessWidget {
       borderRadius: BorderRadius.circular(15),
       child: Image.network(
         'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}',
+        loadingBuilder: (BuildContext context, Widget child,
+      ImageChunkEvent? loadingProgress) {
+    if (loadingProgress == null) {
+      // Image fully loaded
+      return child;
+    } else {
+      // Still loading → show progress
+      return Center(
+        child: CircularProgressIndicator(
+          value: loadingProgress.expectedTotalBytes != null
+              ? loadingProgress.cumulativeBytesLoaded /
+                  (loadingProgress.expectedTotalBytes ?? 1)
+              : null,
+        ),
+      );
+    }
+  },
         fit: BoxFit.fill,
       ),
     );

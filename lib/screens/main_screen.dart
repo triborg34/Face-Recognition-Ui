@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
           child: CoustomAppbar(
               tabs: tabs, mController: mController, tabsIcon: tabsIcon)),
       extendBody: false,
-      body: Obx(() => nController.personList.length == 0
+      body: Obx(() => nController.personList.length < 0
           ? Center(
               child: CircularProgressIndicator(
                 color: primaryColor,

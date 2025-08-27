@@ -248,16 +248,21 @@ class networkController extends GetxController {
     final mList =
         await pb.collection('collection').getFullList(sort: '-created');
     for (var json in mList) {
-      personList.add(personClass.fromJson(json.data));
+      await Future.delayed(Duration(milliseconds: 100)).then((value) {
+        personList.add(personClass.fromJson(json.data));
+      },);
+      
+      
     }
   }
 
   void startSub() {
     pb.collection('collection').subscribe(
       '*',
-      (e) {
+      (e) async {
         if (e.action == 'create') {
-          personList.insert(0, personClass.fromJson(e.record!.data));
+         await Future.delayed(Duration(seconds: 1)).then((value) => personList.insert(0, personClass.fromJson(e.record!.data)));
+          
         } else if (e.action == 'delete') {
           personList.removeWhere(
             (element) => element.id == e.record!.id,
