@@ -46,8 +46,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
-  //TODO:ADD NAZER STRERM
-    //TODO:FIX UI FIRST PAGE
+
     //TODO:ADD SEARCH IMAGE TO FILTERS
   //TODO:LAST AND LEAST FIX RELAYS
 }
