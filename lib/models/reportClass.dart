@@ -12,7 +12,7 @@ class reportClass {
   String? gender;
   String? id;
   String? name;
-  int? score;
+  double? score;
   String? time;
   String? trackId;
   String? updated;

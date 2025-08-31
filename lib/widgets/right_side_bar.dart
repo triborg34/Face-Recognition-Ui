@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -13,6 +12,7 @@ import 'package:faceui/widgets/image_box.dart';
 import 'package:faceui/widgets/name_box.dart';
 import 'package:faceui/widgets/time_box.dart';
 import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -36,6 +36,9 @@ class RightSideBar extends StatelessWidget {
       Get.find<reportController>().familyController.text = '';
       Get.find<reportController>().sageController.text = '';
       Get.find<reportController>().eageController.text = '';
+      // Get.find<reportController>().isComplete.value=false;
+      Get.find<reportController>().isPressed.value=false;
+
     } catch (e) {
       ScaffoldMessenger.maybeOf(context)!
           .showSnackBar(SnackBar(content: Text("Somthing Went Wrong")));
@@ -105,7 +108,8 @@ class RightSideBar extends StatelessWidget {
                                     rcontroller.filename.value,
                                     "True");
                                 rcontroller.filepath.value = data!['imageData'];
-                                rcontroller.filelocation.value=data['fileLocation'];
+                                rcontroller.filelocation.value =
+                                    data['fileLocation'];
                               } catch (e) {
                                 print(e);
                                 await ScaffoldMessenger.of(context)
@@ -179,14 +183,18 @@ class RightSideBar extends StatelessWidget {
               child: ElevatedButton(
                   style: TextButton.styleFrom(backgroundColor: primaryColor),
                   onPressed: () async {
+                     rcontroller.isPressed.value=true;
                     rcontroller.reportList.clear();
+                      rcontroller.isComplete.value=false;
+                     
                     try {
                       if (rcontroller.isImage.value) {
-                        await getImages(rcontroller);
+                        rcontroller.isComplete.value =
+                            await getImages(rcontroller);
                       } else {
-                        await getResult(rcontroller);
+                        rcontroller.isComplete.value =
+                            await getResult(rcontroller);
                       }
-                      rcontroller.isComplete.value = true;
                     } catch (e) {
                       print(e);
                       ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
@@ -195,6 +203,7 @@ class RightSideBar extends StatelessWidget {
                               child: Text(
                                   "خطا در جستجو لطفا دوباره امتحان کنید"))));
                     }
+                     
                   },
                   child: Text(
                     "جستجو",
@@ -207,46 +216,46 @@ class RightSideBar extends StatelessWidget {
     );
   }
 
-Future<bool> getImages(reportController rcontroller ) async {
-  var response=await http.get(Uri.parse("http://${url}:${port}/util/imageSearch?fileLocation=${rcontroller.filelocation}"));
+  Future<bool> getImages(reportController rcontroller) async {
+    var response = await http.get(Uri.parse(
+        "http://${url}:${port}/util/imageSearch?fileLocation=${rcontroller.filelocation}"));
 
-  for (String data in jsonDecode(response.body)){
-    final json = await pb.collection('collection').getFirstListItem('id="$data"');
-     final request = await http.get(Uri.parse(
-            'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
-        Uint8List tempUint = request.bodyBytes;
-        rcontroller.reportList.add(reportClass(
-         age: json.data['age'],
-            camera: json.data['camera'],
-            collectionId: json.data['collectionId'],
-            collectionName: json.data['collectionName'],
-            created: json.data['created'],
-            croppedFrame: json.data['cropped_frame'],
-            date: json.data['date'],
-            frame: json.data['frame'],
-            gender: json.data['gender'],
-            id: json.data['id'],
-            role: json.data['role'],
-            imageByte: tempUint,
-            name: json.data['name'],
-            score: json.data['score'],
-            time: json.data['time'],
-            trackId: json.data['track_id'],
-            updated: json.data['updated']));
-        ;
+    for (String data in jsonDecode(response.body)) {
+      final json =
+          await pb.collection('collection').getFirstListItem('id="$data"');
+      final request = await http.get(Uri.parse(
+          'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+      Uint8List tempUint = request.bodyBytes;
+      rcontroller.reportList.add(reportClass(
+          age: json.data['age'],
+          camera: json.data['camera'],
+          collectionId: json.data['collectionId'],
+          collectionName: json.data['collectionName'],
+          created: json.data['created'],
+          croppedFrame: json.data['cropped_frame'],
+          date: json.data['date'],
+          frame: json.data['frame'],
+          gender: json.data['gender'],
+          id: json.data['id'],
+          role: json.data['role'],
+          imageByte: tempUint,
+          name: json.data['name'],
+          score: json.data['score'],
+          time: json.data['time'],
+          trackId: json.data['track_id'],
+          updated: json.data['updated']));
+      ;
+    }
+
+    return true;
   }
 
-  
-  return true;
-}
   Future<bool> getResult(reportController rcontroller) async {
-    print('resuilt');
-
-    if(rcontroller.isDate.value && rcontroller.untilDate.value.length==0){
-      rcontroller.untilDate.value=rcontroller.fromDate.value;
+    if (rcontroller.isDate.value && rcontroller.untilDate.value.length == 0) {
+      rcontroller.untilDate.value = rcontroller.fromDate.value;
     }
-      if(rcontroller.isTime.value && rcontroller.untilTime.value.length==0){
-      rcontroller.untilTime.value=rcontroller.fromTime.value;
+    if (rcontroller.isTime.value && rcontroller.untilTime.value.length == 0) {
+      rcontroller.untilTime.value = rcontroller.fromTime.value;
     }
     // Build the filter string based on active filters
     List<String> filters = [];
@@ -274,27 +283,28 @@ Future<bool> getImages(reportController rcontroller ) async {
 
     // Build the complete filter string
     String filterString = filters.join(' && ');
-    final records = await pb.collection('collection').getFullList(filter: filterString,sort: '-created');
+    final records = await pb
+        .collection('collection')
+        .getFullList(filter: filterString, sort: '-created');
     var tempList = records.where((element) {
-      bool passesDateFilter=true;
-      bool passesTimeFilter=true;
-      if (rcontroller.isDate.value){
+      bool passesDateFilter = true;
+      bool passesTimeFilter = true;
+      if (rcontroller.isDate.value) {
         DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
         DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
 
         DateTime initDate = DateTime.parse(element.data['date']);
-      
+
         if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
-            rcontroller.untilDate.value == ''){
-               passesDateFilter =
+            rcontroller.untilDate.value == '') {
+          passesDateFilter =
               element.data['date'] == rcontroller.untilDate.value;
-            }
-            else{
-                  passesDateFilter =
+        } else {
+          passesDateFilter =
               initDate.isBefore(untilDate) && initDate.isAfter(fromDate);
-            }
+        }
       }
-        if (rcontroller.isTime.value) {
+      if (rcontroller.isTime.value) {
         TimeOfDay fromTime = TimeOfDay(
             hour: int.parse(rcontroller.fromTime.value.split(':')[0]),
             minute: int.parse(rcontroller.fromTime.value.split(':')[1]));
@@ -306,8 +316,7 @@ Future<bool> getImages(reportController rcontroller ) async {
             minute: int.parse(element.data['time'].split(':')[1]));
 
         if (rcontroller.fromTime.value == rcontroller.fromTime.value) {
-          passesTimeFilter =
-              element.data['time'] == rcontroller.fromTime.value;
+          passesTimeFilter = element.data['time'] == rcontroller.fromTime.value;
         } else {
           passesTimeFilter = getTime(fromTime, untilTime, initTime);
         }
@@ -315,31 +324,31 @@ Future<bool> getImages(reportController rcontroller ) async {
       return passesTimeFilter && passesDateFilter;
     }).toList();
 
-     for (var json in tempList) {
-        // rcontroller.reportList.add(reportClass.fromJson(json.data));
-        final repsonse = await http.get(Uri.parse(
-            'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
-        Uint8List tempUint = repsonse.bodyBytes;
-        rcontroller.reportList.add(reportClass(
-            age: json.data['age'],
-            camera: json.data['camera'],
-            collectionId: json.data['collectionId'],
-            collectionName: json.data['collectionName'],
-            created: json.data['created'],
-            croppedFrame: json.data['cropped_frame'],
-            date: json.data['date'],
-            frame: json.data['frame'],
-            gender: json.data['gender'],
-            id: json.data['id'],
-            role: json.data['role'],
-            imageByte: tempUint,
-            name: json.data['name'],
-            score: json.data['score'],
-            time: json.data['time'],
-            trackId: json.data['track_id'],
-            updated: json.data['updated']));
-      }
-      return true;
+    for (var json in tempList) {
+      // rcontroller.reportList.add(reportClass.fromJson(json.data));
+      final repsonse = await http.get(Uri.parse(
+          'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+      Uint8List tempUint = repsonse.bodyBytes;
+      rcontroller.reportList.add(reportClass(
+          age: json.data['age'],
+          camera: json.data['camera'],
+          collectionId: json.data['collectionId'],
+          collectionName: json.data['collectionName'],
+          created: json.data['created'],
+          croppedFrame: json.data['cropped_frame'],
+          date: json.data['date'],
+          frame: json.data['frame'],
+          gender: json.data['gender'],
+          id: json.data['id'],
+          role: json.data['role'],
+          imageByte: tempUint,
+          name: json.data['name'],
+          score: json.data['score'],
+          time: json.data['time'],
+          trackId: json.data['track_id'],
+          updated: json.data['updated']));
+    }
+    return true;
 
     // If no filters are active, return empty result
     // if (filterString.isEmpty) {
@@ -434,6 +443,4 @@ Future<bool> getImages(reportController rcontroller ) async {
 
     return ftMin < itMin && itMin <= ltMin;
   }
-
-  //TODO:CHECK TIME AND DATE WITH ANPR TO BE RIGHT
 }

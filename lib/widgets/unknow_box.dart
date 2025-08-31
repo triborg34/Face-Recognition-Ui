@@ -25,13 +25,17 @@ class UnknowBox extends StatelessWidget {
     mController.isPersonSelected.value = true;
     mController.personSelector.value = -1;
     mController.globalIndex.value = index;
+
   }
 
   Widget _buildUnknownPersonCard(int index) {
     final person = nController.personList[index];
 
     return Obx(() => InkWell(
-          onTap: () => _selectUnknownPerson(index),
+
+          onTap: () {
+            mController.person=person;
+            _selectUnknownPerson(index);},
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             height: 100,

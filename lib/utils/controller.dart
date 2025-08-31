@@ -20,6 +20,7 @@ class mainController extends GetxController {
   var unknownSelector = (-1).obs;
   var isPersonSelected = false.obs;
   var globalIndex = (-1).obs;
+  var person=personClass().obs();
   
 }
 
@@ -47,6 +48,7 @@ class reportController extends GetxController {
   var isDate = false.obs;
   var isTime = false.obs;
   var isUnknown = false.obs;
+  var isPressed=false.obs;
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
@@ -248,10 +250,9 @@ class networkController extends GetxController {
     final mList =
         await pb.collection('collection').getFullList(sort: '-created');
     for (var json in mList) {
-      await Future.delayed(Duration(milliseconds: 100)).then((value) {
-        personList.add(personClass.fromJson(json.data));
-      },);
-      
+       personList.add(personClass.fromJson(json.data));
+
+
       
     }
   }

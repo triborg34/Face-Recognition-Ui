@@ -58,7 +58,7 @@ class DetailsBox extends StatelessWidget {
   }
 
   Widget _buildPersonName(context) {
-    final person = nController.personList[mController.globalIndex.value];
+    final person = mController.person;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -129,7 +129,7 @@ class DetailsBox extends StatelessWidget {
   }
 
   Widget _buildDetectedAvatar() {
-    final person = nController.personList[mController.globalIndex.value];
+    final person = mController.person;
     final hasImage = person.croppedFrame?.isNotEmpty ?? false;
 
     return CircleAvatar(
@@ -143,7 +143,7 @@ class DetailsBox extends StatelessWidget {
   }
 
   Widget _buildKnownAvatar() {
-    final person = nController.personList[mController.globalIndex.value];
+    final person = mController.person;
     final hasImage = person.croppedFrame?.isNotEmpty ?? false;
 
     if (!hasImage) {
@@ -172,7 +172,7 @@ class DetailsBox extends StatelessWidget {
   }
 
   Widget _buildPersonDetails() {
-    final person = nController.personList[mController.globalIndex.value];
+    final person = mController.person;
 
     return Column(
       children: [
@@ -193,7 +193,7 @@ class DetailsBox extends StatelessWidget {
   }
 
   Widget _buildFullImage() {
-    final person = nController.personList[mController.globalIndex.value];
+    final person = mController.person;
     final hasFrame = person.frame?.isNotEmpty ?? false;
 
     return Expanded(

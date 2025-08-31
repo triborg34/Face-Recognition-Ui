@@ -1,3 +1,4 @@
+
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -34,7 +35,7 @@ class ReportScreen extends StatelessWidget {
                   child: AnimatedCrossFade(
                     duration: Duration(milliseconds: 500),
                     crossFadeState:
-                        Get.find<reportController>().isComplete.value
+                        Get.find<reportController>().isPressed.value
                             ? CrossFadeState.showFirst
                             : CrossFadeState.showSecond,
                     secondChild: SizedBox.shrink(),
@@ -47,7 +48,7 @@ class ReportScreen extends StatelessWidget {
                           color: Colors.transparent,
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(15)),
-                      child: Column(
+                      child:  Get.find<reportController>().isComplete.value==false? CoustomLoading() : Column(
                         children: [
                           Container(
                             height: 40,
@@ -442,5 +443,20 @@ class ReportScreen extends StatelessWidget {
         dynamicLayout: true,
         usePrinterSettings: true,
         onLayout: (PdfPageFormat format) async => doc.save());
+  }
+}
+
+class CoustomLoading extends StatelessWidget {
+  const CoustomLoading({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,textDirection: TextDirection.rtl,
+      children: [
+        CircularProgressIndicator(color: primaryColor,),
+      ],
+    ));
   }
 }

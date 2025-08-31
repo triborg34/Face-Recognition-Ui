@@ -32,7 +32,10 @@ class RegistredBox extends StatelessWidget {
    
 
     return Obx(() => InkWell(
-          onTap: () => _selectPerson(index),
+
+          onTap: () {
+            mController.person=person;
+            _selectPerson(index);}, 
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 250),
             height: 100,
