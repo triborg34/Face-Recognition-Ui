@@ -1,5 +1,6 @@
 // import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/add_or_edit_person.dart';
@@ -205,10 +206,17 @@ class DetailsBox extends StatelessWidget {
         child: hasFrame
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.network(
-                  'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
+                child:CachedNetworkImage(
                   fit: BoxFit.fill,
-                ),
+       imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
+       progressIndicatorBuilder: (context, url, downloadProgress) => 
+               Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+       errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
+                //  Image.network(
+                //   'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
+                //   fit: BoxFit.fill,
+                // ),
               )
             : Center(child: Icon(Icons.person)),
       ),

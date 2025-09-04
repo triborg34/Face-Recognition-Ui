@@ -1,9 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-
+import 'dart:math' as math;
 class UnknowBox extends StatelessWidget {
   const UnknowBox({
     super.key,
@@ -60,27 +61,35 @@ class UnknowBox extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
-      child: Image.network(
-        'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}',
-        loadingBuilder: (BuildContext context, Widget child,
-      ImageChunkEvent? loadingProgress) {
-    if (loadingProgress == null) {
-      // Image fully loaded
-      return child;
-    } else {
-      // Still loading → show progress
-      return Center(
-        child: CircularProgressIndicator(
-          value: loadingProgress.expectedTotalBytes != null
-              ? loadingProgress.cumulativeBytesLoaded /
-                  (loadingProgress.expectedTotalBytes ?? 1)
-              : null,
-        ),
-      );
-    }
-  },
+      child: 
+      CachedNetworkImage(
         fit: BoxFit.fill,
-      ),
+       imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}",
+       progressIndicatorBuilder: (context, url, downloadProgress) => 
+               CircularProgressIndicator(value: downloadProgress.progress,color: primaryColor,),
+       errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
+  //     Image.network(
+  //       'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}',
+  //       loadingBuilder: (BuildContext context, Widget child,
+  //     ImageChunkEvent? loadingProgress) {
+  //   if (loadingProgress == null) {
+  //     // Image fully loaded
+  //     return child;
+  //   } else {
+  //     // Still loading → show progress
+  //     return Center(
+  //       child: CircularProgressIndicator(
+  //         value: loadingProgress.expectedTotalBytes != null
+  //             ? loadingProgress.cumulativeBytesLoaded /
+  //                 (loadingProgress.expectedTotalBytes ?? 1)
+  //             : null,
+  //       ),
+  //     );
+  //   }
+  // },
+  //       fit: BoxFit.fill,
+  //     ),
     );
   }
 
@@ -110,17 +119,24 @@ class UnknowBox extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 15),
-                Wrap(
-                  textDirection: TextDirection.rtl,
-                  spacing: 10,
-                  runSpacing: 10,
-                  children: nController.personList
+                Builder(
+                  builder: (context) {
+                               List<Widget> unregistred = nController.personList
                       .asMap()
                       .entries
                       .where((entry) =>
                           entry.value.name == 'unknown') // Filter out unknown
                       .map((entry) => _buildUnknownPersonCard(entry.key))
-                      .toList(),
+                      .toList(growable: true);
+                  unregistred =
+                      unregistred.sublist(0, math.min(16, unregistred.length));
+                    return Wrap(
+                      textDirection: TextDirection.rtl,
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: unregistred,
+                    );
+                  }
                 )
               ],
             ),

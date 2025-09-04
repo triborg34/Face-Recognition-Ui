@@ -21,6 +21,8 @@ class mainController extends GetxController {
   var isPersonSelected = false.obs;
   var globalIndex = (-1).obs;
   var person=personClass().obs();
+  var isRegisterExpand=false.obs;
+  var isUnknownExpand=false.obs;
   
 }
 
@@ -262,7 +264,8 @@ class networkController extends GetxController {
       '*',
       (e) async {
         if (e.action == 'create') {
-         await Future.delayed(Duration(seconds: 1)).then((value) => personList.insert(0, personClass.fromJson(e.record!.data)));
+          personList.insert(0, personClass.fromJson(e.record!.data));
+        //  await Future.delayed(Duration(seconds: 1)).then((value) => ));
           
         } else if (e.action == 'delete') {
           personList.removeWhere(

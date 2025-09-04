@@ -1,3 +1,4 @@
+
 import 'package:faceui/screens/splash_screen.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/network_util.dart';
@@ -49,4 +50,6 @@ class MyApp extends StatelessWidget {
 
     //TODO:ADD SEARCH IMAGE TO FILTERS
   //TODO:LAST AND LEAST FIX RELAYS
+  //TODO:FIX UI ISSUES
+  //TODO:SETTING BACKEND
 }
