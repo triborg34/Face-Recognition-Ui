@@ -227,7 +227,13 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
                                 ElevatedButton(
                                   autofocus: false,
                                   onPressed: () async {
-                                    await _login();
+                                    try{
+                                      await _login();
+                                    }
+                                      
+                                    catch(e){
+                                      ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(content: Text("نام کاربری یا رمز عبور اشتباه است",textDirection: TextDirection.rtl,)));
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: primaryColor,
