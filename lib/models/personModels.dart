@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class personClass {
   String? age;
   String? camera;
@@ -14,6 +16,7 @@ class personClass {
   String? trackId;
   String? role;
   String? humancrop;
+  Uint8List? tempFrame;
 
   personClass(
       {this.age,
@@ -30,6 +33,7 @@ class personClass {
       this.time,
       this.role,
       this.humancrop,
+      this.tempFrame,
       this.trackId});
 
   personClass.fromJson(Map<String, dynamic> json) {

@@ -14,16 +14,20 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
+   RxInt unknownDisplayCount = 16.obs;
   var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
   var unknownSelector = (-1).obs;
   var isPersonSelected = false.obs;
   var globalIndex = (-1).obs;
-  var person=personClass().obs();
-  var isRegisterExpand=false.obs;
-  var isUnknownExpand=false.obs;
-  
+  var person = personClass().obs();
+  var isRegisterExpand = false.obs;
+  var isUnknownExpand = false.obs;
+
+    void loadMoreUnknown() {
+    unknownDisplayCount.value += 16;
+  }
 }
 
 class ThemeController extends GetxController {
@@ -50,11 +54,11 @@ class reportController extends GetxController {
   var isDate = false.obs;
   var isTime = false.obs;
   var isUnknown = false.obs;
-  var isPressed=false.obs;
+  var isPressed = false.obs;
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
-  var filelocation=''.obs;
+  var filelocation = ''.obs;
   var fromDate = ''.obs;
   var untilDate = ''.obs;
   var fromTime = ''.obs;
@@ -252,10 +256,31 @@ class networkController extends GetxController {
     final mList =
         await pb.collection('collection').getFullList(sort: '-created');
     for (var json in mList) {
-       personList.add(personClass.fromJson(json.data));
+      var response = await http.get(Uri.parse(
+          'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+      Uint8List tempUint = response.bodyBytes;
+      personList.add(personClass(
+          age: json.data['age'],
+          camera: json.data['camera'],
+          collectionId: json.data['collectionId'],
+          collectionName: json.data['collectionName'],
+          croppedFrame: json.data['cropped_frame'],
+          date: json.data['date'],
+          frame: json.data['frame'],
+          gender: json.data['gender'],
+          id: json.data['id'],
+          name: json.data['name'],
+          score: json.data['score'],
+          time: json.data['time'],
+          trackId: json.data['track_id'],
+          role: json.data['role'],
+          humancrop: json.data['humancrop'],
+          tempFrame: tempUint));
 
-
+      /*
       
+      */
+      // personList.add(personClass.fromJson(json.data));
     }
   }
 
@@ -265,8 +290,7 @@ class networkController extends GetxController {
       (e) async {
         if (e.action == 'create') {
           personList.insert(0, personClass.fromJson(e.record!.data));
-        //  await Future.delayed(Duration(seconds: 1)).then((value) => ));
-          
+          //  await Future.delayed(Duration(seconds: 1)).then((value) => ));
         } else if (e.action == 'delete') {
           personList.removeWhere(
             (element) => element.id == e.record!.id,

@@ -126,9 +126,13 @@ class RegistredBox extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.expand),
-                      onPressed: () => mController.isRegisterExpand.value =
-                          !mController.isRegisterExpand.value,
+                      icon: Icon(Icons.expand_circle_down),
+                      onPressed: () {
+                        mController.isRegisterExpand.value =
+                          !mController.isRegisterExpand.value;
+                        mController.isUnknownExpand.value = false;
+                          print(mController.isRegisterExpand.value);
+                      }
                     )
                   ],
                 ),
@@ -141,8 +145,15 @@ class RegistredBox extends StatelessWidget {
                           entry.value.name != 'unknown') // Filter out unknown
                       .map((entry) => _buildPersonCard(entry.key))
                       .toList(growable: true);
+
+                  if (mController.isRegisterExpand.value){
+                    registred =
+                      registred.sublist(0,  math.max(16, registred.length));
+                  }
+                 else{
                   registred =
-                      registred.sublist(0, math.min(16, registred.length));
+                      registred.sublist(0,  math.min(16, registred.length));
+                 } 
 
                   return Wrap(
                       alignment: WrapAlignment.start,
