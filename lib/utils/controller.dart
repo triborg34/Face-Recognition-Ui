@@ -15,6 +15,7 @@ import 'dart:html' as html;
 
 class mainController extends GetxController {
    RxInt unknownDisplayCount = 16.obs;
+   RxInt knownDisplayCount=16.obs;
   var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
@@ -25,9 +26,8 @@ class mainController extends GetxController {
   var isRegisterExpand = false.obs;
   var isUnknownExpand = false.obs;
 
-    void loadMoreUnknown() {
-    unknownDisplayCount.value += 16;
-  }
+
+
 }
 
 class ThemeController extends GetxController {

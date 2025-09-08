@@ -3,7 +3,7 @@ import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/registred_box.dart';
 import 'package:faceui/widgets/unknow_box.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+
 import 'package:responsive_sizer/responsive_sizer.dart';
 
 class PersonBox extends StatelessWidget {
@@ -16,12 +16,15 @@ class PersonBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Obx(() => Column(
+        child:
+        //  Obx(() =>
+         Column(
               textDirection: TextDirection.rtl,
               children: [
-              mController.isUnknownExpand.value
-                    ? SizedBox.shrink()
-                    :  RegistredBox(
+              // mController.isUnknownExpand.value
+              //       ? SizedBox.shrink()
+              //       :  
+                    RegistredBox(
                   mController: mController,
                   nController: nController,
                 ),
@@ -29,14 +32,17 @@ class PersonBox extends StatelessWidget {
                   color: primaryColor,
                 ),
 
-                mController.isRegisterExpand.value
-                    ? SizedBox.shrink()
-                    : UnknowBox(
+                // mController.isRegisterExpand.value
+                //     ? SizedBox.shrink()
+                //     :
+                     UnknowBox(
                         mController: mController,
                         nController: nController,
                       ),
               ],
-            )),
+            )
+            // )
+            ,
         width: 50.w,
         decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.4),

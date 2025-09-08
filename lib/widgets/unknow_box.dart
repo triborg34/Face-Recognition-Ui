@@ -1,4 +1,4 @@
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +95,7 @@ class UnknowBox extends StatelessWidget {
             return Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
-                color: Colors.red[100],
+                color: Colors.transparent,
               ),
               child: const Icon(
                 Icons.error,
@@ -161,7 +161,7 @@ class UnknowBox extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    IconButton(
+                    IconButton(//TODO:REGISTRED TO SAME WAY
                       onPressed: () {
                         // Reset display count when toggling
                         mController.unknownDisplayCount.value = 16;
@@ -241,7 +241,7 @@ class UnknowBox extends StatelessWidget {
                                   Text(
                                     "نمایش 16 نفر بیشتر (${allPersonCards.length - currentDisplayCount} باقی مانده)",
                                     style: TextStyle(
-                                      color: primaryColor,
+                                      color: Colors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
