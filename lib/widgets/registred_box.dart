@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class RegistredBox extends StatelessWidget {
 
   Widget _buildPersonImage(dynamic person) {
     // Check if tempFrame exists and is not empty
-    if (person.tempFrame == null || person.tempFrame.isEmpty) {
+    if (person.croppedFrame == null || person.croppedFrame.isEmpty) {
       return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
@@ -86,25 +87,33 @@ class RegistredBox extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15),
       child: RepaintBoundary(
-        child: Image(
-          image: MemoryImage(person.tempFrame),
-          fit: BoxFit.cover,
-          gaplessPlayback: true,
-          errorBuilder: (context, error, stackTrace) {
-            print("Error loading memory image: $error");
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: Colors.transparent,
-              ),
-              child: const Icon(
-                Icons.error,
-                color: Colors.red,
-                size: 30,
-              ),
-            );
-          },
-        ),
+        child: 
+            CachedNetworkImage(
+        fit: BoxFit.fill,
+       imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}",
+       progressIndicatorBuilder: (context, url, downloadProgress) => 
+               CircularProgressIndicator(value: downloadProgress.progress,color: primaryColor,),
+       errorWidget: (context, url, error) => Icon(Icons.error),
+    ),
+        // Image(
+        //   image: MemoryImage(person.tempFrame),
+        //   fit: BoxFit.cover,
+        //   gaplessPlayback: true,
+        //   errorBuilder: (context, error, stackTrace) {
+        //     print("Error loading memory image: $error");
+        //     return Container(
+        //       decoration: BoxDecoration(
+        //         borderRadius: BorderRadius.circular(15),
+        //         color: Colors.transparent,
+        //       ),
+        //       child: const Icon(
+        //         Icons.error,
+        //         color: Colors.red,
+        //         size: 30,
+        //       ),
+        //     );
+        //   },
+        // ),
       ),
     );
   }

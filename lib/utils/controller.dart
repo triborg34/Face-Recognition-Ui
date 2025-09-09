@@ -14,8 +14,8 @@ import 'package:http/http.dart' as http;
 import 'dart:html' as html;
 
 class mainController extends GetxController {
-   RxInt unknownDisplayCount = 16.obs;
-   RxInt knownDisplayCount=16.obs;
+  RxInt unknownDisplayCount = 16.obs;
+  RxInt knownDisplayCount = 16.obs;
   var tabindex = 0.obs;
   var videoIndex = (-1).obs;
   var personSelector = (-1).obs;
@@ -25,9 +25,6 @@ class mainController extends GetxController {
   var person = personClass().obs();
   var isRegisterExpand = false.obs;
   var isUnknownExpand = false.obs;
-
-
-
 }
 
 class ThemeController extends GetxController {
@@ -256,31 +253,31 @@ class networkController extends GetxController {
     final mList =
         await pb.collection('collection').getFullList(sort: '-created');
     for (var json in mList) {
-      var response = await http.get(Uri.parse(
-          'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
-      Uint8List tempUint = response.bodyBytes;
-      personList.add(personClass(
-          age: json.data['age'],
-          camera: json.data['camera'],
-          collectionId: json.data['collectionId'],
-          collectionName: json.data['collectionName'],
-          croppedFrame: json.data['cropped_frame'],
-          date: json.data['date'],
-          frame: json.data['frame'],
-          gender: json.data['gender'],
-          id: json.data['id'],
-          name: json.data['name'],
-          score: json.data['score'],
-          time: json.data['time'],
-          trackId: json.data['track_id'],
-          role: json.data['role'],
-          humancrop: json.data['humancrop'],
-          tempFrame: tempUint));
+      // var response = await http.get(Uri.parse(
+      //     'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
+      // Uint8List tempUint = response.bodyBytes;
+      // personList.add(personClass(
+      //     age: json.data['age'],
+      //     camera: json.data['camera'],
+      //     collectionId: json.data['collectionId'],
+      //     collectionName: json.data['collectionName'],
+      //     croppedFrame: json.data['cropped_frame'],
+      //     date: json.data['date'],
+      //     frame: json.data['frame'],
+      //     gender: json.data['gender'],
+      //     id: json.data['id'],
+      //     name: json.data['name'],
+      //     score: json.data['score'],
+      //     time: json.data['time'],
+      //     trackId: json.data['track_id'],
+      //     role: json.data['role'],
+      //     humancrop: json.data['humancrop'],
+      //     tempFrame: tempUint));
 
       /*
       
       */
-      // personList.add(personClass.fromJson(json.data));
+      personList.add(personClass.fromJson(json.data));
     }
   }
 
@@ -289,6 +286,26 @@ class networkController extends GetxController {
       '*',
       (e) async {
         if (e.action == 'create') {
+          //           var response = await http.get(Uri.parse(
+          //     'http://${url}:8091/api/files/collection/${e.record!.data['id']}/${e.record!.data['cropped_frame']}'));
+          // Uint8List tempUint = response.bodyBytes;
+          // personList.insert(0,personClass(
+          //     age: e.record!.data['age'],
+          //     camera: e.record!.data['camera'],
+          //     collectionId: e.record!.data['collectionId'],
+          //     collectionName: e.record!.data['collectionName'],
+          //     croppedFrame: e.record!.data['cropped_frame'],
+          //     date:e.record!.data['date'],
+          //     frame: e.record!.data['frame'],
+          //     gender: e.record!.data['gender'],
+          //     id: e.record!.data['id'],
+          //     name: e.record!.data['name'],
+          //     score: e.record!.data['score'],
+          //     time: e.record!.data['time'],
+          //     trackId: e.record!.data['track_id'],
+          //     role: e.record!.data['role'],
+          //     humancrop: e.record!.data['humancrop'],
+          //     tempFrame: tempUint));
           personList.insert(0, personClass.fromJson(e.record!.data));
           //  await Future.delayed(Duration(seconds: 1)).then((value) => ));
         } else if (e.action == 'delete') {
