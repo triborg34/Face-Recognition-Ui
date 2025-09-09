@@ -170,7 +170,7 @@ class RegistredBox extends StatelessWidget {
                         fontSize: 18,
                       ),
                     ),
-                    IconButton(//TODO:REGISTRED TO SAME WAY
+                    IconButton(
                       onPressed: () {
                         // Reset display count when toggling
                         mController.knownDisplayCount.value = 16;
