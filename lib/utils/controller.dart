@@ -376,6 +376,7 @@ class settinController extends GetxController {
   var padding = 0.obs;
   var score = 0.0.obs;
   var quality = 0.0.obs;
+  var hScore=0.0.obs;
 
   var isRfid = false.obs;
   TextEditingController rfipController = TextEditingController();
@@ -418,6 +419,7 @@ class settinController extends GetxController {
     score.value = settings.first.score!;
     padding.value = settings.first.padding!;
     quality.value = settings.first.quality!.toDouble();
+    hScore.value=settings.first.hScore!;
     isRfid.value = settings.first.isRfid!;
     rfipController.text = settings.first.rfidip!;
     rfportConroller.text = settings.first.rfidport!.toString();

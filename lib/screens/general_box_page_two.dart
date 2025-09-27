@@ -78,6 +78,8 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                 final body = <String, dynamic>{
                                   "score": double.parse(scontroller.score.value
                                       .toStringAsFixed(2)),
+                                  "hscore":double.parse(scontroller.hScore.value
+                                      .toStringAsFixed(2)),
                                   "padding": scontroller.padding.value,
                                   "isRfid": scontroller.isRfid.value,
                                   "rl1": scontroller.isrlOne.value,

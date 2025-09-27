@@ -282,8 +282,8 @@ class ReportScreen extends StatelessWidget {
                                             width: 150,
                                             child: Center(
                                               child: Text(rcontroller
-                                                  .reportList[index].score
-                                                  .toString()),
+                                                  .reportList[index].score!.toStringAsFixed(2)+"%"
+                                                  ),
                                             ),
                                           ),
                                           Container(

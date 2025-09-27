@@ -164,7 +164,7 @@ class RegistredBox extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "افراد ناشناس",
+                      "افراد ثبت شده",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,

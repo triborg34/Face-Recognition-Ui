@@ -23,7 +23,7 @@ class SlidersWidgets extends StatelessWidget {
         textDirection: TextDirection.rtl,
         children: [
           FutursOfSystemRow(
-            lable: "دقت تشخیص",
+            lable: "دقت تشخیص چهره",
           ),
           SizedBox(
             width: 5,
@@ -46,6 +46,44 @@ class SlidersWidgets extends StatelessWidget {
             () => Text(
               textDirection: TextDirection.rtl,
               "${(scontroller.score.value * 100).round()}%",
+              style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400),
+            ),
+          )
+        ],
+      ),
+      SizedBox(
+        height: 35,
+      ),
+            Row(
+        textDirection: TextDirection.rtl,
+        children: [
+          FutursOfSystemRow(
+            lable: "دقت تشخیص انسان",
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Obx(() => SizedBox(
+                height: 10,
+                child: Slider(
+                  activeColor: primaryColor,
+                  inactiveColor: Colors.white70,
+                  value: scontroller.hScore.value,
+                  onChanged: (value) {
+                    scontroller.hScore.value = value;
+                  },
+                ),
+              )),
+          SizedBox(
+            width: 0,
+          ),
+          Obx(
+            () => Text(
+              textDirection: TextDirection.rtl,
+              "${(scontroller.hScore.value * 100).round()}%",
               style: TextStyle(
                   color: Colors.white70,
                   fontSize: 12,

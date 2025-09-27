@@ -3,6 +3,7 @@ class SettingClass {
   String? collectionName;
   String? id;
   double? score;
+  double? hScore;
   int? padding;
   double? quality;
   String? ip;
@@ -24,6 +25,7 @@ class SettingClass {
       this.score,
       this.padding,
       this.quality,
+      this.hScore,
       this.ip,
       this.port,
       this.isRfid,
@@ -54,6 +56,7 @@ class SettingClass {
     isAlarm = json['isAlarm'];
     created = json['created'];
     updated = json['updated'];
+    hScore=json['hscore'];
   }
 
   Map<String, dynamic> toJson() {
@@ -75,6 +78,7 @@ class SettingClass {
     data['isAlarm'] = this.isAlarm;
     data['created'] = this.created;
     data['updated'] = this.updated;
+    data['hscore']=this.hScore;
     return data;
   }
 }
