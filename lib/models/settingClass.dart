@@ -17,6 +17,7 @@ class SettingClass {
   bool? isAlarm;
   String? created;
   String? updated;
+  bool? isregion;
 
   SettingClass(
       {this.collectionId,
@@ -36,6 +37,7 @@ class SettingClass {
       this.rfconnect,
       this.isAlarm,
       this.created,
+      this.isregion,
       this.updated});
 
   SettingClass.fromJson(Map<String, dynamic> json) {
@@ -57,6 +59,7 @@ class SettingClass {
     created = json['created'];
     updated = json['updated'];
     hScore=json['hscore'];
+    isregion=json['isregion'];
   }
 
   Map<String, dynamic> toJson() {
@@ -79,6 +82,7 @@ class SettingClass {
     data['created'] = this.created;
     data['updated'] = this.updated;
     data['hscore']=this.hScore;
+    data['isregion']=this.isregion;
     return data;
   }
 }

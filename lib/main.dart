@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
   }
 
 
-    //TODO:ADD SEARCH IMAGE TO FILTERS
-  //TODO:LAST AND LEAST FIX RELAYS
-//TODO:FIx issues for backend
+
+  //TODO:LAST AND LEAST FIX RELAYS (FIX FOR NON REGION MODE)
+
 }

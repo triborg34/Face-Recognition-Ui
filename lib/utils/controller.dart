@@ -386,7 +386,7 @@ class settinController extends GetxController {
   var rfconnect = false.obs;
 
   var isAlarm = false.obs;
-
+  var isRegionMode=false.obs;
   fetchFirstData() async {
     final kList = await pb.collection('setting').getFullList();
     for (var json in kList) {
@@ -427,6 +427,7 @@ class settinController extends GetxController {
     isrlTwo.value = settings.first.rl2!;
     rfconnect.value = settings.first.rfconnect!;
     isAlarm.value = settings.first.isAlarm!;
+    isRegionMode.value=settings.first.isregion!;
   }
 
   checkForConnect() async {

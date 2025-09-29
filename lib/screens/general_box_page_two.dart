@@ -3,7 +3,6 @@ import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/sliderWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 
 class GeneralBoxPageTwo extends StatelessWidget {
   GeneralBoxPageTwo({
@@ -90,7 +89,8 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                   "alarm": scontroller.isAlarm.value,
                                   "quality":
                                       (scontroller.quality.value).toInt(),
-                                  'rfconnect': scontroller.rfconnect.value
+                                  'rfconnect': scontroller.rfconnect.value,
+                                  'isregion':scontroller.isRegionMode.value
                                 };
 
                                 try {
@@ -153,7 +153,8 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                 )),
                             Obx(() => Visibility(
                                   visible: scontroller.isRfid.value,
-                                  child: Row(
+                                  
+                                  child:scontroller.isRegionMode.value ? Container(child: Text("از نرم افزار پوشش برای رله استفاده کنید"),) : Row(
                                     children: [
                                       SizedBox(
                                         width: 15,
@@ -219,63 +220,63 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                                   value!;
                                             },
                                           )),
-                                      TextButton(
-                                          onPressed: () async {
-                                            if (Get.find<settinController>()
-                                                .isRfid
-                                                .value) {
-                                              Uri uri = Uri.parse(
-                                                  'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
+                                      // TextButton(
+                                      //     onPressed: () async {
+                                      //       if (Get.find<settinController>()
+                                      //           .isRfid
+                                      //           .value) {
+                                      //         Uri uri = Uri.parse(
+                                      //             'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
 
-                                              var res = await http.post(
-                                                uri,
-                                                body: {"isconnect": false},
-                                              );
-                                              if (res.statusCode == 200) {
-                                                scontroller.rfconnect.value =
-                                                    !scontroller
-                                                        .rfconnect.value;
-                                              }
+                                      //         var res = await http.post(
+                                      //           uri,
+                                      //           body: {"isconnect": false},
+                                      //         );
+                                      //         if (res.statusCode == 200) {
+                                      //           scontroller.rfconnect.value =
+                                      //               !scontroller
+                                      //                   .rfconnect.value;
+                                      //         }
 
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          "اتصال قطع شد",
-                                                          textDirection:
-                                                              TextDirection
-                                                                  .rtl)));
-                                            } else {
-                                              Uri uri = Uri.parse(
-                                                  'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
+                                      //         ScaffoldMessenger.of(context)
+                                      //             .showSnackBar(SnackBar(
+                                      //                 content: Text(
+                                      //                     "اتصال قطع شد",
+                                      //                     textDirection:
+                                      //                         TextDirection
+                                      //                             .rtl)));
+                                      //       } else {
+                                      //         Uri uri = Uri.parse(
+                                      //             'http://${url}:${port}/iprelay?ip=${scontroller.rfipController.text}&port=${scontroller.rfportConroller.text}');
 
-                                              var res = await http.post(
-                                                uri,
-                                                body: {"isconnect": true},
-                                              );
-                                              if (res.statusCode == 200) {
-                                                scontroller.rfconnect.value =
-                                                    !scontroller
-                                                        .rfconnect.value;
-                                              }
+                                      //         var res = await http.post(
+                                      //           uri,
+                                      //           body: {"isconnect": true},
+                                      //         );
+                                      //         if (res.statusCode == 200) {
+                                      //           scontroller.rfconnect.value =
+                                      //               !scontroller
+                                      //                   .rfconnect.value;
+                                      //         }
 
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(
-                                                      content: Text(
-                                                          "اتصال متصل شد",
-                                                          textDirection:
-                                                              TextDirection
-                                                                  .rtl)));
-                                            }
+                                      //         ScaffoldMessenger.of(context)
+                                      //             .showSnackBar(SnackBar(
+                                      //                 content: Text(
+                                      //                     "اتصال متصل شد",
+                                      //                     textDirection:
+                                      //                         TextDirection
+                                      //                             .rtl)));
+                                      //       }
 
-                                            scontroller.rfconnect.value =
-                                                !scontroller.rfconnect.value;
-                                          },
-                                          child: Text(
-                                            scontroller.rfconnect.value
-                                                ? "قطع"
-                                                : "اتصال",
-                                            style: TextStyle(fontSize: 16),
-                                          )),
+                                      //       scontroller.rfconnect.value =
+                                      //           !scontroller.rfconnect.value;
+                                      //     },
+                                      //     child: Text(
+                                      //       scontroller.rfconnect.value
+                                      //           ? "قطع"
+                                      //           : "اتصال",
+                                      //       style: TextStyle(fontSize: 16),
+                                      //     )),
                                     ],
                                   ),
                                 ))
@@ -300,6 +301,34 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                       value: scontroller.isAlarm.value,
                                       onChanged: (value) {
                                         scontroller.isAlarm.value = value;
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text("فعال شد",
+                                                    textDirection:
+                                                        TextDirection.rtl)));
+                                      },
+                                    )),
+                              ],
+                            )),
+                            SizedBox(
+                          height: 15,
+                        ),
+                        Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 100,
+                                  child: Text(
+                                    "حالت پوشش منطقه",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                Obx(() => Switch(
+                                      value: scontroller.isRegionMode.value,
+                                      onChanged: (value) {
+                                        scontroller.isRegionMode.value = value;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text("فعال شد",
