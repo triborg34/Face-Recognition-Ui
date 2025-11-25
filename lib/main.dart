@@ -38,9 +38,9 @@ class MyApp extends StatelessWidget {
         onInit: () {
           var host = getNetworkInfo();
           url = host['hostname'];
-          url='127.0.0.1';
+          // url='127.0.0.1';
           port = host['port'];
-          port="8000";
+          // port="8000";
 
         },
       ),
@@ -49,6 +49,6 @@ class MyApp extends StatelessWidget {
 
 
 
-  //TODO:LAST AND LEAST FIX RELAYS (FIX FOR NON REGION MODE)
+  
 
 }

@@ -71,7 +71,7 @@ class InfoBox extends StatelessWidget {
           child: Column(
             children: [
               KeyValueRow(
-                    keyString: "BuilDNumber", valueString: "SN/14040430"),
+                    keyString: "BuilDNumber", valueString: "SN/14040904"),
                 Divider(
                   color: primaryColor,
                 ),

@@ -159,6 +159,10 @@ class RegistredBox extends StatelessWidget {
               textDirection: TextDirection.rtl,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                ElevatedButton(onPressed: ()async{
+                  nController.inilazedPage=nController.inilazedPage+1;
+                 await nController.fetchFirstData(nController.inilazedPage);
+                }, child: Text("بارگزاری موارد بیشتر",style: TextStyle(color: Colors.white),)),
                 Row(
                   textDirection: TextDirection.rtl,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

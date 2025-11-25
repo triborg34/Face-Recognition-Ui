@@ -25,6 +25,7 @@ class mainController extends GetxController {
   var person = personClass().obs();
   var isRegisterExpand = false.obs;
   var isUnknownExpand = false.obs;
+  
 }
 
 class ThemeController extends GetxController {
@@ -248,11 +249,12 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
+  int inilazedPage=1;
 
-  fetchFirstData() async {
+  fetchFirstData(int intpage) async {
     final mList =
-        await pb.collection('collection').getFullList(sort: '-created');
-    for (var json in mList) {
+        await pb.collection('collection').getList(sort: '-created',page: intpage,perPage: 30);
+    for (var json in mList.items) {
       // var response = await http.get(Uri.parse(
       //     'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
       // Uint8List tempUint = response.bodyBytes;
@@ -319,7 +321,7 @@ class networkController extends GetxController {
 
   @override
   void onReady() async {
-    await fetchFirstData();
+    await fetchFirstData(inilazedPage);
     startSub();
     super.onReady();
   }
