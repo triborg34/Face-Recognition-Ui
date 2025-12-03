@@ -206,13 +206,17 @@ class DetailsBox extends StatelessWidget {
         child: hasFrame
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child:CachedNetworkImage(
-                  fit: BoxFit.fill,
-       imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
-       progressIndicatorBuilder: (context, url, downloadProgress) => 
-               Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-       errorWidget: (context, url, error) => Icon(Icons.error),
-    ),
+                child:InteractiveViewer(
+                  minScale: 1.0,
+                  maxScale: 5.0,
+                  child: CachedNetworkImage(
+                    fit: BoxFit.fill,
+                         imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
+                         progressIndicatorBuilder: (context, url, downloadProgress) => 
+                                 Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                         errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                ),
                 //  Image.network(
                 //   'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
                 //   fit: BoxFit.fill,

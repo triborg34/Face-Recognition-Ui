@@ -1,4 +1,5 @@
 
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
@@ -156,7 +157,9 @@ class ReportScreen extends StatelessWidget {
                                 scrollDirection: Axis.vertical,
                                 itemBuilder: (context, index) {
                                   return InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      showImageViewer(context, NetworkImage('http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].frame}'));
+                                    },
                                     child: Container(
                                       height: 100,
                                       child: Row(

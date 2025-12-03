@@ -294,6 +294,7 @@ class RightSideBar extends StatelessWidget {
         DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
 
         DateTime initDate = DateTime.parse(element.data['date']);
+        print("${fromDate} , ${untilDate} , ${initDate}");
 
         if (rcontroller.fromDate.value == rcontroller.untilDate.value ||
             rcontroller.untilDate.value == '') {

@@ -58,6 +58,7 @@ class DateBox extends StatelessWidget {
                         date =
                             "${picked.toGregorian().year}-0${picked.toGregorian().month}-0${picked.toGregorian().day}";
                       }
+                      print(date);
                       Get.find<reportController>().fromDate.value = date;
                       Get.find<reportController>().isDate.value = true;
                     },
