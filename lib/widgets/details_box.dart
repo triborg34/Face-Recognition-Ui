@@ -1,6 +1,7 @@
 // import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/add_or_edit_person.dart';
@@ -50,7 +51,7 @@ class DetailsBox extends StatelessWidget {
                     SizedBox(height: 15),
                     _buildPersonDetails(),
                     SizedBox(height: 15),
-                    _buildFullImage(),
+                    _buildFullImage(context),
                   ],
                 ),
               ),
@@ -193,7 +194,7 @@ class DetailsBox extends StatelessWidget {
     );
   }
 
-  Widget _buildFullImage() {
+  Widget _buildFullImage(context) {
     final person = mController.person;
     final hasFrame = person.frame?.isNotEmpty ?? false;
 
@@ -206,16 +207,21 @@ class DetailsBox extends StatelessWidget {
         child: hasFrame
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child:InteractiveViewer(
-                  minScale: 1.0,
-                  maxScale: 5.0,
-                  child: CachedNetworkImage(
-                    fit: BoxFit.fill,
-                         imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
-                         progressIndicatorBuilder: (context, url, downloadProgress) => 
-                                 Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                         errorWidget: (context, url, error) => Icon(Icons.error),
-                      ),
+                child:GestureDetector(
+                  onTap: () async{
+                    await showImageViewer(context, NetworkImage('http://${url}:8091/api/files/collection/${person.id}/${person.frame}'));
+                  },
+                  child: InteractiveViewer(
+                    minScale: 1.0,
+                    maxScale: 5.0,
+                    child: CachedNetworkImage(
+                      fit: BoxFit.fill,
+                           imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
+                           progressIndicatorBuilder: (context, url, downloadProgress) => 
+                                   Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                           errorWidget: (context, url, error) => Icon(Icons.error),
+                        ),
+                  ),
                 ),
                 //  Image.network(
                 //   'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',

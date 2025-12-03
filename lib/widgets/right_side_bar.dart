@@ -38,6 +38,8 @@ class RightSideBar extends StatelessWidget {
       Get.find<reportController>().eageController.text = '';
       // Get.find<reportController>().isComplete.value=false;
       Get.find<reportController>().isPressed.value=false;
+      Get.find<reportController>().isDate.value=false;
+      Get.find<reportController>().isTime.value=false;
 
     } catch (e) {
       ScaffoldMessenger.maybeOf(context)!
