@@ -25,7 +25,8 @@ class mainController extends GetxController {
   var person = personClass().obs();
   var isRegisterExpand = false.obs;
   var isUnknownExpand = false.obs;
-  
+
+
 }
 
 class ThemeController extends GetxController {
@@ -249,11 +250,12 @@ class videoFeedController extends GetxController {
 
 class networkController extends GetxController {
   var personList = <personClass>[].obs;
-  int inilazedPage=1;
+  int inilazedPage = 1;
 
   fetchFirstData(int intpage) async {
-    final mList =
-        await pb.collection('collection').getList(sort: '-created',page: intpage,perPage: 30);
+    final mList = await pb
+        .collection('collection')
+        .getList(sort: '-created', page: intpage, perPage: 30);
     for (var json in mList.items) {
       // var response = await http.get(Uri.parse(
       //     'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
@@ -321,6 +323,7 @@ class networkController extends GetxController {
 
   @override
   void onReady() async {
+    
     await fetchFirstData(inilazedPage);
     startSub();
     super.onReady();
@@ -364,11 +367,11 @@ class userController extends GetxController {
   }
 
   @override
-  void onInit() async {
+  void onReady() async {
+    print("READY");
     await fetchFirstData();
     startSub();
-
-    super.onInit();
+    super.onReady();
   }
 }
 
@@ -378,7 +381,7 @@ class settinController extends GetxController {
   var padding = 0.obs;
   var score = 0.0.obs;
   var quality = 0.0.obs;
-  var hScore=0.0.obs;
+  var hScore = 0.0.obs;
 
   var isRfid = false.obs;
   TextEditingController rfipController = TextEditingController();
@@ -388,7 +391,7 @@ class settinController extends GetxController {
   var rfconnect = false.obs;
 
   var isAlarm = false.obs;
-  var isRegionMode=false.obs;
+  var isRegionMode = false.obs;
   fetchFirstData() async {
     final kList = await pb.collection('setting').getFullList();
     for (var json in kList) {
@@ -421,7 +424,7 @@ class settinController extends GetxController {
     score.value = settings.first.score!;
     padding.value = settings.first.padding!;
     quality.value = settings.first.quality!.toDouble();
-    hScore.value=settings.first.hScore!;
+    hScore.value = settings.first.hScore!;
     isRfid.value = settings.first.isRfid!;
     rfipController.text = settings.first.rfidip!;
     rfportConroller.text = settings.first.rfidport!.toString();
@@ -429,7 +432,7 @@ class settinController extends GetxController {
     isrlTwo.value = settings.first.rl2!;
     rfconnect.value = settings.first.rfconnect!;
     isAlarm.value = settings.first.isAlarm!;
-    isRegionMode.value=settings.first.isregion!;
+    isRegionMode.value = settings.first.isregion!;
   }
 
   checkForConnect() async {
@@ -445,12 +448,12 @@ class settinController extends GetxController {
   }
 
   @override
-  void onInit() async {
+  void onReady() async {
     await fetchFirstData();
     await firstIniliazed();
     await checkForConnect();
     startSub();
 
-    super.onInit();
+    super.onReady();
   }
 }

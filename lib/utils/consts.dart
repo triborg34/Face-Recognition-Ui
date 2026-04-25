@@ -10,6 +10,14 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 
+
+
+
+List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/splash', page:() =>  SplashScreen())];
+
+
+Color primaryColor = Color.fromARGB(255, 25, 32, 71);
+
 String role = '';
 String email = '';
 String url = '127.0.0.1';
@@ -17,17 +25,12 @@ String port = "8000";
 String unames='';
 
 
-List<GetPage> pages = [GetPage(name: '/', page: () => MainScreen()),GetPage(name: '/splash', page:() =>  SplashScreen())];
+
 var pb =PocketBase('http://${url}:8091');
-Color primaryColor = Color.fromARGB(255, 25, 32, 71);
-
-
-
-
-
 Future<Map<String, dynamic>?> uploadFile(List<int> fileBytes, String filename,String isSearch) async {
     try {
           final uri = Uri.parse('http://${url}:${port}/upload?isSearch=${isSearch}');
+      
     final request = http.MultipartRequest('POST', uri)
       ..files.add(http.MultipartFile.fromBytes(
         'file',

@@ -35,9 +35,11 @@ class MyApp extends StatelessWidget {
         initialBinding: MyBindings(),
         debugShowCheckedModeBanner: false,
        home: SplashScreen(),
-        onInit: () {
+        onInit: () async {
           var host = getNetworkInfo();
           url = host['hostname'];
+    
+
           // url='127.0.0.1';
           port = host['port'];
           // port="8000";
