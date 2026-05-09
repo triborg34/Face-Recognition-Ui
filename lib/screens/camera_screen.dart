@@ -42,7 +42,7 @@ class CameraScreen extends StatelessWidget {
                   ElevatedButton(
                       style: TextButton.styleFrom(
                           backgroundColor: primaryColor,
-                          textStyle: TextStyle(color: Colors.white)),
+                          textStyle: TextStyle(color: Colors.white,fontFamily: 'nazanin'),),
                       onPressed: () async {
                         await showAdaptiveDialog(
                           context: context,
@@ -96,7 +96,7 @@ class CameraScreen extends StatelessWidget {
                                     child: Center(
                                         child: Text(
                                       ccontroller.cameras[index].id.toString(),
-                                      style: TextStyle(fontFamily: 'robot'),
+                                      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
                                     )),
                                     decoration: BoxDecoration(
                                         border: Border(
@@ -121,7 +121,7 @@ class CameraScreen extends StatelessWidget {
                                     child: Center(
                                         child: Text(
                                       ccontroller.cameras[index].ip.toString(),
-                                      style: TextStyle(fontFamily: 'robot'),
+                                      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
                                     )),
                                     decoration: BoxDecoration(
                                         border: Border(
@@ -135,7 +135,7 @@ class CameraScreen extends StatelessWidget {
                                         child: Text(
                                       ccontroller.cameras[index].port
                                           .toString(),
-                                      style: TextStyle(fontFamily: 'robot'),
+                                      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
                                     )),
                                     decoration: BoxDecoration(
                                         border: Border(
@@ -168,7 +168,7 @@ class CameraScreen extends StatelessWidget {
                                         child: Text(
                                       ccontroller.cameras[index].rtspUrl
                                           .toString(),overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(fontFamily: 'robot'),
+                                      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
                                     )),
                                     decoration: BoxDecoration(
                                         border: Border(
@@ -182,7 +182,7 @@ class CameraScreen extends StatelessWidget {
                                         child: Text(
                                       ccontroller.cameras[index].username!
                                           .toString(),
-                                      style: TextStyle(fontFamily: 'robot'),
+                                      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
                                     )),
                                     decoration: BoxDecoration(
                                         border: Border(
@@ -282,7 +282,7 @@ class CameraScreen extends StatelessWidget {
                   ElevatedButton(
                       style: TextButton.styleFrom(
                           backgroundColor: primaryColor,
-                          textStyle: TextStyle(color: Colors.white)),
+                          textStyle: TextStyle(color: Colors.white,fontFamily: 'nazanin')),
                       onPressed: () {
                         ccontroller.startDiscovery();
                

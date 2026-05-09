@@ -55,7 +55,7 @@ class CoustomTextField2 extends StatelessWidget {
           ? TextDirection.ltr
           : TextDirection.rtl,
       controller: tcontroller,
-      style: TextStyle(fontFamily: 'robot'),
+      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
       decoration: InputDecoration(
           filled: true,
           fillColor: primaryColor,
@@ -91,7 +91,7 @@ class CoustomTextField3 extends StatelessWidget {
     return TextField(
       textDirection:  TextDirection.rtl,
       controller: tcontroller,
-      style: TextStyle(fontFamily: 'robot'),
+      style: TextStyle(fontFamily: 'robot',fontFamilyFallback: ['nazanin']),
       decoration: InputDecoration(
           filled: true,
           fillColor: Colors.indigo,

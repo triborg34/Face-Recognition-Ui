@@ -27,6 +27,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.indigo,
         ),
         theme: ThemeData(
+          fontFamilyFallback: ['arial','robot'],
           fontFamily: 'nazanin',
           brightness: Brightness.light,
           primarySwatch: Colors.indigo,
