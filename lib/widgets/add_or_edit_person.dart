@@ -23,6 +23,7 @@ class AddOrEditPerson extends StatelessWidget {
       required this.role,
       required this.socialnumber,
       required this.isEditing,
+      this.description,
       this.id,
       this.imagePath});
   final personController pcontroller;
@@ -37,6 +38,7 @@ class AddOrEditPerson extends StatelessWidget {
   final bool isEditing;
   final String? imagePath;
   final String? id;
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class AddOrEditPerson extends StatelessWidget {
         child: Material(
       child: Container(
         padding: EdgeInsets.all(15),
-        height: 400,
+        height: 470,
         width: 500,
         decoration: BoxDecoration(
             color: primaryColor, borderRadius: BorderRadius.circular(15)),
@@ -72,54 +74,77 @@ class AddOrEditPerson extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                InkWell(
-                  onTap: () async {
-                    FilePickerResult? result = await FilePicker.platform
-                        .pickFiles(type: FileType.image);
-                    if (result != null) {
-                      Uint8List fileBytes = result.files.first.bytes!;
-                      pcontroller.filename.value = result.files.single.name;
+                Row(
+                  textDirection: TextDirection.rtl,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(spacing: 10,direction: Axis.vertical,
+                      children: [
+                        for (var cam in Get.find<cameraController>().cameras)
+                          InkWell(//TODO : OPEN DIALOUG AND SHOW CAMERA AND A TAKE PICTURE BUTTON ( CONNECT API)
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.indigo),
+                                  borderRadius: BorderRadius.circular(15)),
+                              padding: EdgeInsets.all(12),
+                              child: Text(cam.name!),
+                            ),
+                          )
+                      ],
+                    ),
+                    Spacer(),
+                    InkWell(
+                      onTap: () async {
+                        FilePickerResult? result = await FilePicker.platform
+                            .pickFiles(type: FileType.image);
+                        if (result != null) {
+                          Uint8List fileBytes = result.files.first.bytes!;
+                          pcontroller.filename.value = result.files.single.name;
 
-                      try {
-                        // pcontroller.filepath.value =
-                        Map<String, dynamic>? data = await uploadFile(
-                          fileBytes,
-                          "${Random().nextInt(999)}.${pcontroller.filename.value}",'False'
-                        );
-                        pcontroller.filepath.value = data!['imageData'];
-                        pcontroller.filename.value = data['fileLocation'];
-                      } catch (e) {
-                        print(e);
-                        await ScaffoldMessenger.maybeOf(context)!.showSnackBar(
-                            SnackBar(
-                                content: Directionality(
-                                    textDirection: TextDirection.rtl,
-                                    child: Text("خطا در ارسال داده"))));
-                      }
-                    } else {
-                      await ScaffoldMessenger.maybeOf(context)!.showSnackBar(
-                          SnackBar(
-                              content: Directionality(
-                                  textDirection: TextDirection.rtl,
-                                  child: Text("خطا در انتخاب عکس"))));
-                    }
-                  },
-                  child: Obx(() => Container(
-                        width: 128,
-                        height: 128,
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: pcontroller.filepath.value!.length > 0
-                                    ? MemoryImage(
-                                        pcontroller.filepath.value!,
-                                      )
-                                    : NetworkImage(isEditing
-                                        ? 'http://${url}:8091/api/files/known_face/${id}/${imagePath}'
-                                        : 'assets/images/unknown-person1.png'),
-                                fit: BoxFit.fill),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.indigo)),
-                      )),
+                          try {
+                            // pcontroller.filepath.value =
+                            Map<String, dynamic>? data = await uploadFile(
+                                fileBytes,
+                                "${Random().nextInt(999)}.${pcontroller.filename.value}",
+                                'False');
+                            pcontroller.filepath.value = data!['imageData'];
+                            pcontroller.filename.value = data['fileLocation'];
+                          } catch (e) {
+                            print(e);
+                            await ScaffoldMessenger.maybeOf(context)!
+                                .showSnackBar(SnackBar(
+                                    content: Directionality(
+                                        textDirection: TextDirection.rtl,
+                                        child: Text("خطا در ارسال داده"))));
+                          }
+                        } else {
+                          await ScaffoldMessenger.maybeOf(context)!
+                              .showSnackBar(SnackBar(
+                                  content: Directionality(
+                                      textDirection: TextDirection.rtl,
+                                      child: Text("خطا در انتخاب عکس"))));
+                        }
+                      },
+                      child: Obx(() => Container(
+                            width: 128,
+                            height: 128,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: pcontroller.filepath.value!.length >
+                                            0
+                                        ? MemoryImage(
+                                            pcontroller.filepath.value!,
+                                          )
+                                        : NetworkImage(isEditing
+                                            ? 'http://${url}:8091/api/files/known_face/${id}/${imagePath}'
+                                            : 'assets/images/unknown-person1.png'),
+                                    fit: BoxFit.fill),
+                                shape: BoxShape.circle,
+                                border: Border.all(color: Colors.indigo)),
+                          )),
+                    ),
+                  ],
                 ),
                 SizedBox(
                   height: 15,
@@ -231,6 +256,13 @@ class AddOrEditPerson extends StatelessWidget {
                         ))
                   ],
                 ),
+                SizedBox(height: 15,),
+                        SizedBox(
+                      width: 500,
+                      child: CoustomTextField3(
+                          hint: 'توضیحات', tcontroller: pcontroller.description),
+                    ),
+                    SizedBox(height: 15,),
                 Spacer(),
                 Center(
                     child: Container(
@@ -250,18 +282,18 @@ class AddOrEditPerson extends StatelessWidget {
                           'age': pcontroller.ageNumber.text,
                           'gender': pcontroller.genterP.value,
                           'socialnumber': pcontroller.socialNumber.text,
-                          "role": pcontroller.roleP.value
+                          "role": pcontroller.roleP.value,
+                          "description": pcontroller.description.text
                         };
                         try {
                           if (isEditing) {
                             final record = await pb
                                 .collection('known_face')
                                 .update(id!, body: body);
-                                   ScaffoldMessenger.maybeOf(context)!.showSnackBar(
+                            ScaffoldMessenger.maybeOf(context)!.showSnackBar(
                                 SnackBar(content: Text(record.id)));
-                                
                           } else {
-                            final response = await await http.post(uri,
+                            final response = await http.post(uri,
                                 body: jsonEncode(body),
                                 headers: {'Content-Type': "application/json"});
                             ScaffoldMessenger.maybeOf(context)!.showSnackBar(

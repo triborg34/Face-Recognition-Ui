@@ -6,11 +6,12 @@ class knowPerson {
   String? socialNumber;
   String? gender;
   String? age;
+  String? description;
   String? role;
   String? track_id;
   String? updated;
 
-  knowPerson({this.embdanings, this.id, this.image, this.name, this.updated});
+  knowPerson({this.embdanings, this.id, this.image, this.name, this.updated,this.description});
 
   knowPerson.fromJson(Map<String, dynamic> json) {
     embdanings = json['embdanings'].cast<double>();
@@ -23,6 +24,7 @@ class knowPerson {
     role = json['role'];
     track_id = json['track_id'];
     updated = json['updated'];
+    description = json['description'];
   }
 
   Map<String, dynamic> toJson() {
@@ -36,6 +38,7 @@ class knowPerson {
     data['age'] = this.age;
     data['role'] = this.role;
     data['updated'] = this.updated;
+    data['description'] = this.description;
     return data;
   }
 }

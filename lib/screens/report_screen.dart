@@ -140,7 +140,7 @@ class ReportScreen extends StatelessWidget {
                                   decoration: BoxDecoration(),
                                   width: 155,
                                   child: Center(
-                                    child: Text("دوربین"),
+                                    child: Text("کد ملی"),
                                   ),
                                 ),
                               ],
@@ -294,7 +294,7 @@ class ReportScreen extends StatelessWidget {
                                             width: 155,
                                             child: Center(
                                               child: Text(rcontroller
-                                                  .reportList[index].camera
+                                                  .reportList[index].socialnumber
                                                   .toString()),
                                             ),
                                           ),

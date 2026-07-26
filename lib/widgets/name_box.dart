@@ -64,3 +64,49 @@ class NameBox extends StatelessWidget {
         ));
   }
 }
+
+
+class SocialBox extends StatelessWidget {
+  SocialBox({
+    required this.rcontroller,
+    super.key,
+  });
+
+  reportController rcontroller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Row(
+          textDirection: TextDirection.rtl,
+          children: [
+            Checkbox(
+              value: rcontroller.isSocialNUmber.value,
+              onChanged: (value) =>
+                  rcontroller.isSocialNUmber.value = !rcontroller.isSocialNUmber.value,
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              "کد ملی",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+            Visibility(
+                visible: rcontroller.isSocialNUmber.value,
+                child: Row(
+                  children: [
+                    SizedBox(
+                        width: 250,
+                        child: CoustomTextField(
+                          tcontroller: rcontroller.socialValue,
+                          hint: "کد ملی",
+                        )),
+                  ],
+                ))
+          ],
+        ));
+  }
+}

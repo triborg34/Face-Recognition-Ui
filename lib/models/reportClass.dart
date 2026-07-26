@@ -18,6 +18,7 @@ class reportClass {
   String? updated;
   Uint8List? imageByte;
   String? role;
+  String? socialnumber;
 
   reportClass(
       {this.age,
@@ -34,6 +35,7 @@ class reportClass {
       this.score,
       this.time,
       this.trackId,
+      this.socialnumber,
       this.updated,this.imageByte,this.role});
 
   reportClass.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class reportClass {
     trackId = json['track_id'];
     updated = json['updated'];
     role=json['role'];
+    socialnumber=json['socialnumber'];
   }
 
   Map<String, dynamic> toJson() {
@@ -73,6 +76,7 @@ class reportClass {
     data['track_id'] = this.trackId;
     data['updated'] = this.updated;
     data['role']=this.role;
+    data['socialnumber']=this.socialnumber;
     return data;
   }
 }

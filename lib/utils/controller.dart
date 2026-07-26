@@ -54,6 +54,7 @@ class reportController extends GetxController {
   var isTime = false.obs;
   var isUnknown = false.obs;
   var isPressed = false.obs;
+  var isSocialNUmber=false.obs;
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
@@ -66,6 +67,7 @@ class reportController extends GetxController {
   TextEditingController familyController = TextEditingController();
   TextEditingController sageController = TextEditingController();
   TextEditingController eageController = TextEditingController();
+    TextEditingController socialValue=TextEditingController();
 
   var reportList = <reportClass>[].obs;
 }
@@ -83,6 +85,7 @@ class cameraController extends GetxController {
   TextEditingController rtspController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
 
   void startSub() {
     pb.collection('cameras').subscribe(
@@ -155,6 +158,7 @@ class personController extends GetxController {
   TextEditingController lastName = TextEditingController();
   TextEditingController socialNumber = TextEditingController();
   TextEditingController ageNumber = TextEditingController();
+  TextEditingController description=TextEditingController();
 
   fetchFirstData() async {
     final kList = await pb.collection('known_face').getFullList();

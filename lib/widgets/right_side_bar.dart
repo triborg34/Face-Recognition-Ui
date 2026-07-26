@@ -59,7 +59,7 @@ class RightSideBar extends StatelessWidget {
             firstChild: Center(
               child: rcontroller.filepath.value == null
                   ? Container(
-                      width: 300,
+                      width: 350,
                       height: 300,
                       decoration: BoxDecoration(
                           border: Border.all(color: primaryColor),
@@ -160,6 +160,12 @@ class RightSideBar extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
+                        SocialBox(
+                    rcontroller: rcontroller,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
                   GenderBox(rcontroller: rcontroller),
                   SizedBox(
                     height: 15,
@@ -225,6 +231,7 @@ class RightSideBar extends StatelessWidget {
     for (String data in jsonDecode(response.body)) {
       final json =
           await pb.collection('collection').getFirstListItem('id="$data"');
+       
       final request = await http.get(Uri.parse(
           'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
       Uint8List tempUint = request.bodyBytes;
@@ -244,6 +251,7 @@ class RightSideBar extends StatelessWidget {
           name: json.data['name'],
           score: json.data['score'],
           time: json.data['time'],
+          socialnumber: json.data['socialnumber'],
           trackId: json.data['track_id'],
           updated: json.data['updated']));
       ;
@@ -271,6 +279,10 @@ class RightSideBar extends StatelessWidget {
     // Add gender filter
     if (rcontroller.isGender.value) {
       filters.add('gender="${rcontroller.genderValue.value}"');
+    }
+    if (rcontroller.isSocialNUmber.value){
+      filters.add('socialnumber="${rcontroller.socialValue.text}"');
+
     }
 
     // Add name filter
@@ -348,6 +360,7 @@ class RightSideBar extends StatelessWidget {
           name: json.data['name'],
           score: json.data['score'],
           time: json.data['time'],
+          socialnumber: json.data['socialnumber'],
           trackId: json.data['track_id'],
           updated: json.data['updated']));
     }

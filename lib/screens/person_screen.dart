@@ -6,6 +6,7 @@ import 'package:faceui/widgets/add_or_edit_person.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:faceui/utils/consts.dart';
+import 'package:http/http.dart' as http;
 
 class PersonScreen extends StatelessWidget {
   const PersonScreen({super.key});
@@ -93,6 +94,8 @@ class PersonScreen extends StatelessWidget {
                                                   .knownList[i].role!,
                                               socialnumber: pcontroller
                                                   .knownList[i].socialNumber!,
+                                              description: pcontroller
+                                                  .knownList[i].description!,
                                               isEditing: true),
                                         );
                                       },
@@ -109,6 +112,11 @@ class PersonScreen extends StatelessWidget {
                                             .collection('known_face')
                                             .delete(
                                                 pcontroller.knownList[i].id!);
+
+                                        Uri uri = Uri.parse(
+                                            'http://${url}:${port}/util/refreshDb');
+
+                                        await http.get(uri);
                                       },
                                       child: Icon(
                                         Icons.delete,

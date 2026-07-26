@@ -176,6 +176,19 @@ class DetailsBox extends StatelessWidget {
   Widget _buildPersonDetails() {
     final person = mController.person;
 
+    String description='';
+    try{
+          final know = Get.find<personController>().knownList.firstWhere(
+            (p) => p.name == person.name,
+          );
+          description=know.description!;
+    }catch(e){
+      description='';
+    }
+  
+    
+
+
     return Column(
       children: [
         CoustomRow(title: "شماره شناسایی", substring: person.trackId!),
@@ -188,6 +201,8 @@ class DetailsBox extends StatelessWidget {
         CoustomRow(title: "تاریخ", substring: person.date!.toPersianDate()),
         SizedBox(height: 10),
         CoustomRow(title: "زمان", substring: person.time!.toPersianDigit()),
+        SizedBox(height: 10),
+           CoustomRow(title: "توضیحات", substring: description),
         SizedBox(height: 10),
 
       ],
