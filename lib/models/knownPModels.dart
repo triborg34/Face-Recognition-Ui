@@ -10,11 +10,21 @@ class knowPerson {
   String? role;
   String? track_id;
   String? updated;
+  String? userwhom;
+  int? embeddingCount;
 
-  knowPerson({this.embdanings, this.id, this.image, this.name, this.updated,this.description});
+  knowPerson(
+      {this.embdanings,
+      this.id,
+      this.image,
+      this.name,
+      this.updated,
+      this.description,
+      this.userwhom,
+      this.embeddingCount});
 
   knowPerson.fromJson(Map<String, dynamic> json) {
-    embdanings = json['embdanings'].cast<double>();
+    embdanings = (json['embdanings'] as List?)?.cast<double>();
     id = json['id'];
     image = json['image'];
     name = json['name'];
@@ -25,20 +35,25 @@ class knowPerson {
     track_id = json['track_id'];
     updated = json['updated'];
     description = json['description'];
+    userwhom = json['userwhom'];
+    embeddingCount = json['embedding_count'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['embdanings'] = this.embdanings;
-    data['id'] = this.id;
-    data['image'] = this.image;
-    data['name'] = this.name;
-    data['socialnumber'] = this.socialNumber;
-    data['gender'] = this.gender;
-    data['age'] = this.age;
-    data['role'] = this.role;
-    data['updated'] = this.updated;
-    data['description'] = this.description;
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['embdanings'] = embdanings;
+    data['id'] = id;
+    data['image'] = image;
+    data['name'] = name;
+    data['socialnumber'] = socialNumber;
+    data['gender'] = gender;
+    data['age'] = age;
+    data['role'] = role;
+    data['track_id'] = track_id;
+    data['updated'] = updated;
+    data['description'] = description;
+    data['userwhom'] = userwhom;
+    data['embedding_count'] = embeddingCount;
     return data;
   }
 }

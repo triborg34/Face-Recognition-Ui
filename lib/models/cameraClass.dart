@@ -53,7 +53,7 @@ class cameraClass {
     data['rtspUrl'] = this.rtspUrl;
     data['updated'] = this.updated;
     data['gate']=this.gate;
-    data['username']=this.updated;
+    data['username']=this.username;
     data['password']=this.password;
     return data;
   }

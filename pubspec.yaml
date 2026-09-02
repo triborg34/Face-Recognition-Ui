@@ -50,7 +50,7 @@ dependencies:
   splash_view: ^2.0.1
   cached_network_image: ^3.4.1
   persian_datetime_picker: ^3.2.0
-  
+
   
 
 dev_dependencies:

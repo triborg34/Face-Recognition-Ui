@@ -1,14 +1,10 @@
-// import 'dart:math';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
-import 'package:faceui/widgets/add_or_edit_person.dart';
 import 'package:faceui/widgets/coustom_row.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'package:persian_number_utility/persian_number_utility.dart';
 
 class DetailsBox extends StatelessWidget {
@@ -69,29 +65,11 @@ class DetailsBox extends StatelessWidget {
         person.name == "unknown"
             ? IconButton(
                 onPressed: () async {
-                  final response = await http.get(Uri.parse(
-                      'http://${url}:8091/api/files/collection/${person.id}/${person.croppedFrame}'));
-
-                  await showAdaptiveDialog(
-                      context: context,
-                      builder: (context) {
-                        return AddOrEditPerson(
-                            filename:
-                                'http://${url}:8091/api/files/collection/${person.id}/${person.humancrop}',
-                            filepath: response.bodyBytes,
-                            pcontroller: Get.find<personController>(),
-                            name: '',
-                            lastName: '',
-                            age: person.age!,
-                            gender: person.gender!,
-                            role: 'approve',
-                            socialnumber: '',
-                            isEditing: false);
-                      });
+                  // For unknown persons, just show their name
                 },
                 icon: Icon(
-                  Icons.add_circle,
-                  color: Colors.white,
+                  Icons.info_outline,
+                  color: Colors.white54,
                 ))
             : person.role == 'approve'
                 ? Icon(
@@ -103,13 +81,34 @@ class DetailsBox extends StatelessWidget {
                     color: Colors.red,
                   ),
         Text(
-          person.name! == "unknown" ? "ناشناس" : person.name!,
+          person.name == "unknown" ? "ناشناس" : person.name!,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
         IconButton(
             onPressed: () async {
-              await pb.collection('collection').delete(person.id!);
-              mController.isPersonSelected.value = false;
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('حذف رخداد'),
+                  content: Text('آیا از حذف این رخداد مطمئن هستید؟'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('لغو'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.red),
+                      child: Text('حذف'),
+                    ),
+                  ],
+                ),
+              );
+              if (confirmed == true) {
+                await pb.collection('collection').delete(person.id!);
+                mController.isPersonSelected.value = false;
+              }
             },
             icon: Icon(
               Icons.delete_forever,
@@ -176,35 +175,44 @@ class DetailsBox extends StatelessWidget {
   Widget _buildPersonDetails() {
     final person = mController.person;
 
-    String description='';
-    try{
-          final know = Get.find<personController>().knownList.firstWhere(
+    String description = '';
+    try {
+      final know = Get.find<personController>().knownList.firstWhere(
             (p) => p.name == person.name,
           );
-          description=know.description!;
-    }catch(e){
-      description='';
+      description = know.description ?? '';
+    } catch (e) {
+      description = '';
     }
-  
-    
-
 
     return Column(
       children: [
-        CoustomRow(title: "شماره شناسایی", substring: person.trackId!),
+        CoustomRow(title: "شماره شناسایی", substring: person.trackId ?? '-'),
         SizedBox(height: 10),
         CoustomRow(
-            title: "جنسیت", substring: person.gender! == 'male' ? "مرد" : "زن"),
+            title: "جنسیت",
+            substring: person.gender == 'male' ? "مرد" : "زن"),
         SizedBox(height: 10),
-        CoustomRow(title: "سن", substring: person.age!),
+        CoustomRow(title: "سن", substring: person.age ?? '-'),
         SizedBox(height: 10),
-        CoustomRow(title: "تاریخ", substring: person.date!.toPersianDate()),
+        CoustomRow(
+            title: "تاریخ",
+            substring: (person.date ?? '').toPersianDate()),
         SizedBox(height: 10),
-        CoustomRow(title: "زمان", substring: person.time!.toPersianDigit()),
+        CoustomRow(
+            title: "زمان",
+            substring: (person.time ?? '').toPersianDigit()),
         SizedBox(height: 10),
-           CoustomRow(title: "توضیحات", substring: description),
+        CoustomRow(title: "توضیحات", substring: description),
         SizedBox(height: 10),
-
+        TextButton(
+            onPressed: () {
+              downloadPbFile(
+                'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
+                filename: 'frame_${person.trackId ?? person.id}.jpg',
+              );
+            },
+            child: Text("ذخیره عکس"))
       ],
     );
   }
@@ -222,26 +230,29 @@ class DetailsBox extends StatelessWidget {
         child: hasFrame
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child:GestureDetector(
-                  onTap: () async{
-                    await showImageViewer(context, NetworkImage('http://${url}:8091/api/files/collection/${person.id}/${person.frame}'));
+                child: GestureDetector(
+                  onTap: () async {
+                    await showImageViewer(
+                        context,
+                        NetworkImage(
+                            'http://${url}:8091/api/files/collection/${person.id}/${person.frame}'));
                   },
                   child: InteractiveViewer(
                     minScale: 1.0,
                     maxScale: 5.0,
                     child: CachedNetworkImage(
                       fit: BoxFit.fill,
-                           imageUrl: "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
-                           progressIndicatorBuilder: (context, url, downloadProgress) => 
-                                   Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
-                           errorWidget: (context, url, error) => Icon(Icons.error),
-                        ),
+                      imageUrl:
+                          "http://${url}:8091/api/files/collection/${person.id}/${person.frame}",
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) => Center(
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress)),
+                      errorWidget: (context, url, error) =>
+                          Icon(Icons.error),
+                    ),
                   ),
                 ),
-                //  Image.network(
-                //   'http://${url}:8091/api/files/collection/${person.id}/${person.frame}',
-                //   fit: BoxFit.fill,
-                // ),
               )
             : Center(child: Icon(Icons.person)),
       ),

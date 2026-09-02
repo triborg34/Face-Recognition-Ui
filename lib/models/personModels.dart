@@ -70,7 +70,7 @@ class personClass {
     data['time'] = this.time;
     data['track_id'] = this.trackId;
     data['role']=this.role;
-    data['humancrop']=this.role;
+    data['humancrop']=this.humancrop;
     return data;
   }
 }

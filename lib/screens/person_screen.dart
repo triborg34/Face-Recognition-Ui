@@ -1,12 +1,13 @@
-import 'dart:typed_data';
-
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:faceui/models/knownPModels.dart';
+import 'package:faceui/screens/person_detail_screen.dart';
+import 'package:faceui/utils/api_service.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/add_or_edit_person.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:faceui/utils/consts.dart';
-import 'package:http/http.dart' as http;
 
 class PersonScreen extends StatelessWidget {
   const PersonScreen({super.key});
@@ -17,188 +18,341 @@ class PersonScreen extends StatelessWidget {
 
     return Obx(() => AnimatedOpacity(
           opacity: pcontroller.isVisible.value ? 1.0 : 0.0,
-          duration: Duration(milliseconds: 500),
+          duration: const Duration(milliseconds: 500),
           child: Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
-            margin: EdgeInsets.all(15),
-            padding: EdgeInsets.all(15),
+            margin: const EdgeInsets.all(15),
+            padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               border: Border.all(color: primaryColor),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Directionality(
               textDirection: TextDirection.rtl,
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        await showAdaptiveDialog(
-                          context: context,
-                          builder: (context) => AddOrEditPerson(
-                            pcontroller: pcontroller,
-                            name: '',
-                            lastName: '',
-                            age: '',
-                            filename: '',
-                            filepath: Uint8List(0),
-                            gender: 'male',
-                            role: 'approve',
-                            isEditing: false,
-                            socialnumber: '',
-                          ),
-                        );
-                      },
-                      child: Text(
-                        "اضافه کردن",
-                        style: TextStyle(color: Colors.white),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          await showAdaptiveDialog(
+                            context: context,
+                            builder: (context) => AddOrEditPerson(
+                              pcontroller: pcontroller,
+                              name: '',
+                              lastName: '',
+                              age: '',
+                              filename: '',
+                              filepath: null,
+                              gender: 'male',
+                              role: 'approve',
+                              isEditing: false,
+                              description: '',
+                              socialnumber: '',
+                            ),
+                          );
+                          pcontroller.fetchFirstData();
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: primaryColor,
+                        ),
+                        child: const Text(
+                          "اضافه کردن",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
-                      style: TextButton.styleFrom(
-                        backgroundColor: primaryColor,
+                      SizedBox(width: 12),
+                      Text(
+                        'افراد ثبت شده (${pcontroller.knownList.length})',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 15),
-                    Wrap(
-                      alignment: WrapAlignment.start,
-                      spacing: 15,
-                      runSpacing: 10,
-                      children: [
-                        for (int i = 0; i < pcontroller.knownList.length; i++)
-                          Container(
-                            child: Stack(
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: pcontroller.knownList.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Align(
-                                    alignment: Alignment.topLeft,
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await showAdaptiveDialog(
-                                          context: context,
-                                          builder: (context) => AddOrEditPerson(
-                                              id: pcontroller.knownList[i].id!,
-                                              imagePath: pcontroller
-                                                  .knownList[i].image!,
-                                              pcontroller: pcontroller,
-                                              name: pcontroller
-                                                  .knownList[i].name!
-                                                  .split(' ')[0],
-                                              lastName: pcontroller
-                                                  .knownList[i].name!
-                                                  .split(' ')[1],
-                                              age:
-                                                  pcontroller.knownList[i].age!,
-                                              gender: pcontroller
-                                                  .knownList[i].gender!,
-                                              role: pcontroller
-                                                  .knownList[i].role!,
-                                              socialnumber: pcontroller
-                                                  .knownList[i].socialNumber!,
-                                              description: pcontroller
-                                                  .knownList[i].description!,
-                                              isEditing: true),
-                                        );
-                                      },
-                                      child: Icon(
-                                        Icons.edit,
-                                        size: 20,
-                                      ),
-                                    )),
-                                Align(
-                                    alignment: Alignment.topRight,
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await pb
-                                            .collection('known_face')
-                                            .delete(
-                                                pcontroller.knownList[i].id!);
-
-                                        Uri uri = Uri.parse(
-                                            'http://${url}:${port}/util/refreshDb');
-
-                                        await http.get(uri);
-                                      },
-                                      child: Icon(
-                                        Icons.delete,
-                                        size: 20,
-                                        color: Colors.red,
-                                      ),
-                                    )),
-                                Column(
-                                  children: [
-                                    Container(
-                                      height: 110,
-                                      child: Center(
-                                        child: pcontroller.knownList[i].image!
-                                                    .length >
-                                                0
-                                            ? null
-                                            : Icon(
-                                                Icons.person,
-                                                size: 36,
-                                                color: primaryColor,
-                                              ),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: NetworkImage(
-                                                'http://${url}:8091/api/files/known_face/${pcontroller.knownList[i].id}/${pcontroller.knownList[i].image}'),
-                                            fit: BoxFit.contain),
-                                        border: Border.all(color: primaryColor),
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(pcontroller.knownList[i].name!),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(pcontroller.knownList[i].age!),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(pcontroller.knownList[i].gender ==
-                                            'male'
-                                        ? "مرد"
-                                        : "زن"),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    Text(
-                                        pcontroller.knownList[i].socialNumber!),
-                                    SizedBox(
-                                      height: 4,
-                                    ),
-                                    Icon(
-                                      pcontroller.knownList[i].role == "approve"
-                                          ? Icons.check_box
-                                          : Icons.cancel,
-                                      color: pcontroller.knownList[i].role ==
-                                              "approve"
-                                          ? Colors.green
-                                          : Colors.red,
-                                    )
-                                  ],
+                                Icon(Icons.person_add_alt_1,
+                                    size: 64, color: Colors.white24),
+                                SizedBox(height: 16),
+                                Text(
+                                  'هنوز شخصی ثبت نشده است',
+                                  style: TextStyle(
+                                    color: Colors.white54,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                SizedBox(height: 8),
+                                Text(
+                                  'روی دکمه "اضافه کردن" کلیک کنید',
+                                  style: TextStyle(
+                                    color: Colors.white38,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ],
                             ),
-                            padding: EdgeInsets.all(10),
-                            height: 300,
-                            width: 200,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: primaryColor),
-                            ),
                           )
-                      ],
-                    )
-                  ],
-                ),
+                        : GridView.builder(
+                            padding: EdgeInsets.zero,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 5,
+                              childAspectRatio: 200 / 400,
+                              crossAxisSpacing: 15,
+                              mainAxisSpacing: 10,
+                            ),
+                            itemCount: pcontroller.knownList.length,
+                            itemBuilder: (context, index) => PersonCard(
+                              person: pcontroller.knownList[index],
+                              pcontroller: pcontroller,
+                            ),
+                          ),
+                  ),
+                ],
               ),
             ),
           ),
         ));
+  }
+}
+
+class PersonCard extends StatelessWidget {
+  const PersonCard({
+    super.key,
+    required this.person,
+    required this.pcontroller,
+  });
+
+  final knowPerson person;
+  final personController pcontroller;
+
+  @override
+  Widget build(BuildContext context) {
+    final faceCount = person.embeddingCount ?? 1;
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(color: primaryColor),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Column(
+              children: [
+                _PersonAvatar(person: person),
+                const SizedBox(height: 10),
+                Text(
+                  person.name ?? '',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 6),
+                Text(person.age ?? '', style: TextStyle(fontSize: 12)),
+                const SizedBox(height: 4),
+                Text(person.gender == 'male' ? 'مرد' : 'زن',
+                    style: TextStyle(fontSize: 12)),
+                const SizedBox(height: 4),
+                if ((person.socialNumber ?? '').isNotEmpty)
+                  Text(person.socialNumber ?? '',
+                      style: TextStyle(fontSize: 11, color: Colors.white70)),
+                const SizedBox(height: 4),
+                // Face count badge
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.face, size: 12, color: Colors.white70),
+                      SizedBox(width: 4),
+                      Text(
+                        '$faceCount',
+                        style: TextStyle(fontSize: 11, color: Colors.white70),
+                      ),
+                    ],
+                  ),
+                ),
+                Spacer(),
+                Icon(
+                  person.role == 'approve'
+                      ? Icons.check_box
+                      : Icons.cancel,
+                  color: person.role == 'approve' ? Colors.green : Colors.red,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
+          // Edit button (top-left in RTL)
+          Align(
+            alignment: Alignment.topLeft,
+            child: InkWell(
+              onTap: () async {
+                final nameParts = (person.name ?? '').split(' ');
+                await showAdaptiveDialog(
+                  context: context,
+                  builder: (context) => AddOrEditPerson(
+                    id: person.id,
+                    imagePath: person.image,
+                    pcontroller: pcontroller,
+                    name: nameParts.isNotEmpty ? nameParts[0] : '',
+                    lastName: nameParts.length > 1 ? nameParts[1] : '',
+                    age: person.age ?? '',
+                    gender: person.gender ?? 'male',
+                    role: person.role ?? 'approve',
+                    socialnumber: person.socialNumber ?? '',
+                    description: person.description ?? '',
+                    isEditing: true,
+                  ),
+                );
+              },
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(Icons.edit, size: 16, color: Colors.white70),
+              ),
+            ),
+          ),
+          // Delete button (top-right in RTL)
+          Align(
+            alignment: Alignment.topRight,
+            child: InkWell(
+              onTap: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text('حذف شخص'),
+                    content:
+                        Text('آیا از حذف "${person.name}" مطمئن هستید؟'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: Text('لغو'),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        style: TextButton.styleFrom(
+                            foregroundColor: Colors.red),
+                        child: Text('حذف'),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true) {
+                  try {
+                    await pb.collection('known_face').delete(person.id!);
+                    await ApiService.refreshDb();
+                  } catch (e) {
+                    debugPrint('Delete failed: $e');
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('خطا در حذف شخص')),
+                      );
+                    }
+                  }
+                }
+              },
+              child: Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black45,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child:
+                    Icon(Icons.delete, size: 16, color: Colors.red.shade300),
+              ),
+            ),
+          ),
+          // Detail button (bottom-center)
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 28),
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PersonDetailScreen(person: person),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.indigo.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'جزئیات',
+                    style: TextStyle(fontSize: 11, color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PersonAvatar extends StatelessWidget {
+  const _PersonAvatar({required this.person});
+
+  final knowPerson person;
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImage = (person.image ?? '').isNotEmpty;
+    return Container(
+      height: 100,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        border: Border.all(color: primaryColor),
+        shape: BoxShape.circle,
+      ),
+      child: ClipOval(
+        child: hasImage
+            ? CachedNetworkImage(
+                imageUrl: fileUrl(person.id, person.image),
+                fit: BoxFit.contain,
+                placeholder: (_, __) => const Center(
+                  child: SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
+                errorWidget: (_, __, ___) => const Icon(
+                  Icons.person,
+                  size: 36,
+                  color: primaryColor,
+                ),
+              )
+            : const Icon(
+                Icons.person,
+                size: 36,
+                color: primaryColor,
+              ),
+      ),
+    );
   }
 }

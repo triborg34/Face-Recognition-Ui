@@ -25,8 +25,6 @@ class mainController extends GetxController {
   var person = personClass().obs();
   var isRegisterExpand = false.obs;
   var isUnknownExpand = false.obs;
-
-
 }
 
 class ThemeController extends GetxController {
@@ -54,7 +52,7 @@ class reportController extends GetxController {
   var isTime = false.obs;
   var isUnknown = false.obs;
   var isPressed = false.obs;
-  var isSocialNUmber=false.obs;
+  var isSocialNUmber = false.obs;
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
@@ -67,7 +65,7 @@ class reportController extends GetxController {
   TextEditingController familyController = TextEditingController();
   TextEditingController sageController = TextEditingController();
   TextEditingController eageController = TextEditingController();
-    TextEditingController socialValue=TextEditingController();
+  TextEditingController socialValue = TextEditingController();
 
   var reportList = <reportClass>[].obs;
 }
@@ -85,7 +83,6 @@ class cameraController extends GetxController {
   TextEditingController rtspController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
 
   void startSub() {
     pb.collection('cameras').subscribe(
@@ -110,9 +107,7 @@ class cameraController extends GetxController {
 
   fetchFirstData() async {
     final mList = await pb.collection('cameras').getFullList();
-    for (var json in mList) {
-      cameras.add(cameraClass.fromJson(json.data));
-    }
+    cameras.assignAll(mList.map((json) => cameraClass.fromJson(json.data)));
   }
 
   @override
@@ -158,13 +153,17 @@ class personController extends GetxController {
   TextEditingController lastName = TextEditingController();
   TextEditingController socialNumber = TextEditingController();
   TextEditingController ageNumber = TextEditingController();
-  TextEditingController description=TextEditingController();
+  TextEditingController description = TextEditingController();
+
+  /// Everything except `embdanings` — the UI never uses the embedding
+  /// vectors and they dominate the payload size.
+  static const _listFields =
+      'id,name,image,age,gender,role,socialnumber,description,userwhom,track_id,updated';
 
   fetchFirstData() async {
-    final kList = await pb.collection('known_face').getFullList();
-    for (var json in kList) {
-      knownList.add(knowPerson.fromJson(json.data));
-    }
+    final kList =
+        await pb.collection('known_face').getFullList(fields: _listFields);
+    knownList.assignAll(kList.map((json) => knowPerson.fromJson(json.data)));
   }
 
   void startSub() {
@@ -207,6 +206,11 @@ class personController extends GetxController {
   @override
   void onClose() {
     isVisible.value = false;
+    name.dispose();
+    lastName.dispose();
+    socialNumber.dispose();
+    ageNumber.dispose();
+    description.dispose();
     super.onClose();
   }
 }
@@ -228,7 +232,7 @@ class videoFeedController extends GetxController {
   html.ImageElement? getElement(String viewId) => _cameras[viewId];
 
   void disconnect(String viewId) {
-    print(viewId);
+    debugPrint(viewId);
     final element = _cameras[viewId];
     if (element != null) {
       element.src = '';
@@ -260,33 +264,8 @@ class networkController extends GetxController {
     final mList = await pb
         .collection('collection')
         .getList(sort: '-created', page: intpage, perPage: 30);
-    for (var json in mList.items) {
-      // var response = await http.get(Uri.parse(
-      //     'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
-      // Uint8List tempUint = response.bodyBytes;
-      // personList.add(personClass(
-      //     age: json.data['age'],
-      //     camera: json.data['camera'],
-      //     collectionId: json.data['collectionId'],
-      //     collectionName: json.data['collectionName'],
-      //     croppedFrame: json.data['cropped_frame'],
-      //     date: json.data['date'],
-      //     frame: json.data['frame'],
-      //     gender: json.data['gender'],
-      //     id: json.data['id'],
-      //     name: json.data['name'],
-      //     score: json.data['score'],
-      //     time: json.data['time'],
-      //     trackId: json.data['track_id'],
-      //     role: json.data['role'],
-      //     humancrop: json.data['humancrop'],
-      //     tempFrame: tempUint));
-
-      /*
-      
-      */
-      personList.add(personClass.fromJson(json.data));
-    }
+    personList
+        .addAll(mList.items.map((json) => personClass.fromJson(json.data)));
   }
 
   void startSub() {
@@ -327,7 +306,6 @@ class networkController extends GetxController {
 
   @override
   void onReady() async {
-    
     await fetchFirstData(inilazedPage);
     startSub();
     super.onReady();
@@ -345,9 +323,7 @@ class userController extends GetxController {
 
   fetchFirstData() async {
     final kList = await pb.collection('users').getFullList();
-    for (var json in kList) {
-      users.add(UsersClass.fromJson(json.data));
-    }
+    users.assignAll(kList.map((json) => UsersClass.fromJson(json.data)));
   }
 
   void startSub() {
@@ -372,7 +348,6 @@ class userController extends GetxController {
 
   @override
   void onReady() async {
-    print("READY");
     await fetchFirstData();
     startSub();
     super.onReady();
@@ -398,9 +373,7 @@ class settinController extends GetxController {
   var isRegionMode = false.obs;
   fetchFirstData() async {
     final kList = await pb.collection('setting').getFullList();
-    for (var json in kList) {
-      settings.add(SettingClass.fromJson(json.data));
-    }
+    settings.assignAll(kList.map((json) => SettingClass.fromJson(json.data)));
   }
 
   void startSub() {

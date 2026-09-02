@@ -26,18 +26,31 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
   userController ucontroller = Get.find<userController>();
 
   Future<void> _checkLoginStatus() async {
+    // Wait for users to be loaded (they're loaded in onReady)
+    int retries = 0;
+    while (ucontroller.users.isEmpty && retries < 30) {
+      await Future.delayed(Duration(milliseconds: 100));
+      retries++;
+    }
+
     String username = await getRememberMe();
-    if (username != '') {
-      UsersClass user = ucontroller.users.firstWhere(
-        (element) => element.username == username,
-      );
-      if (user.remember_me!) {
-        role=user.role!;
-        email=user.email!;
-              unames=user.username!;
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => MainScreen()),
+    if (username.isNotEmpty && ucontroller.users.isNotEmpty) {
+      try {
+        UsersClass user = ucontroller.users.firstWhere(
+          (element) => element.username == username,
         );
+        if (user.remember_me == true) {
+          role = user.role ?? '';
+          email = user.email ?? '';
+          unames = user.username ?? '';
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => MainScreen()),
+            );
+          }
+        }
+      } catch (e) {
+        // User not found, stay on login page
       }
     }
   }
@@ -282,31 +295,40 @@ class _ModernLoginPageState extends State<ModernLoginPage> {
 
   _login() async {
     if (_formKey.currentState!.validate()) {
-      UsersClass user = ucontroller.users.firstWhere(
-        (element) => element.username == _usernameController.text,
-      );
-      if (_rememberMe) {
-        saveRememberMe(true, user.username!);
-        await pb
-            .collection('users')
-            .update(user.id!, body: {"remember_me": _rememberMe});
-      }
-      // Login logic here
-
       try {
+        UsersClass user = ucontroller.users.firstWhere(
+          (element) => element.username == _usernameController.text,
+        );
+        if (_rememberMe) {
+          saveRememberMe(true, user.username!);
+          await pb
+              .collection('users')
+              .update(user.id!, body: {"remember_me": _rememberMe});
+        }
+
         if (utf8.decode(base64.decode(user.password!)) ==
             _passwordController.text) {
-              role=user.role!;
-              email=user.email!;
-              unames=user.username!;
+          role = user.role ?? '';
+          email = user.email ?? '';
+          unames = user.username ?? '';
           Get.to(() => MainScreen());
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text('رمز عبور یا نام کاربری اشتباه',
+                      textDirection: TextDirection.rtl)),
+            );
+          }
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text('رمز عبور یا نام کاربری اشتباه',
-                  textDirection: TextDirection.rtl)),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('نام کاربری یافت نشد',
+                    textDirection: TextDirection.rtl)),
+          );
+        }
       }
     }
   }
