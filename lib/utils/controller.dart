@@ -7,6 +7,7 @@ import 'package:faceui/models/personModels.dart';
 import 'package:faceui/models/reportClass.dart';
 import 'package:faceui/models/settingClass.dart';
 import 'package:faceui/models/userClass.dart';
+import 'package:faceui/utils/api_service.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -158,12 +159,54 @@ class personController extends GetxController {
   /// Everything except `embdanings` — the UI never uses the embedding
   /// vectors and they dominate the payload size.
   static const _listFields =
-      'id,name,image,age,gender,role,socialnumber,description,userwhom,track_id,updated';
+      'id,name,image,face_crop,age,gender,role,socialnumber,description,userwhom,track_id,updated';
 
   fetchFirstData() async {
     final kList =
         await pb.collection('known_face').getFullList(fields: _listFields);
     knownList.assignAll(kList.map((json) => knowPerson.fromJson(json.data)));
+    // After loading, fetch embedding counts from backend API
+    await fetchEmbeddingCounts();
+  }
+
+  /// Fetch embedding counts from the backend's /known-persons endpoint
+  /// and merge them into the existing knownList.
+  Future<void> fetchEmbeddingCounts() async {
+    try {
+      final persons = await ApiService.getKnownPersons();
+      if (persons.isEmpty) return;
+
+      for (final backendPerson in persons) {
+        final backendName = backendPerson['name'] ?? '';
+        final embeddingCount = backendPerson['embedding_count'] ?? 0;
+
+        // Find matching person in knownList by name
+        final index = knownList.indexWhere(
+          (p) => p.name == backendName,
+        );
+        if (index != -1) {
+          knownList[index] = knowPerson(
+            embdanings: knownList[index].embdanings,
+            id: knownList[index].id,
+            image: knownList[index].image,
+            faceCrop: knownList[index].faceCrop,
+            name: knownList[index].name,
+            updated: knownList[index].updated,
+            description: knownList[index].description,
+            userwhom: knownList[index].userwhom,
+            socialNumber: knownList[index].socialNumber,
+            gender: knownList[index].gender,
+            age: knownList[index].age,
+            role: knownList[index].role,
+            track_id: knownList[index].track_id,
+            embeddingCount: embeddingCount,
+          );
+        }
+      }
+    } catch (e) {
+      // Silently fail - embedding counts are informational
+      debugPrint('Failed to fetch embedding counts: $e');
+    }
   }
 
   void startSub() {
@@ -172,6 +215,8 @@ class personController extends GetxController {
       (e) {
         if (e.action == 'create') {
           knownList.add(knowPerson.fromJson(e.record!.data));
+          // Fetch embedding counts after a new person is added
+          fetchEmbeddingCounts();
         } else if (e.action == 'delete') {
           knownList.removeWhere(
             (element) => element.id == e.record!.id,
@@ -181,6 +226,7 @@ class personController extends GetxController {
               knownList.indexWhere((element) => element.id == e.record!.id);
           if (index != -1) {
             knownList[index] = knowPerson.fromJson(e.record!.toJson());
+            fetchEmbeddingCounts();
           }
         }
       },

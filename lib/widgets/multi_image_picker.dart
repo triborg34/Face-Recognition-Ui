@@ -1,26 +1,30 @@
 import 'dart:typed_data';
 
 import 'package:faceui/utils/api_service.dart';
+import 'package:faceui/widgets/face_selection_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
-/// Holds a single image selection: the raw bytes and a server-side file path
-/// returned by the `/upload` endpoint.
+/// Holds a single selected face: the cropped face bytes, server-side file path,
+/// and the face index from detection.
 class SelectedImage {
   final Uint8List bytes;
   final String serverPath;
   final String displayName;
+  final int faceIndex;
 
   SelectedImage({
     required this.bytes,
     required this.serverPath,
     required this.displayName,
+    this.faceIndex = 0,
   });
 }
 
 /// A grid of selected face images with add / remove controls.
 ///
-/// Used both in the "add person" flow and the "add reference face" flow.
+/// When images are picked, they go through the face detection + selection
+/// workflow before being added to the list.
 class MultiImagePicker extends StatelessWidget {
   const MultiImagePicker({
     super.key,
@@ -57,27 +61,43 @@ class MultiImagePicker extends StatelessWidget {
 
     final remaining = maxImages - images.length;
     final files = result.files.take(remaining).toList();
-
     final newImages = List<SelectedImage>.from(images);
 
     for (final file in files) {
       if (file.bytes == null) continue;
 
-      // Upload the image to the backend for face detection/cropping
       final name = file.name;
       final dotIndex = name.lastIndexOf('.');
       final ext = dotIndex != -1 ? name.substring(dotIndex) : '';
       final uniqueName = 'face_${DateTime.now().microsecondsSinceEpoch}$ext';
 
+      // Detect faces in the image
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 1),
+            content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  SizedBox(width: 8),
+                  Text('در حال شناسایی چهره...'),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+
       try {
-        final uploadResult = await ApiService.uploadImage(file.bytes!, uniqueName);
-        if (uploadResult != null) {
-          newImages.add(SelectedImage(
-            bytes: uploadResult['imageData'],
-            serverPath: uploadResult['fileLocation'],
-            displayName: name,
-          ));
-        } else {
+        final detectionResult = await ApiService.detectFaces(file.bytes!, uniqueName);
+        if (detectionResult == null || detectionResult.faces.isEmpty) {
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -88,7 +108,20 @@ class MultiImagePicker extends StatelessWidget {
               ),
             );
           }
+          continue;
         }
+
+        // Show face selection dialog
+        if (!context.mounted) return;
+        final selection = await FaceSelectionWidget.show(context, detectionResult);
+        if (selection == null) continue; // User cancelled
+
+        newImages.add(SelectedImage(
+          bytes: selection.face.cropBytes,
+          serverPath: selection.filePath,
+          displayName: name,
+          faceIndex: selection.faceIndex,
+        ));
       } catch (e) {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -158,7 +191,7 @@ class MultiImagePicker extends StatelessWidget {
                       color: Colors.white38, size: 32),
                   SizedBox(height: 8),
                   Text(
-                    'کلیک کنید یا تصاویر را بکشید',
+                    'تصویر انتخاب کنید (چهره شناسایی و انتخاب می‌شود)',
                     style: TextStyle(color: Colors.white38, fontSize: 12),
                   ),
                 ],

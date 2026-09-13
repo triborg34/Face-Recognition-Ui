@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/screens/person_detail_screen.dart';
 import 'package:faceui/utils/api_service.dart';
@@ -53,7 +52,8 @@ class PersonScreen extends StatelessWidget {
                               socialnumber: '',
                             ),
                           );
-                          pcontroller.fetchFirstData();
+                          // Refresh list and embedding counts after dialog closes
+                          await pcontroller.fetchFirstData();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: primaryColor,
@@ -219,6 +219,8 @@ class PersonCard extends StatelessWidget {
                     isEditing: true,
                   ),
                 );
+                // Refresh after edit dialog closes
+                await pcontroller.fetchFirstData();
               },
               child: Container(
                 padding: EdgeInsets.all(4),
@@ -321,7 +323,11 @@ class _PersonAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasImage = (person.image ?? '').isNotEmpty;
+    final imageProvider = personFaceImage(
+      faceCrop: person.faceCrop,
+      recordId: person.id,
+      image: person.image,
+    );
     return Container(
       height: 100,
       width: double.infinity,
@@ -330,18 +336,11 @@ class _PersonAvatar extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: ClipOval(
-        child: hasImage
-            ? CachedNetworkImage(
-                imageUrl: fileUrl(person.id, person.image),
-                fit: BoxFit.contain,
-                placeholder: (_, __) => const Center(
-                  child: SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ),
-                errorWidget: (_, __, ___) => const Icon(
+        child: imageProvider != null
+            ? Image(
+                image: imageProvider,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(
                   Icons.person,
                   size: 36,
                   color: primaryColor,

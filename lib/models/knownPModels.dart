@@ -2,6 +2,7 @@ class knowPerson {
   List<double>? embdanings;
   String? id;
   String? image;
+  String? faceCrop;
   String? name;
   String? socialNumber;
   String? gender;
@@ -17,9 +18,15 @@ class knowPerson {
       {this.embdanings,
       this.id,
       this.image,
+      this.faceCrop,
       this.name,
-      this.updated,
+      this.socialNumber,
+      this.gender,
+      this.age,
       this.description,
+      this.role,
+      this.track_id,
+      this.updated,
       this.userwhom,
       this.embeddingCount});
 
@@ -27,6 +34,7 @@ class knowPerson {
     embdanings = (json['embdanings'] as List?)?.cast<double>();
     id = json['id'];
     image = json['image'];
+    faceCrop = json['face_crop'];
     name = json['name'];
     socialNumber = json['socialnumber'];
     gender = json['gender'];
@@ -44,6 +52,7 @@ class knowPerson {
     data['embdanings'] = embdanings;
     data['id'] = id;
     data['image'] = image;
+    data['face_crop'] = faceCrop;
     data['name'] = name;
     data['socialnumber'] = socialNumber;
     data['gender'] = gender;

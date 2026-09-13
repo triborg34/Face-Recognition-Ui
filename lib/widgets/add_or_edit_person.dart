@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:faceui/utils/api_service.dart';
@@ -6,6 +5,7 @@ import 'package:faceui/widgets/camera_feed.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/coustom_text_field.dart';
+import 'package:faceui/widgets/face_selection_widget.dart';
 import 'package:faceui/widgets/multi_image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -67,13 +67,203 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
     if (!widget.isEditing) {
       _pc.filename.value = widget.filename ?? '';
       _pc.filepath.value = widget.filepath ?? Uint8List(0);
+
+      if (widget.filepath != null &&
+          widget.filepath!.isNotEmpty &&
+          widget.filename != null &&
+          widget.filename!.isNotEmpty) {
+        _selectedImages.add(SelectedImage(
+          bytes: widget.filepath!,
+          serverPath: widget.filename!,
+          displayName: widget.filename!,
+          faceIndex: 0,
+        ));
+      }
     } else {
       _pc.filename.value = '';
       _pc.filepath.value = Uint8List(0);
     }
   }
 
-  Future<void> _pickSingleImage() async {
+  /// Opens camera dialog, captures frame, uploads for face detection,
+  /// and adds the detected face to the reference images list.
+  Future<void> _captureFromCamera() async {
+    final cameras = Get.find<cameraController>().cameras;
+    if (cameras.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('هیچ دوربینی یافت نشد')),
+        );
+      }
+      return;
+    }
+
+    // If only one camera, use it directly. Otherwise show selection.
+    if (cameras.length == 1) {
+      await _showCameraDialog(cameras.first);
+    } else {
+      await showDialog(
+        context: context,
+        builder: (ctx) => SimpleDialog(
+          title: Text('انتخاب دوربین', textDirection: TextDirection.rtl),
+          children: cameras
+              .map((cam) => SimpleDialogOption(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      _showCameraDialog(cam);
+                    },
+                    child: Text(cam.name ?? 'دوربین'),
+                  ))
+              .toList(),
+        ),
+      );
+    }
+  }
+
+  Future<void> _showCameraDialog(dynamic cam) async {
+    if (!mounted) return;
+
+    await showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          bool isCapturing = false;
+
+          return Center(
+            child: Container(
+              decoration: BoxDecoration(
+                color: primaryColor,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: 520,
+              height: 420,
+              child: Column(
+                children: [
+                  Container(
+                    width: 520,
+                    height: 340,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(15),
+                        topRight: Radius.circular(15),
+                      ),
+                      child: CameraFeed(
+                        streamUrl:
+                            'http://$url:$port/rt${cam.hashCode}?source=${cam.rtspUrl}&role=True',
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 10),
+                  isCapturing
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white),
+                            ),
+                            SizedBox(width: 8),
+                            Text('در حال پردازش چهره...',
+                                style: TextStyle(color: Colors.white70)),
+                          ],
+                        )
+                      : ElevatedButton.icon(
+                          icon: Icon(Icons.camera_alt, color: Colors.white),
+                          label: Text('عکس بگیر',
+                              style: TextStyle(color: Colors.white)),
+                          style: TextButton.styleFrom(
+                            backgroundColor: Colors.indigo,
+                          ),
+                          onPressed: () async {
+                            setDialogState(() => isCapturing = true);
+
+                            try {
+                              final data = await ApiService.takePicture(
+                                cam.rtspUrl!,
+                                cam.name!,
+                              );
+
+                              if (data != null &&
+                                  data['file_location'] != null) {
+                                final serverPath =
+                                    data['file_location'] ?? '';
+
+                                // Detect all faces in the captured frame
+                                final detectionResult =
+                                    await ApiService.detectFacesFromPath(
+                                        serverPath);
+
+                                if (detectionResult != null &&
+                                    detectionResult.faces.isNotEmpty &&
+                                    mounted) {
+                                  // Show face selection dialog
+                                  final selection =
+                                      await FaceSelectionWidget.show(
+                                          context, detectionResult);
+
+                                  if (selection != null && mounted) {
+                                    setState(() {
+                                      _selectedImages.add(SelectedImage(
+                                        bytes: selection.face.cropBytes,
+                                        serverPath: selection.filePath,
+                                        displayName: 'camera_${cam.name}',
+                                        faceIndex: selection.faceIndex,
+                                      ));
+                                    });
+                                    Navigator.pop(dialogContext);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'چهره ${selection.faceIndex + 1} اضافه شد')),
+                                    );
+                                  }
+                                } else {
+                                  if (mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              'چهره‌ای در تصویر یافت نشد')),
+                                    );
+                                  }
+                                }
+                              } else {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                        content:
+                                            Text('خطا در گرفتن عکس')),
+                                  );
+                                }
+                              }
+                            } catch (e) {
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('خطا در گرفتن عکس: $e')),
+                                );
+                              }
+                            } finally {
+                              if (mounted) {
+                                setDialogState(
+                                    () => isCapturing = false);
+                              }
+                            }
+                          },
+                        ),
+                  SizedBox(height: 8),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// Pick file from device, detect faces, let user select, add to reference list.
+  Future<void> _pickAndAddImage() async {
     final result = await FilePicker.platform.pickFiles(type: FileType.image);
     if (result == null || result.files.isEmpty) return;
 
@@ -86,15 +276,36 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
     final uniqueName = 'img_${DateTime.now().microsecondsSinceEpoch}$ext';
 
     try {
-      final data = await ApiService.uploadImage(file.bytes!, uniqueName);
-      if (data != null && mounted) {
-        setState(() {
-          _pc.filepath.value = data['imageData'];
-          _pc.filename.value = data['fileLocation'];
-        });
+      final detectionResult =
+          await ApiService.detectFaces(file.bytes!, uniqueName);
+      if (detectionResult != null &&
+          detectionResult.faces.isNotEmpty &&
+          mounted) {
+        // Show face selection dialog
+        final selection =
+            await FaceSelectionWidget.show(context, detectionResult);
+        if (selection != null && mounted) {
+          setState(() {
+            _selectedImages.add(SelectedImage(
+              bytes: selection.face.cropBytes,
+              serverPath: selection.filePath,
+              displayName: name,
+              faceIndex: selection.faceIndex,
+            ));
+          });
+        }
+      } else if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('چهره‌ای در تصویر یافت نشد')),
+        );
       }
     } catch (e) {
       debugPrint('Upload error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطا در آپلود تصویر')),
+        );
+      }
     }
   }
 
@@ -113,7 +324,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
 
     try {
       if (widget.isEditing) {
-        // For editing: update via PocketBase directly (no face reprocessing)
+        // Editing: update via PocketBase directly
         final body = <String, dynamic>{
           'name': name,
           'age': _pc.ageNumber.text,
@@ -134,10 +345,11 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
           Navigator.pop(context);
         }
       } else {
-        // For new person: use backend API for face processing
+        // New person: use backend API for face processing
         if (_selectedImages.isNotEmpty) {
           // Multi-image registration
-          final imagePaths = _selectedImages.map((img) => img.serverPath).toList();
+          final imagePaths =
+              _selectedImages.map((img) => img.serverPath).toList();
           final result = await ApiService.insertPersonMulti(
             name: name,
             imagePaths: imagePaths,
@@ -154,7 +366,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
             Navigator.pop(context);
           }
         } else if (_pc.filename.value.isNotEmpty) {
-          // Single image registration (from camera capture or file upload)
+          // Single image registration (legacy path)
           final result = await ApiService.insertPersonSingle(
             name: name,
             imagePath: _pc.filename.value,
@@ -165,7 +377,8 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
           );
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(result['message'] ?? 'شخص اضافه شد')),
+              SnackBar(
+                  content: Text(result['message'] ?? 'شخص اضافه شد')),
             );
             Navigator.pop(context);
           }
@@ -201,7 +414,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
       child: Material(
         child: Container(
           padding: EdgeInsets.all(15),
-          constraints: BoxConstraints(maxWidth: 540, maxHeight: 600),
+          constraints: BoxConstraints(maxWidth: 560, maxHeight: 620),
           decoration: BoxDecoration(
             color: primaryColor,
             borderRadius: BorderRadius.circular(15),
@@ -217,150 +430,114 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 15),
-                // Camera capture and image upload row
-                Row(
-                  textDirection: TextDirection.rtl,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Camera buttons
-                    Container(
-                      height: 110,
-                      width: 200,
-                      child: Wrap(
-                        spacing: 10,
-                        direction: Axis.vertical,
-                        children: [
-                          for (var cam in Get.find<cameraController>().cameras)
-                            InkWell(
-                              onTap: () async {
-                                try {
-                                  await showDialog(
-                                    context: context,
-                                    builder: (context) => Center(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: primaryColor,
-                                          borderRadius: BorderRadius.circular(15),
-                                        ),
-                                        width: 500,
-                                        height: 350,
-                                        child: Column(
-                                          children: [
-                                            Container(
-                                              width: 500,
-                                              height: 300,
-                                              child: CameraFeed(
-                                                streamUrl:
-                                                    'http://$url:$port/rt${cam.hashCode}?source=${cam.rtspUrl}&role=True',
-                                              ),
-                                            ),
-                                            SizedBox(height: 10),
-                                            ElevatedButton(
-                                              onPressed: () async {
-                                                final data = await ApiService.takePicture(
-                                                  cam.rtspUrl!,
-                                                  cam.name!,
-                                                );
-                                                if (data != null) {
-                                                  _pc.filepath.value =
-                                                      base64Decode(data['image_data']);
-                                                  _pc.filename.value =
-                                                      data['file_location'];
-                                                }
-                                                Navigator.pop(context);
-                                              },
-                                              child: Text('عکس بگیر'),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                } catch (e) {
-                                  debugPrint(e.toString());
-                                  if (context.mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('خطا در ارسال داده')),
-                                    );
-                                  }
-                                }
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.indigo),
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                padding: EdgeInsets.all(12),
-                                child: Text(cam.name!),
-                              ),
-                            ),
-                        ],
+
+                // Camera and file upload buttons
+                if (!widget.isEditing)
+                  Row(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildActionChip(
+                        icon: Icons.camera_alt,
+                        label: 'عکس با دوربین',
+                        onTap: _captureFromCamera,
                       ),
-                    ),
-                    Spacer(),
-                    // Image preview / upload button
-                    InkWell(
-                      onTap: _pickSingleImage,
-                      child: Obx(() {
-                        final bytes = _pc.filepath.value;
-                        final ImageProvider image =
-                            (bytes != null && bytes.isNotEmpty)
-                                ? MemoryImage(bytes)
-                                : (widget.isEditing
-                                    ? NetworkImage(
-                                        fileUrl(widget.id, widget.imagePath))
-                                    : AssetImage(
-                                        'assets/images/unknown-person1.png'));
-                        return Container(
-                          width: 128,
-                          height: 128,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: image,
-                              fit: BoxFit.fill,
-                              onError: (_, __) {},
-                            ),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.indigo),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15),
-                // Multi-image picker (only for new person)
+                      SizedBox(width: 12),
+                      _buildActionChip(
+                        icon: Icons.photo_library,
+                        label: 'انتخاب از فایل',
+                        onTap: _pickAndAddImage,
+                      ),
+                    ],
+                  ),
+                if (!widget.isEditing) SizedBox(height: 12),
+
+                // Reference images list (only for new person)
                 if (!widget.isEditing)
                   MultiImagePicker(
                     images: _selectedImages,
                     onImagesChanged: (images) {
-                      setState(() => _selectedImages.clear());
-                      setState(() => _selectedImages.addAll(images));
+                      setState(() {
+                        _selectedImages.clear();
+                        _selectedImages.addAll(images);
+                      });
                     },
                     isEnabled: !_isSubmitting,
                   ),
-                SizedBox(height: 10),
+
+                // For editing: show current avatar with upload option
+                if (widget.isEditing)
+                  Row(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      InkWell(
+                        onTap: _pickAndAddImage,
+                        child: Obx(() {
+                          final bytes = _pc.filepath.value;
+                          final ImageProvider image =
+                              (bytes != null && bytes.isNotEmpty)
+                                  ? MemoryImage(bytes)
+                                  : NetworkImage(
+                                      fileUrl(widget.id, widget.imagePath));
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: image,
+                                fit: BoxFit.fill,
+                                onError: (_, __) {},
+                              ),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.indigo),
+                            ),
+                          );
+                        }),
+                      ),
+                      SizedBox(width: 12),
+                      Column(
+                        children: [
+                          Text('عکس پروفایل',
+                              style: TextStyle(fontSize: 12)),
+                          SizedBox(height: 4),
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.upload, size: 16),
+                            label: Text('تغییر'),
+                            style: TextButton.styleFrom(
+                              backgroundColor: Colors.indigo,
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 6),
+                            ),
+                            onPressed: _pickAndAddImage,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+
+                SizedBox(height: 12),
+
                 // Form fields
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 165,
+                      width: 160,
                       child: CoustomTextField3(
                         hint: 'نام',
                         tcontroller: _pc.name,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 8),
                     SizedBox(
-                      width: 165,
+                      width: 160,
                       child: CoustomTextField3(
                         hint: 'نام خانوادگی',
                         tcontroller: _pc.lastName,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 8),
                     Obx(() => SizedBox(
                           width: 100,
                           child: Directionality(
@@ -371,47 +548,53 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                                 fillColor: Colors.indigo,
                                 filled: true,
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                                 border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                               ),
                               borderRadius: BorderRadius.circular(15),
                               value: _pc.genterP.value,
                               items: [
-                                DropdownMenuItem(value: 'male', child: Text('مرد')),
-                                DropdownMenuItem(value: 'female', child: Text('زن')),
+                                DropdownMenuItem(
+                                    value: 'male', child: Text('مرد')),
+                                DropdownMenuItem(
+                                    value: 'female', child: Text('زن')),
                               ],
-                              onChanged: (value) => _pc.genterP.value = value!,
+                              onChanged: (value) =>
+                                  _pc.genterP.value = value!,
                             ),
                           ),
                         )),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: 165,
+                      width: 160,
                       child: CoustomTextField3(
                         hint: 'کد ملی',
                         tcontroller: _pc.socialNumber,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 8),
                     SizedBox(
-                      width: 165,
+                      width: 160,
                       child: CoustomTextField3(
                         hint: 'سن',
                         tcontroller: _pc.ageNumber,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    SizedBox(width: 8),
                     Obx(() => SizedBox(
                           width: 100,
                           child: Directionality(
@@ -422,28 +605,34 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                                 fillColor: Colors.indigo,
                                 filled: true,
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                                 enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                                 border: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.transparent),
+                                  borderSide:
+                                      BorderSide(color: Colors.transparent),
                                 ),
                               ),
                               borderRadius: BorderRadius.circular(15),
                               value: _pc.roleP.value,
                               items: [
-                                DropdownMenuItem(value: 'approve', child: Text('مجاز')),
-                                DropdownMenuItem(value: 'denied', child: Text('غیر مجاز')),
+                                DropdownMenuItem(
+                                    value: 'approve', child: Text('مجاز')),
+                                DropdownMenuItem(
+                                    value: 'denied', child: Text('غیر مجاز')),
                               ],
-                              onChanged: (value) => _pc.roleP.value = value!,
+                              onChanged: (value) =>
+                                  _pc.roleP.value = value!,
                             ),
                           ),
                         )),
                   ],
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 8),
                 SizedBox(
                   width: 500,
                   child: CoustomTextField3(
@@ -452,13 +641,25 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                   ),
                 ),
                 Spacer(),
+
+                // Image count indicator
+                if (!widget.isEditing && _selectedImages.isNotEmpty)
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      '${_selectedImages.length} تصویر مرجع انتخاب شده',
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
+                    ),
+                  ),
+
                 // Submit button
                 SizedBox(
                   width: 300,
                   height: 50,
                   child: ElevatedButton(
                     style: TextButton.styleFrom(
-                      backgroundColor: _isSubmitting ? Colors.grey : Colors.indigo,
+                      backgroundColor:
+                          _isSubmitting ? Colors.grey : Colors.indigo,
                     ),
                     onPressed: _isSubmitting ? null : _submit,
                     child: _isSubmitting
@@ -491,6 +692,31 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionChip({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.indigo),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white70, size: 20),
+            SizedBox(width: 6),
+            Text(label, style: TextStyle(color: Colors.white70, fontSize: 13)),
+          ],
         ),
       ),
     );

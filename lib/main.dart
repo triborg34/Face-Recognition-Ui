@@ -1,4 +1,3 @@
-
 import 'package:faceui/screens/splash_screen.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/network_util.dart';
@@ -6,11 +5,21 @@ import 'package:faceui/utils/network_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:pocketbase/pocketbase.dart';
 
 import 'utils/bindings.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Set URL/port BEFORE runApp so `pb` initializes with correct values.
+  var host = getNetworkInfo();
+  url = host['hostname'] ?? '127.0.0.1';
+  port = '8003';
+
+  // Reinitialize pb with the correct URL (it was created with defaults).
+  pb = PocketBase('http://$url:8091');
+
   runApp(MyApp());
 }
 
@@ -27,7 +36,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.indigo,
         ),
         theme: ThemeData(
-          fontFamilyFallback: ['arial','robot'],
+          fontFamilyFallback: ['arial', 'robot'],
           fontFamily: 'nazanin',
           brightness: Brightness.light,
           primarySwatch: Colors.indigo,
@@ -35,24 +44,8 @@ class MyApp extends StatelessWidget {
         getPages: pages,
         initialBinding: MyBindings(),
         debugShowCheckedModeBanner: false,
-       home: SplashScreen(),
-        onInit: () async {
-          var host = getNetworkInfo();
-          url = host['hostname'];
-    
-
-          // url='127.0.0.1';
-          port = host['port'];
-          // port="8000";
-          port="8003";
-
-        },
+        home: SplashScreen(),
       ),
     );
   }
-
-
-
-  
-
 }

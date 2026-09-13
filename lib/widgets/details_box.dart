@@ -1,11 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:faceui/utils/api_service.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
+import 'package:faceui/widgets/add_or_edit_person.dart';
 import 'package:faceui/widgets/coustom_row.dart';
+import 'package:faceui/widgets/face_selection_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:persian_number_utility/persian_number_utility.dart';
+import 'package:http/http.dart' as http;
 
 class DetailsBox extends StatelessWidget {
   const DetailsBox({
@@ -65,7 +69,74 @@ class DetailsBox extends StatelessWidget {
         person.name == "unknown"
             ? IconButton(
                 onPressed: () async {
-                  // For unknown persons, just show their name
+                  try {
+                    final hasCropped =
+                        person.croppedFrame?.isNotEmpty ?? false;
+                    final imageFile = hasCropped
+                        ? person.croppedFrame!
+                        : (person.frame ?? '');
+                    if (imageFile.isEmpty) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('تصویری موجود نیست')),
+                        );
+                      }
+                      return;
+                    }
+
+                    final imageUrl =
+                        'http://${url}:8091/api/files/collection/${person.id}/$imageFile';
+                    final imageResponse =
+                        await http.get(Uri.parse(imageUrl));
+
+                    if (imageResponse.statusCode == 200 &&
+                        imageResponse.bodyBytes.isNotEmpty) {
+                      final detectionResult =
+                          await ApiService.detectFaces(
+                        imageResponse.bodyBytes,
+                        'face_${person.id}.jpg',
+                      );
+
+                      if (detectionResult != null &&
+                          detectionResult.faces.isNotEmpty &&
+                          context.mounted) {
+                        final selection = await FaceSelectionWidget.show(
+                            context, detectionResult);
+
+                        if (selection != null && context.mounted) {
+                          await showAdaptiveDialog(
+                              context: context,
+                              builder: (context) {
+                                return AddOrEditPerson(
+                                    filename: selection.filePath,
+                                    filepath:
+                                        selection.face.cropBytes,
+                                    pcontroller:
+                                        Get.find<personController>(),
+                                    name: '',
+                                    lastName: '',
+                                    age: person.age ?? '',
+                                    gender: person.gender ?? 'male',
+                                    role: 'approve',
+                                    socialnumber: '',
+                                    isEditing: false);
+                              });
+                        }
+                      } else if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content:
+                                  Text('چهره‌ای در تصویر یافت نشد')),
+                        );
+                      }
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('خطا: $e')),
+                      );
+                    }
+                  }
                 },
                 icon: Icon(
                   Icons.info_outline,
@@ -145,29 +216,24 @@ class DetailsBox extends StatelessWidget {
 
   Widget _buildKnownAvatar() {
     final person = mController.person;
-    final hasImage = person.croppedFrame?.isNotEmpty ?? false;
-
-    if (!hasImage) {
-      return CircleAvatar(
-        radius: 60,
-        backgroundImage: NetworkImage('assets/images/unknown-person1.png'),
-      );
-    }
 
     try {
       final knownPerson = Get.find<personController>().knownList.firstWhere(
             (p) => p.name == person.name,
           );
+      final imageProvider = personFaceImage(
+        faceCrop: knownPerson.faceCrop,
+        recordId: knownPerson.id,
+        image: knownPerson.image,
+      );
       return CircleAvatar(
         radius: 60,
-        backgroundImage: NetworkImage(
-          'http://${url}:8091/api/files/known_face/${knownPerson.id}/${knownPerson.image}',
-        ),
+        backgroundImage: imageProvider,
       );
     } catch (e) {
       return CircleAvatar(
         radius: 60,
-        backgroundImage: NetworkImage('assets/images/unknown-person1.png'),
+        backgroundImage: AssetImage('assets/images/unknown-person1.png'),
       );
     }
   }

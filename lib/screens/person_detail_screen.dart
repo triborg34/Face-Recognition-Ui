@@ -1,10 +1,10 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/utils/api_service.dart';
 import 'package:faceui/utils/consts.dart';
+import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/multi_image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 /// Full-screen page showing a person's details, all reference faces, and
 /// controls for adding/removing faces.
@@ -18,46 +18,12 @@ class PersonDetailScreen extends StatefulWidget {
 }
 
 class _PersonDetailScreenState extends State<PersonDetailScreen> {
-  List<Map<String, dynamic>> _faceDetails = [];
-  bool _isLoadingFaces = true;
-  String? _faceError;
   final List<SelectedImage> _newFaces = [];
   bool _isAddingFaces = false;
 
   @override
   void initState() {
     super.initState();
-    _loadFaceDetails();
-  }
-
-  Future<void> _loadFaceDetails() async {
-    setState(() {
-      _isLoadingFaces = true;
-      _faceError = null;
-    });
-
-    try {
-      final result = await ApiService.getPersonFaces(widget.person.name ?? '');
-      if (result != null && mounted) {
-        setState(() {
-          _faceDetails = List<Map<String, dynamic>>.from(
-              result['person']?['faces'] ?? []);
-          _isLoadingFaces = false;
-        });
-      } else {
-        setState(() {
-          _isLoadingFaces = false;
-          _faceError = 'خطا در بارگذاری اطلاعات چهره';
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isLoadingFaces = false;
-          _faceError = 'خطا: $e';
-        });
-      }
-    }
   }
 
   Future<void> _addFaces() async {
@@ -67,9 +33,15 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
 
     try {
       for (final face in _newFaces) {
-        await ApiService.addFaceReference(
+        // Use registerFace to register the specific selected face
+        await ApiService.registerFace(
+          filePath: face.serverPath,
+          faceIndex: face.faceIndex,
           name: widget.person.name ?? '',
-          imagePath: face.serverPath,
+          gender: widget.person.gender ?? 'male',
+          age: widget.person.age ?? '',
+          role: widget.person.role ?? 'approve',
+          socialnumber: widget.person.socialNumber ?? '',
         );
       }
       if (mounted) {
@@ -77,7 +49,9 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
           SnackBar(content: Text('${_newFaces.length} تصویر اضافه شد')),
         );
         _newFaces.clear();
-        await _loadFaceDetails();
+        // Refresh the person data from PocketBase
+        await Get.find<personController>().fetchFirstData();
+        if (mounted) setState(() {});
       }
     } catch (e) {
       if (mounted) {
@@ -87,56 +61,6 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
       }
     } finally {
       if (mounted) setState(() => _isAddingFaces = false);
-    }
-  }
-
-  Future<void> _removeFace(int index) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('حذف تصویر مرجع'),
-        content: Text('آیا از حذف این تصویر مطمئن هستید؟'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text('لغو'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('حذف'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-
-    try {
-      final result = await ApiService.removeFaceReference(
-        name: widget.person.name ?? '',
-        embeddingIndex: index,
-      );
-      if (result['success'] == true) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('تصویر حذف شد')),
-          );
-          await _loadFaceDetails();
-        }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(result['message'] ?? 'خطا در حذف')),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('خطا: $e')),
-        );
-      }
     }
   }
 
@@ -191,7 +115,7 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final person = widget.person;
-    final faceCount = person.embeddingCount ?? _faceDetails.length;
+    final faceCount = person.embeddingCount ?? 0;
 
     return Scaffold(
       appBar: AppBar(
@@ -228,7 +152,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
   }
 
   Widget _buildPersonHeader(knowPerson person) {
-    final hasImage = (person.image ?? '').isNotEmpty;
+    final imageProvider = personFaceImage(
+      faceCrop: person.faceCrop,
+      recordId: person.id,
+      image: person.image,
+    );
 
     return Container(
       padding: EdgeInsets.all(20),
@@ -248,14 +176,11 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
               border: Border.all(color: Colors.indigo, width: 2),
             ),
             child: ClipOval(
-              child: hasImage
-                  ? CachedNetworkImage(
-                      imageUrl: fileUrl(person.id, person.image),
+              child: imageProvider != null
+                  ? Image(
+                      image: imageProvider,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      errorWidget: (_, __, ___) =>
+                      errorBuilder: (_, __, ___) =>
                           Icon(Icons.person, size: 40, color: Colors.indigo),
                     )
                   : Icon(Icons.person, size: 40, color: Colors.indigo),
@@ -311,6 +236,13 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
   }
 
   Widget _buildFacesSection(int faceCount) {
+    final person = widget.person;
+    final imageProvider = personFaceImage(
+      faceCrop: person.faceCrop,
+      recordId: person.id,
+      image: person.image,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -319,145 +251,77 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
         SizedBox(height: 12),
-        if (_isLoadingFaces)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: CircularProgressIndicator(color: Colors.indigo),
-            ),
-          )
-        else if (_faceError != null)
-          Center(
-            child: Padding(
-              padding: EdgeInsets.all(30),
-              child: Column(
-                children: [
-                  Icon(Icons.error_outline, color: Colors.red, size: 40),
-                  SizedBox(height: 8),
-                  Text(_faceError!, style: TextStyle(color: Colors.red)),
-                  SizedBox(height: 8),
-                  TextButton(
-                    onPressed: _loadFaceDetails,
-                    child: Text('تلاش مجدد'),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else if (_faceDetails.isEmpty)
-          Container(
-            padding: EdgeInsets.all(30),
+        Container(
+            padding: EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.white24),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Center(
-              child: Text(
-                'هیچ تصویر مرجعی یافت نشد',
-                style: TextStyle(color: Colors.white54),
-              ),
-            ),
-          )
-        else
-          GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: _calculateCrossAxisCount(context),
-              childAspectRatio: 1.0,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
-            itemCount: _faceDetails.length,
-            itemBuilder: (context, index) => _buildFaceCard(index),
-          ),
-      ],
-    );
-  }
-
-  int _calculateCrossAxisCount(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    if (width > 1000) return 6;
-    if (width > 700) return 4;
-    if (width > 500) return 3;
-    return 2;
-  }
-
-  Widget _buildFaceCard(int index) {
-    final face = _faceDetails[index];
-    final imagePath = face['image_path'] ?? '';
-    final hasImage = imagePath.isNotEmpty;
-
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.white24),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(11),
-            child: hasImage
-                ? GestureDetector(
-                    onTap: () {
-                      showImageViewer(
-                        context,
-                        NetworkImage(
-                            'http://$url:8091/api/files/known_face/${widget.person.id}/$imagePath'),
-                      );
-                    },
-                    child: CachedNetworkImage(
-                      imageUrl:
-                          'http://$url:8091/api/files/known_face/${widget.person.id}/$imagePath',
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      errorWidget: (_, __, ___) =>
-                          Icon(Icons.person, color: Colors.white38),
-                    ),
-                  )
-                : Container(
-                    color: Colors.grey[800],
-                    child: Icon(Icons.person, color: Colors.white38, size: 40),
+            child: Row(
+              children: [
+                // Face crop preview
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.white24),
                   ),
-          ),
-        ),
-        Positioned(
-          top: 4,
-          left: 4,
-          child: GestureDetector(
-            onTap: () => _removeFace(index),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.9),
-                shape: BoxShape.circle,
-              ),
-              padding: EdgeInsets.all(4),
-              child: Icon(Icons.delete, color: Colors.white, size: 16),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: imageProvider != null
+                        ? Image(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              color: Colors.grey[800],
+                              child: Icon(Icons.person,
+                                  color: Colors.white38, size: 48),
+                            ),
+                          )
+                        : Container(
+                            color: Colors.grey[800],
+                            child: Icon(Icons.person,
+                                color: Colors.white38, size: 48),
+                          ),
+                  ),
+                ),
+                SizedBox(width: 20),
+                // Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'چهره مرجع',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '$faceCount بردار چهره ثبت شده',
+                        style:
+                            TextStyle(fontSize: 13, color: Colors.white70),
+                      ),
+                      SizedBox(height: 4),
+                      if (imageProvider != null)
+                        Text(
+                          'تصویر چهره: موجود',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.green),
+                        )
+                      else
+                        Text(
+                          'تصویر چهره: موجود نیست',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.white54),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(11),
-                bottomRight: Radius.circular(11),
-              ),
-            ),
-            child: Text(
-              '#${index + 1}',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ),
       ],
     );
   }

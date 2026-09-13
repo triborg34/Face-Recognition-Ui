@@ -41,7 +41,26 @@ void downloadPbFile(String pbFileUrl, {String? filename}) {
   anchor.click();
 }
 
-PocketBase get pb => PocketBase('http://$url:8091');
+/// Build an ImageProvider for a person's face, preferring the cropped face
+/// over the full reference image.
+///
+/// Resolution order:
+/// 1. `faceCrop` (base64-encoded JPEG face crop)
+/// 2. `image` field from PocketBase (full reference image)
+/// 3. Returns null (caller should use placeholder)
+ImageProvider? personFaceImage({String? faceCrop, String? recordId, String? image}) {
+  if (faceCrop != null && faceCrop.isNotEmpty) {
+    try {
+      return MemoryImage(base64Decode(faceCrop));
+    } catch (_) {}
+  }
+  if (image != null && image.isNotEmpty && recordId != null && recordId.isNotEmpty) {
+    return NetworkImage(fileUrl(recordId, image));
+  }
+  return null;
+}
+
+var pb = PocketBase('http://$url:8091');
 Future<Map<String, dynamic>?> uploadFile(
     List<int> fileBytes, String filename, String isSearch) async {
   try {
