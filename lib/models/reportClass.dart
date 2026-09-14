@@ -19,7 +19,7 @@ class reportClass {
   Uint8List? imageByte;
   String? role;
   String? socialnumber;
-
+  String? userwhom;
   reportClass(
       {this.age,
       this.camera,
@@ -36,6 +36,7 @@ class reportClass {
       this.time,
       this.trackId,
       this.socialnumber,
+      this.userwhom,
       this.updated,this.imageByte,this.role});
 
   reportClass.fromJson(Map<String, dynamic> json) {

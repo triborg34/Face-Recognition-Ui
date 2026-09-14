@@ -49,9 +49,10 @@ void downloadPbFile(String pbFileUrl, {String? filename}) {
 /// 2. `image` field from PocketBase (full reference image)
 /// 3. Returns null (caller should use placeholder)
 ImageProvider? personFaceImage({String? faceCrop, String? recordId, String? image}) {
+  
   if (faceCrop != null && faceCrop.isNotEmpty) {
     try {
-      return MemoryImage(base64Decode(faceCrop));
+      return NetworkImage(fileUrl(recordId,faceCrop));
     } catch (_) {}
   }
   if (image != null && image.isNotEmpty && recordId != null && recordId.isNotEmpty) {

@@ -146,3 +146,42 @@ class CoustomTextField4 extends StatelessWidget {
     );
   }
 }
+
+class CoustomTextField5 extends StatelessWidget {
+  CoustomTextField5({
+    required this.controller,
+    required this.hint,
+    required this.width,
+    required this.onsubmit,
+    super.key,
+  });
+  double width;
+  String hint;
+  TextEditingController controller;
+  Function(String) onsubmit=(String value){};
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: width,
+      child: TextField(
+        onSubmitted: onsubmit,
+        textDirection: hint != '' ? TextDirection.rtl : TextDirection.ltr,
+        controller: controller,
+        obscureText: hint == 'رمز عبور' ? true : false,
+        decoration: InputDecoration(
+            hintTextDirection: TextDirection.rtl,
+            hintText: hint,
+            fillColor: Colors.indigo,
+            filled: true,
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.transparent, width: 1.0)),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide(color: Colors.transparent, width: 1.0),
+            )),
+      ),
+    );
+  }
+}

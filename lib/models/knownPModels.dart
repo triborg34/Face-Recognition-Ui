@@ -13,6 +13,8 @@ class knowPerson {
   String? updated;
   String? userwhom;
   int? embeddingCount;
+  
+
 
   knowPerson(
       {this.embdanings,
@@ -34,7 +36,7 @@ class knowPerson {
     embdanings = (json['embdanings'] as List?)?.cast<double>();
     id = json['id'];
     image = json['image'];
-    faceCrop = json['face_crop'];
+    faceCrop = json['faceCrop'];
     name = json['name'];
     socialNumber = json['socialnumber'];
     gender = json['gender'];
@@ -45,6 +47,7 @@ class knowPerson {
     description = json['description'];
     userwhom = json['userwhom'];
     embeddingCount = json['embedding_count'];
+
   }
 
   Map<String, dynamic> toJson() {
@@ -52,7 +55,7 @@ class knowPerson {
     data['embdanings'] = embdanings;
     data['id'] = id;
     data['image'] = image;
-    data['face_crop'] = faceCrop;
+    data['faceCrop'] = faceCrop;
     data['name'] = name;
     data['socialnumber'] = socialNumber;
     data['gender'] = gender;
@@ -63,6 +66,7 @@ class knowPerson {
     data['description'] = description;
     data['userwhom'] = userwhom;
     data['embedding_count'] = embeddingCount;
+
     return data;
   }
 }

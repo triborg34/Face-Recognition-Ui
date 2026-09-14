@@ -18,6 +18,7 @@ class SettingClass {
   String? created;
   String? updated;
   bool? isregion;
+  bool? isReportLock;
 
   SettingClass(
       {this.collectionId,
@@ -38,6 +39,7 @@ class SettingClass {
       this.isAlarm,
       this.created,
       this.isregion,
+      this.isReportLock,
       this.updated});
 
   SettingClass.fromJson(Map<String, dynamic> json) {
@@ -60,6 +62,7 @@ class SettingClass {
     updated = json['updated'];
     hScore=json['hscore'];
     isregion=json['isregion'];
+    isReportLock=json['isReportLock'];
   }
 
   Map<String, dynamic> toJson() {
@@ -83,6 +86,7 @@ class SettingClass {
     data['updated'] = this.updated;
     data['hscore']=this.hScore;
     data['isregion']=this.isregion;
+    data['isReportLock']=this.isReportLock;
     return data;
   }
 }

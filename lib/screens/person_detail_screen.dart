@@ -42,6 +42,8 @@ class _PersonDetailScreenState extends State<PersonDetailScreen> {
           age: widget.person.age ?? '',
           role: widget.person.role ?? 'approve',
           socialnumber: widget.person.socialNumber ?? '',
+          userwhom: widget.person.userwhom ?? '',
+          description: widget.person.description ?? ''
         );
       }
       if (mounted) {

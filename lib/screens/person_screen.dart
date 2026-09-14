@@ -50,6 +50,7 @@ class PersonScreen extends StatelessWidget {
                               isEditing: false,
                               description: '',
                               socialnumber: '',
+                             selectedRole: '',
                             ),
                           );
                           // Refresh list and embedding counts after dialog closes
@@ -106,7 +107,7 @@ class PersonScreen extends StatelessWidget {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 5,
-                              childAspectRatio: 200 / 400,
+                              // childAspectRatio: 200 / 400,
                               crossAxisSpacing: 15,
                               mainAxisSpacing: 10,
                             ),
@@ -140,6 +141,7 @@ class PersonCard extends StatelessWidget {
     final faceCount = person.embeddingCount ?? 1;
 
     return Container(
+      
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -163,6 +165,15 @@ class PersonCard extends StatelessWidget {
                 Text(person.gender == 'male' ? 'مرد' : 'زن',
                     style: TextStyle(fontSize: 12)),
                 const SizedBox(height: 4),
+      
+                Text(person.userwhom == 'visitor' ? 'ارباب رجوع' : 'همکار',
+                    style: TextStyle(fontSize: 12)),
+                const SizedBox(height: 4),
+                      
+                Text(person.description ?? "توضیحی ندارد",
+                    style: TextStyle(fontSize: 12)),
+                const SizedBox(height: 4),
+                
                 if ((person.socialNumber ?? '').isNotEmpty)
                   Text(person.socialNumber ?? '',
                       style: TextStyle(fontSize: 11, color: Colors.white70)),
@@ -217,6 +228,7 @@ class PersonCard extends StatelessWidget {
                     socialnumber: person.socialNumber ?? '',
                     description: person.description ?? '',
                     isEditing: true,
+                    selectedRole: person.userwhom ?? '',
                   ),
                 );
                 // Refresh after edit dialog closes
@@ -330,7 +342,7 @@ class _PersonAvatar extends StatelessWidget {
     );
     return Container(
       height: 100,
-      width: double.infinity,
+      width:100,
       decoration: BoxDecoration(
         border: Border.all(color: primaryColor),
         shape: BoxShape.circle,

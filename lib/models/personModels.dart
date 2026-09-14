@@ -52,6 +52,7 @@ class personClass {
     trackId = json['track_id'];
     role=json['role'];
     humancrop=json['humancrop'];
+    
   }
 
   Map<String, dynamic> toJson() {

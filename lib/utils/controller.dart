@@ -54,6 +54,8 @@ class reportController extends GetxController {
   var isUnknown = false.obs;
   var isPressed = false.obs;
   var isSocialNUmber = false.obs;
+  var isPersonType = false.obs;
+  var personTypeValue = 'colleague'.obs;
 
   var filename = 'انتخاب'.obs;
   var filepath = Rxn<Uint8List>(Uint8List(0));
@@ -148,6 +150,8 @@ class personController extends GetxController {
   var roleP = 'approve'.obs;
   var genterP = 'male'.obs;
   var filename = ''.obs;
+  var selectedRole='visitor'.obs;
+  
   var filepath = Rxn<Uint8List>(Uint8List(0));
 
   TextEditingController name = TextEditingController();
@@ -159,12 +163,14 @@ class personController extends GetxController {
   /// Everything except `embdanings` — the UI never uses the embedding
   /// vectors and they dominate the payload size.
   static const _listFields =
-      'id,name,image,face_crop,age,gender,role,socialnumber,description,userwhom,track_id,updated';
+      'id,name,image,face_crop,age,gender,role,socialnumber,description,userwhom,track_id,updated,faceCrop';
 
   fetchFirstData() async {
     final kList =
         await pb.collection('known_face').getFullList(fields: _listFields);
     knownList.assignAll(kList.map((json) => knowPerson.fromJson(json.data)));
+
+    print(knownList[0].faceCrop);
     // After loading, fetch embedding counts from backend API
     await fetchEmbeddingCounts();
   }
@@ -417,6 +423,7 @@ class settinController extends GetxController {
 
   var isAlarm = false.obs;
   var isRegionMode = false.obs;
+  var isReportLock=false.obs;
   fetchFirstData() async {
     final kList = await pb.collection('setting').getFullList();
     settings.assignAll(kList.map((json) => SettingClass.fromJson(json.data)));
@@ -456,6 +463,7 @@ class settinController extends GetxController {
     rfconnect.value = settings.first.rfconnect!;
     isAlarm.value = settings.first.isAlarm!;
     isRegionMode.value = settings.first.isregion!;
+    isReportLock.value=settings.first.isReportLock!;
   }
 
   checkForConnect() async {

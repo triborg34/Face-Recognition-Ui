@@ -90,7 +90,8 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                   "quality":
                                       (scontroller.quality.value).toInt(),
                                   'rfconnect': scontroller.rfconnect.value,
-                                  'isregion':scontroller.isRegionMode.value
+                                  'isregion':scontroller.isRegionMode.value,
+                                  "isReportLock":scontroller.isReportLock.value
                                 };
 
                                 try {
@@ -329,6 +330,33 @@ class GeneralBoxPageTwo extends StatelessWidget {
                                       value: scontroller.isRegionMode.value,
                                       onChanged: (value) {
                                         scontroller.isRegionMode.value = value;
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content: Text("فعال شد",
+                                                    textDirection:
+                                                        TextDirection.rtl)));
+                                      },
+                                    )),
+                              ],
+                            )),
+                      
+                      SizedBox(height: 15,),
+                      Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 100,
+                                  child: Text(
+                                    "قفل گزارش گیری",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                                Obx(() => Switch(
+                                      value: scontroller.isReportLock.value,
+                                      onChanged: (value) {
+                                        scontroller.isReportLock.value = value;
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(SnackBar(
                                                 content: Text("فعال شد",

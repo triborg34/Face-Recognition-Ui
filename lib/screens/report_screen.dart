@@ -1,4 +1,3 @@
-
 import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
@@ -35,10 +34,9 @@ class ReportScreen extends StatelessWidget {
             builder: (rcontroller) => Expanded(
                   child: AnimatedCrossFade(
                     duration: Duration(milliseconds: 500),
-                    crossFadeState:
-                        Get.find<reportController>().isPressed.value
-                            ? CrossFadeState.showFirst
-                            : CrossFadeState.showSecond,
+                    crossFadeState: Get.find<reportController>().isPressed.value
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
                     secondChild: SizedBox.shrink(),
                     firstChild: Container(
                       width: 75.w,
@@ -49,283 +47,330 @@ class ReportScreen extends StatelessWidget {
                           color: Colors.transparent,
                           border: Border.all(color: primaryColor),
                           borderRadius: BorderRadius.circular(15)),
-                      child:  Get.find<reportController>().isComplete.value==false? CoustomLoading() : Column(
-                        children: [
-                          Container(
-                            height: 40,
-                            child: Row(
-                              textDirection: TextDirection.rtl,
+                      child: Get.find<reportController>().isComplete.value ==
+                              false
+                          ? CoustomLoading()
+                          : Column(
                               children: [
                                 Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("ردیف"),
+                                  height: 40,
+                                  child: Row(
+                                    textDirection: TextDirection.rtl,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("ردیف"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("عکس"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("نام و نام خانوادگی"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("جنسیت"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("سن"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("تاریخ"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text("زمان"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                left: BorderSide(
+                                                    color: primaryColor))),
+                                        width: 150,
+                                        child: Center(
+                                          child: Text(rcontroller.isPersonType.value ?  "سمت" :"درصد تشخیص"),
+                                        ),
+                                      ),
+                                      Container(
+                                        decoration: BoxDecoration(),
+                                        width: 155,
+                                        child: Center(
+                                          child: Text("کد ملی"),
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(15),
+                                          topRight: Radius.circular(15)),
+                                      border: Border.all(color: primaryColor)),
                                 ),
                                 Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("عکس"),
-                                  ),
+                                  height: 75.h,
+                                  child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      itemBuilder: (context, index) {
+                                        return InkWell(
+                                          onTap: () {
+                                            showImageViewer(
+                                                context,
+                                                NetworkImage(
+                                                    'http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].frame}'));
+                                          },
+                                          child: Container(
+                                            height: 100,
+                                            child: Row(
+                                              textDirection: TextDirection.rtl,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(
+                                                        (index + 1).toString()),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: rcontroller
+                                                            .reportList[index]
+                                                            .croppedFrame!
+                                                            .isNotEmpty
+                                                        ? Container(
+                                                            padding:
+                                                                EdgeInsets.all(
+                                                                    5),
+                                                            width: 150,
+                                                            child: ClipRRect(
+                                                              child:
+                                                                  Image.network(
+                                                                'http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
+                                                                fit:
+                                                                    BoxFit.fill,
+                                                              ),
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          0),
+                                                            ),
+                                                          )
+                                                        : Center(
+                                                            child: Icon(
+                                                                Icons.person)),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                                .reportList[
+                                                                    index]
+                                                                .name!
+                                                                .toString() ==
+                                                            'unknown'
+                                                        ? "ناشناس"
+                                                        : rcontroller
+                                                            .reportList[index]
+                                                            .name!
+                                                            .toString()),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                                .reportList[
+                                                                    index]
+                                                                .gender
+                                                                .toString() ==
+                                                            'male'
+                                                        ? "مرد"
+                                                        : "زن"),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                        .reportList[index].age
+                                                        .toString()),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                        .reportList[index].date!
+                                                        .toPersianDate()
+                                                        .toString()),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                        .reportList[index].time
+                                                        .toString()),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                      border: Border(
+                                                          left: BorderSide(
+                                                              color:
+                                                                  primaryColor))),
+                                                  width: 150,
+                                                  child: Center(
+                                                    child: Builder(
+                                                        builder: (context) {
+                                                      if (!rcontroller
+                                                          .isPersonType.value) {
+                                                        return Text(rcontroller
+                                                                .reportList[
+                                                                    index]
+                                                                .score!
+                                                                .toStringAsFixed(
+                                                                    2) +
+                                                            "%");
+                                                      }
+                                                      String? userwhom;
+                                                      if (rcontroller
+                                                              .reportList[index]
+                                                              .userwhom ==
+                                                          'visitor')
+                                                        userwhom = "ارباب رجوع";
+                                                      else if (rcontroller
+                                                              .reportList[index]
+                                                              .userwhom ==
+                                                          'colleague')
+                                                        userwhom = 'همکار';
+                                                      else {
+                                                        userwhom = "ناشناس";
+                                                      }
+                                                      return Text(userwhom);
+                                                    }),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  decoration: BoxDecoration(),
+                                                  width: 155,
+                                                  child: Center(
+                                                    child: Text(rcontroller
+                                                        .reportList[index]
+                                                        .socialnumber
+                                                        .toString()),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                border: Border.all(
+                                                    color: primaryColor)),
+                                          ),
+                                        );
+                                      },
+                                      itemCount: rcontroller.reportList.length),
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("نام و نام خانوادگی"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("جنسیت"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("سن"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("تاریخ"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("زمان"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: primaryColor))),
-                                  width: 150,
-                                  child: Center(
-                                    child: Text("درصد تشخیص"),
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(),
-                                  width: 155,
-                                  child: Center(
-                                    child: Text("کد ملی"),
-                                  ),
-                                ),
+                                Spacer(),
+                                SizedBox(
+                                  width: 200,
+                                  height: 50,
+                                  child: ElevatedButton(
+                                      style: TextButton.styleFrom(
+                                          backgroundColor: primaryColor),
+                                      onPressed: () async {
+                                        await saveFunction(rcontroller);
+                                      },
+                                      child: Text(
+                                        "خروجی گرفتن",
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                                )
                               ],
                             ),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(15),
-                                    topRight: Radius.circular(15)),
-                                border: Border.all(color: primaryColor)),
-                          ),
-                          Container(
-                            height: 75.h,
-                            child: ListView.builder(
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (context, index) {
-                                  return InkWell(
-                                    onTap: () {
-                                      showImageViewer(context, NetworkImage('http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].frame}'));
-                                    },
-                                    child: Container(
-                                      height: 100,
-                                      child: Row(
-                                        textDirection: TextDirection.rtl,
-                                        children: [
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child:
-                                                  Text((index + 1).toString()),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: rcontroller
-                                                      .reportList[index]
-                                                      .croppedFrame!
-                                                      .isNotEmpty
-                                                  ? Container(
-                                                      padding:
-                                                          EdgeInsets.all(5),
-                                                      width: 150,
-                                                      child: ClipRRect(
-                                                        child: Image.network(
-                                                          'http://${url}:8091/api/files/collection/${rcontroller.reportList[index].id}/${rcontroller.reportList[index].croppedFrame}',
-                                                          fit: BoxFit.fill,
-                                                        ),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(0),
-                                                      ),
-                                                    )
-                                                  : Center(
-                                                      child:
-                                                          Icon(Icons.person)),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                          .reportList[index]
-                                                          .name!
-                                                          .toString() ==
-                                                      'unknown'
-                                                  ? "ناشناس"
-                                                  : rcontroller
-                                                      .reportList[index].name!
-                                                      .toString()),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                          .reportList[index]
-                                                          .gender
-                                                          .toString() ==
-                                                      'male'
-                                                  ? "مرد"
-                                                  : "زن"),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                  .reportList[index].age
-                                                  .toString()),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                  .reportList[index].date!
-                                                  .toPersianDate()
-                                                  .toString()),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                  .reportList[index].time
-                                                  .toString()),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(
-                                                border: Border(
-                                                    left: BorderSide(
-                                                        color: primaryColor))),
-                                            width: 150,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                  .reportList[index].score!.toStringAsFixed(2)+"%"
-                                                  ),
-                                            ),
-                                          ),
-                                          Container(
-                                            decoration: BoxDecoration(),
-                                            width: 155,
-                                            child: Center(
-                                              child: Text(rcontroller
-                                                  .reportList[index].socialnumber
-                                                  .toString()),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          border:
-                                              Border.all(color: primaryColor)),
-                                    ),
-                                  );
-                                },
-                                itemCount: rcontroller.reportList.length),
-                          ),
-                          Spacer(),
-                          SizedBox(
-                            width: 200,
-                            height: 50,
-                            child: ElevatedButton(
-                                style: TextButton.styleFrom(
-                                    backgroundColor: primaryColor),
-                                onPressed: () async {
-                                  await saveFunction(rcontroller);
-                                },
-                                child: Text(
-                                  "خروجی گرفتن",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                          )
-                        ],
-                      ),
                     ),
                   ),
                 ))
@@ -397,7 +442,7 @@ class ReportScreen extends StatelessWidget {
                       height: 50,
                       width: 60,
                       alignment: pw.Alignment.center,
-                      child: pw.Text(person.gender =='male' ?"مرد" : "زن",
+                      child: pw.Text(person.gender == 'male' ? "مرد" : "زن",
                           style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
                   pw.Container(
@@ -408,15 +453,14 @@ class ReportScreen extends StatelessWidget {
                           person.role == 'approve' ? "مجاز" : "غیر مجاز",
                           style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
-                                   pw.Container(
+                  pw.Container(
                       height: 50,
                       width: 60,
                       alignment: pw.Alignment.center,
-                      child: pw.Text(
-                          person.age!,
+                      child: pw.Text(person.age!,
                           style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
-                        pw.Container(
+                  pw.Container(
                       height: 50,
                       width: 60,
                       alignment: pw.Alignment.center,
@@ -424,19 +468,14 @@ class ReportScreen extends StatelessWidget {
                           person.role == 'approve' ? "مجاز" : "غیر مجاز",
                           style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
-                      
-                                   pw.Container(
+                  pw.Container(
                       height: 50,
                       width: 30,
                       alignment: pw.Alignment.center,
-                      child: pw.Text(
-                        
-                          person.camera!,
+                      child: pw.Text(person.socialnumber ?? "-",
                           style: pw.TextStyle(font: ttf, fontSize: 10)),
                       decoration: pw.BoxDecoration(border: pw.Border.all())),
                 ])),
-                
-                
         ];
       },
     ));
@@ -456,9 +495,15 @@ class CoustomLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Column(mainAxisAlignment: MainAxisAlignment.center,crossAxisAlignment: CrossAxisAlignment.center,textDirection: TextDirection.rtl,
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      textDirection: TextDirection.rtl,
       children: [
-        CircularProgressIndicator(color: primaryColor,),
+        CircularProgressIndicator(
+          color: primaryColor,
+        ),
       ],
     ));
   }

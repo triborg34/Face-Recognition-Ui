@@ -3,9 +3,11 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:faceui/models/reportClass.dart';
+import 'package:faceui/models/userClass.dart';
 import 'package:faceui/utils/consts.dart';
 import 'package:faceui/utils/controller.dart';
 import 'package:faceui/widgets/age_box.dart';
+import 'package:faceui/widgets/coustom_text_field.dart';
 import 'package:faceui/widgets/date_box.dart';
 import 'package:faceui/widgets/gender_box.dart';
 import 'package:faceui/widgets/image_box.dart';
@@ -37,10 +39,11 @@ class RightSideBar extends StatelessWidget {
       Get.find<reportController>().sageController.text = '';
       Get.find<reportController>().eageController.text = '';
       // Get.find<reportController>().isComplete.value=false;
-      Get.find<reportController>().isPressed.value=false;
-      Get.find<reportController>().isDate.value=false;
-      Get.find<reportController>().isTime.value=false;
-
+      Get.find<reportController>().isPressed.value = false;
+      Get.find<reportController>().isDate.value = false;
+      Get.find<reportController>().isTime.value = false;
+      Get.find<reportController>().isPersonType.value = false;
+      Get.find<reportController>().personTypeValue.value = 'colleague';
     } catch (e) {
       ScaffoldMessenger.maybeOf(context)!
           .showSnackBar(SnackBar(content: Text("Somthing Went Wrong")));
@@ -160,7 +163,7 @@ class RightSideBar extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
-                        SocialBox(
+                  SocialBox(
                     rcontroller: rcontroller,
                   ),
                   SizedBox(
@@ -174,11 +177,18 @@ class RightSideBar extends StatelessWidget {
                   SizedBox(
                     height: 15,
                   ),
+                  _buildPersonTypeFilter(rcontroller),
+                  SizedBox(
+                    height: 15,
+                  ),
                   DateBox(),
                   SizedBox(
                     height: 15,
                   ),
                   TimeBox(),
+                  SizedBox(
+                    height: 15,
+                  ),
                 ],
               ),
             ),
@@ -191,27 +201,89 @@ class RightSideBar extends StatelessWidget {
               child: ElevatedButton(
                   style: TextButton.styleFrom(backgroundColor: primaryColor),
                   onPressed: () async {
-                     rcontroller.isPressed.value=true;
-                    rcontroller.reportList.clear();
-                      rcontroller.isComplete.value=false;
-                     
-                    try {
-                      if (rcontroller.isImage.value) {
-                        rcontroller.isComplete.value =
-                            await getImages(rcontroller);
-                      } else {
-                        rcontroller.isComplete.value =
-                            await getResult(rcontroller);
-                      }
-                    } catch (e) {
-                      print(e);
-                      ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
-                          content: Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: Text(
-                                  "خطا در جستجو لطفا دوباره امتحان کنید"))));
+                    if (Get.find<settinController>().isReportLock.value) {
+                      TextEditingController? password = TextEditingController();
+                      UsersClass user =
+                          Get.find<userController>().users.firstWhere(
+                                (element) => element.username == 'admin',
+                              );
+                      await showAdaptiveDialog(
+                        context: context,
+                        builder: (context) {
+                          return Center(
+                            child: Container(
+                              padding: EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  color: Colors.blue,
+                                  borderRadius: BorderRadius.circular(15)),
+                              width: 300,
+                              height: 80,
+                              child: Center(
+                                child: Row(
+                                  textDirection: TextDirection.rtl,
+                                  children: [
+                                    SizedBox(
+                                      width: 200,
+                                      height: 70,
+                                      child: Material(
+                                          color: Colors.blue,
+                                          child: CoustomTextField5(
+                                            controller: password,
+                                            hint: "رمز عبور",
+                                            width: 250,
+                                            onsubmit: (value) async {
+                                              if (value ==
+                                                  utf8.decode(base64.decode(
+                                                      user.password!))) {
+                                                Navigator.pop(context);
+                                                await searchReport(
+                                                    rcontroller, context);
+                                              } else {
+                                                ScaffoldMessenger.maybeOf(
+                                                        context)!
+                                                    .showSnackBar(SnackBar(
+                                                        content: Directionality(
+                                                            textDirection:
+                                                                TextDirection
+                                                                    .rtl,
+                                                            child: Text(
+                                                                "رمز اشتباه است"))));
+                                              }
+                                            },
+                                          )),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          if (password.text ==
+                                              utf8.decode(base64
+                                                  .decode(user.password!))) {
+                                            Navigator.pop(context);
+                                            await searchReport(
+                                                rcontroller, context);
+                                          } else {
+                                            ScaffoldMessenger.maybeOf(context)!
+                                                .showSnackBar(SnackBar(
+                                                    content: Directionality(
+                                                        textDirection:
+                                                            TextDirection.rtl,
+                                                        child: Text(
+                                                            "رمز اشتباه است"))));
+                                          }
+                                        },
+                                        child: Text("تایید"))
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    } else {
+                      await searchReport(rcontroller, context);
                     }
-                     
                   },
                   child: Text(
                     "جستجو",
@@ -224,6 +296,27 @@ class RightSideBar extends StatelessWidget {
     );
   }
 
+  Future<void> searchReport(
+      reportController rcontroller, BuildContext context) async {
+    rcontroller.isPressed.value = true;
+    rcontroller.reportList.clear();
+    rcontroller.isComplete.value = false;
+
+    try {
+      if (rcontroller.isImage.value) {
+        rcontroller.isComplete.value = await getImages(rcontroller);
+      } else {
+        rcontroller.isComplete.value = await getResult(rcontroller);
+      }
+    } catch (e) {
+      print(e);
+      ScaffoldMessenger.maybeOf(context)!.showSnackBar(SnackBar(
+          content: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Text("خطا در جستجو لطفا دوباره امتحان کنید"))));
+    }
+  }
+
   Future<bool> getImages(reportController rcontroller) async {
     var response = await http.get(Uri.parse(
         "http://${url}:${port}/util/imageSearch?fileLocation=${rcontroller.filelocation}"));
@@ -231,7 +324,7 @@ class RightSideBar extends StatelessWidget {
     for (String data in jsonDecode(response.body)) {
       final json =
           await pb.collection('collection').getFirstListItem('id="$data"');
-       
+
       final request = await http.get(Uri.parse(
           'http://${url}:8091/api/files/collection/${json.data['id']}/${json.data['cropped_frame']}'));
       Uint8List tempUint = request.bodyBytes;
@@ -280,9 +373,8 @@ class RightSideBar extends StatelessWidget {
     if (rcontroller.isGender.value) {
       filters.add('gender="${rcontroller.genderValue.value}"');
     }
-    if (rcontroller.isSocialNUmber.value){
+    if (rcontroller.isSocialNUmber.value) {
       filters.add('socialnumber="${rcontroller.socialValue.text}"');
-
     }
 
     // Add name filter
@@ -297,12 +389,40 @@ class RightSideBar extends StatelessWidget {
 
     // Build the complete filter string
     String filterString = filters.join(' && ');
+
+    // If person type filter is active, get matching names from known_face first
+    // List<String>? personTypeNames;
+    // if (rcontroller.isPersonType.value) {
+    //   try {
+    //     final knownRecords = await pb
+    //         .collection('known_face')
+    //         .getFullList(
+    //             filter: 'role="${rcontroller.personTypeValue.value}"');
+    //     personTypeNames = knownRecords
+    //         .map((r) => r.data['name']?.toString() ?? '')
+    //         .where((n) => n.isNotEmpty)
+    //         .toList();
+    //     if (personTypeNames.isEmpty) {
+    //       rcontroller.reportList.clear();
+    //       return true;
+    //     }
+    //   } catch (e) {
+    //     personTypeNames = null;
+    //   }
+    // }
+
     final records = await pb
         .collection('collection')
         .getFullList(filter: filterString, sort: '-created');
     var tempList = records.where((element) {
       bool passesDateFilter = true;
       bool passesTimeFilter = true;
+      bool passesPersonTypeFilter = true;
+
+      // if (personTypeNames != null) {
+      //   final recordName = element.data['name']?.toString() ?? '';
+      //   passesPersonTypeFilter = personTypeNames.contains(recordName);
+      // }
       if (rcontroller.isDate.value) {
         DateTime fromDate = DateTime.parse(rcontroller.fromDate.value);
         DateTime untilDate = DateTime.parse(rcontroller.untilDate.value);
@@ -336,7 +456,7 @@ class RightSideBar extends StatelessWidget {
           passesTimeFilter = getTime(fromTime, untilTime, initTime);
         }
       }
-      return passesTimeFilter && passesDateFilter;
+      return passesTimeFilter && passesDateFilter && passesPersonTypeFilter;
     }).toList();
 
     for (var json in tempList) {
@@ -364,6 +484,41 @@ class RightSideBar extends StatelessWidget {
           trackId: json.data['track_id'],
           updated: json.data['updated']));
     }
+    if (rcontroller.isPersonType.value) {
+      List<reportClass> tempclass = [];
+
+      rcontroller.reportList.forEach(
+        (element) {
+          for (var person in Get.find<personController>().knownList) {
+            if (element.name == person.name &&
+                rcontroller.personTypeValue.value == person.userwhom) {
+              tempclass.add(reportClass(
+                  age: element.age,
+                  camera: element.camera,
+                  collectionId: element.collectionId,
+                  collectionName: element.collectionName,
+                  created: element.created,
+                  croppedFrame: element.croppedFrame,
+                  date: element.date,
+                  frame: element.frame,
+                  gender: element.gender,
+                  id: element.id,
+                  imageByte: element.imageByte,
+                  name: element.name,
+                  role: element.role,
+                  score: element.score,
+                  socialnumber: element.socialnumber,
+                  time: element.time,
+                  trackId: element.trackId,
+                  updated: element.updated,
+                  userwhom: person.userwhom));
+            }
+          }
+        },
+      );
+      rcontroller.reportList.value = tempclass;
+    }
+
     return true;
 
     // If no filters are active, return empty result
@@ -458,5 +613,66 @@ class RightSideBar extends StatelessWidget {
     int itMin = it.hour * 60 + it.minute;
 
     return ftMin < itMin && itMin <= ltMin;
+  }
+
+  Widget _buildPersonTypeFilter(reportController rcontroller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          textDirection: TextDirection.rtl,
+          children: [
+            Obx(() => Checkbox(
+                  value: rcontroller.isPersonType.value,
+                  onChanged: (val) {
+                    rcontroller.isPersonType.value = val ?? false;
+                  },
+                  // activeColor: primaryColor,
+                )),
+            Text(
+              "نوع شخص",
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Obx(() => rcontroller.isPersonType.value
+            ? Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: Row(
+                  textDirection: TextDirection.rtl,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: RadioListTile<String>(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text('همکار', style: TextStyle(fontSize: 12)),
+                        value: 'colleague',
+                        groupValue: rcontroller.personTypeValue.value,
+                        onChanged: (val) {
+                          rcontroller.personTypeValue.value = val!;
+                        },
+                        // activeColor: primaryColor,
+                      ),
+                    ),
+                    Expanded(
+                      child: RadioListTile<String>(
+                        contentPadding: EdgeInsets.zero,
+                        title:
+                            Text('ارباب رجوع', style: TextStyle(fontSize: 12)),
+                        value: 'visitor',
+                        groupValue: rcontroller.personTypeValue.value,
+                        onChanged: (val) {
+                          rcontroller.personTypeValue.value = val!;
+                        },
+                        // activeColor: primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : SizedBox.shrink()),
+      ],
+    );
   }
 }

@@ -119,6 +119,7 @@ class DetailsBox extends StatelessWidget {
                                     gender: person.gender ?? 'male',
                                     role: 'approve',
                                     socialnumber: '',
+                                    selectedRole: '',
                                     isEditing: false);
                               });
                         }
@@ -218,9 +219,11 @@ class DetailsBox extends StatelessWidget {
     final person = mController.person;
 
     try {
+
       final knownPerson = Get.find<personController>().knownList.firstWhere(
             (p) => p.name == person.name,
           );
+          
       final imageProvider = personFaceImage(
         faceCrop: knownPerson.faceCrop,
         recordId: knownPerson.id,
@@ -230,7 +233,8 @@ class DetailsBox extends StatelessWidget {
         radius: 60,
         backgroundImage: imageProvider,
       );
-    } catch (e) {
+    } 
+    catch (e) {
       return CircleAvatar(
         radius: 60,
         backgroundImage: AssetImage('assets/images/unknown-person1.png'),

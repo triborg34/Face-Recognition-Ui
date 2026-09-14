@@ -15,7 +15,7 @@ void main() {
   // Set URL/port BEFORE runApp so `pb` initializes with correct values.
   var host = getNetworkInfo();
   url = host['hostname'] ?? '127.0.0.1';
-  port = '8003';
+  // port =  '8003';
 
   // Reinitialize pb with the correct URL (it was created with defaults).
   pb = PocketBase('http://$url:8091');
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           fontFamilyFallback: ['arial', 'robot'],
           fontFamily: 'nazanin',
-          brightness: Brightness.light,
+          brightness: Brightness.dark,
           primarySwatch: Colors.indigo,
         ),
         getPages: pages,

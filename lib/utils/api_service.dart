@@ -168,6 +168,8 @@ class ApiService {
     required String age,
     required String role,
     required String socialnumber,
+    required String userwhom,
+    required String description
   }) async {
     final uri = Uri.parse('$_baseUrl/register-face');
     final body = {
@@ -178,6 +180,8 @@ class ApiService {
       'age': age,
       'role': role,
       'socialnumber': socialnumber,
+      'userwhom':userwhom,
+      'description':description
     };
     final response = await http.post(uri,
         body: jsonEncode(body),
@@ -207,6 +211,8 @@ class ApiService {
       'gender': gender,
       'role': role,
       'socialnumber': socialnumber,
+      "userwhom":userwhom,
+      "description":description
     };
     final response = await http.post(uri,
         body: jsonEncode(body),
@@ -217,6 +223,32 @@ class ApiService {
     throw Exception('Failed to add person: ${response.body}');
   }
 
+  /// Upload cropped face bytes to the backend and return the server path.
+  ///
+  /// Reuses the /detect-faces endpoint to save the file on disk.
+  /// Returns the file_location path on success, null on failure.
+  static Future<String?> uploadCroppedFace(
+      List<int> bytes, String filename) async {
+    try {
+      final uri = Uri.parse('$_baseUrl/detect-faces');
+      final request = http.MultipartRequest('POST', uri)
+        ..files.add(http.MultipartFile.fromBytes(
+          'file',
+          bytes,
+          filename: filename,
+        ));
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data['file_location'];
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   /// Register a new person with multiple images via `/insertKToDpMulti`.
   static Future<Map<String, dynamic>> insertPersonMulti({
     required String name,
@@ -225,6 +257,9 @@ class ApiService {
     required String gender,
     required String role,
     required String socialnumber,
+    String userwhom='',
+    String description='',
+    
   }) async {
     final uri = Uri.parse('$_baseUrl/insertKToDpMulti');
     final body = {
@@ -234,6 +269,8 @@ class ApiService {
       'gender': gender,
       'role': role,
       'socialnumber': socialnumber,
+      'userwhom':userwhom,
+      "description":description
     };
     final response = await http.post(uri,
         body: jsonEncode(body),
@@ -295,7 +332,7 @@ class ApiService {
 
   /// Get all known persons via `/known-persons`.
   static Future<List<Map<String, dynamic>>> getKnownPersons() async {
-    final uri = Uri.parse('$_baseUrl/known-persons');
+    final uri = Uri.parse('$_baseUrl/d/known-persons');
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

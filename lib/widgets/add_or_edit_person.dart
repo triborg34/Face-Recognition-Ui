@@ -24,6 +24,8 @@ class AddOrEditPerson extends StatefulWidget {
     required this.role,
     required this.socialnumber,
     required this.isEditing,
+    required this.selectedRole,
+
     this.description,
     this.id,
     this.imagePath,
@@ -42,6 +44,7 @@ class AddOrEditPerson extends StatefulWidget {
   final String? imagePath;
   final String? id;
   final String? description;
+  final String selectedRole;
 
   @override
   State<AddOrEditPerson> createState() => _AddOrEditPersonState();
@@ -63,6 +66,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
     _pc.description.text = widget.description ?? '';
     _pc.roleP.value = widget.role;
     _pc.genterP.value = widget.gender;
+    _pc.selectedRole.value=widget.selectedRole;
 
     if (!widget.isEditing) {
       _pc.filename.value = widget.filename ?? '';
@@ -187,8 +191,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
 
                               if (data != null &&
                                   data['file_location'] != null) {
-                                final serverPath =
-                                    data['file_location'] ?? '';
+                                final serverPath = data['file_location'] ?? '';
 
                                 // Detect all faces in the captured frame
                                 final detectionResult =
@@ -231,9 +234,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                               } else {
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content:
-                                            Text('خطا در گرفتن عکس')),
+                                    SnackBar(content: Text('خطا در گرفتن عکس')),
                                   );
                                 }
                               }
@@ -246,8 +247,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                               }
                             } finally {
                               if (mounted) {
-                                setDialogState(
-                                    () => isCapturing = false);
+                                setDialogState(() => isCapturing = false);
                               }
                             }
                           },
@@ -332,7 +332,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
           'socialnumber': _pc.socialNumber.text,
           'role': _pc.roleP.value,
           'description': _pc.description.text,
-          'userwhom': unames,
+          'userwhom': _pc.selectedRole.value,
         };
         if (_pc.filename.value.isNotEmpty) {
           body['imagePath'] = _pc.filename.value;
@@ -347,9 +347,24 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
       } else {
         // New person: use backend API for face processing
         if (_selectedImages.isNotEmpty) {
-          // Multi-image registration
-          final imagePaths =
-              _selectedImages.map((img) => img.serverPath).toList();
+          final List<String> imagePaths = [];
+          for (final img in _selectedImages) {
+            final serverPath = await ApiService.uploadCroppedFace(
+              img.bytes,
+              '${name}_${img.faceIndex}.jpg',
+            );
+            if (serverPath != null) {
+              imagePaths.add(serverPath);
+            }
+          }
+          if (imagePaths.isEmpty) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('خطا در آپلود تصاویر')),
+              );
+            }
+            return;
+          }
           final result = await ApiService.insertPersonMulti(
             name: name,
             imagePaths: imagePaths,
@@ -357,6 +372,8 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
             gender: _pc.genterP.value,
             role: _pc.roleP.value,
             socialnumber: _pc.socialNumber.text,
+            userwhom:_pc.selectedRole.value,
+            description:_pc.description.text
           );
           if (mounted) {
             final msg = result['message'] ?? 'شخص اضافه شد';
@@ -374,11 +391,12 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
             gender: _pc.genterP.value,
             role: _pc.roleP.value,
             socialnumber: _pc.socialNumber.text,
+            userwhom:_pc.selectedRole.value,
+            description:_pc.description.text
           );
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(result['message'] ?? 'شخص اضافه شد')),
+              SnackBar(content: Text(result['message'] ?? 'شخص اضافه شد')),
             );
             Navigator.pop(context);
           }
@@ -498,8 +516,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                       SizedBox(width: 12),
                       Column(
                         children: [
-                          Text('عکس پروفایل',
-                              style: TextStyle(fontSize: 12)),
+                          Text('عکس پروفایل', style: TextStyle(fontSize: 12)),
                           SizedBox(height: 4),
                           ElevatedButton.icon(
                             icon: Icon(Icons.upload, size: 16),
@@ -568,8 +585,7 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                                 DropdownMenuItem(
                                     value: 'female', child: Text('زن')),
                               ],
-                              onChanged: (value) =>
-                                  _pc.genterP.value = value!,
+                              onChanged: (value) => _pc.genterP.value = value!,
                             ),
                           ),
                         )),
@@ -625,13 +641,43 @@ class _AddOrEditPersonState extends State<AddOrEditPerson> {
                                 DropdownMenuItem(
                                     value: 'denied', child: Text('غیر مجاز')),
                               ],
-                              onChanged: (value) =>
-                                  _pc.roleP.value = value!,
+                              onChanged: (value) => _pc.roleP.value = value!,
                             ),
                           ),
                         )),
                   ],
                 ),
+                SizedBox(
+                  height: 8,
+                ),
+                Obx(() => RadioGroup<String>(
+      groupValue:_pc.selectedRole.value,
+      onChanged: (String? value) {
+        if (value != null) {
+          _pc.selectedRole.value= value;
+   
+        }
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // 1. Option: Colleague (همکار)
+          const Text("همکار"),
+          const Radio<String>(
+            value: "colleague", // The hardcoded value for this option
+          ),
+          
+          const SizedBox(width: 50),
+          
+          // 2. Option: Visitor (ارباب رجوع)
+          const Text("ارباب رجوع"),
+          const Radio<String>(
+            value: "visitor", // The hardcoded value for this option
+          ),
+        ],
+      ),
+    )),
                 SizedBox(height: 8),
                 SizedBox(
                   width: 500,
