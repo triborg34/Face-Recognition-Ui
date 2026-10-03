@@ -11,8 +11,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class AddOrEditPerson extends StatefulWidget {
-  const AddOrEditPerson({
+class AddOrEditPerson2 extends StatefulWidget {
+  const AddOrEditPerson2({
     super.key,
     required this.pcontroller,
     required this.name,
@@ -47,10 +47,10 @@ class AddOrEditPerson extends StatefulWidget {
   final String selectedRole;
 
   @override
-  State<AddOrEditPerson> createState() => _AddOrEditPersonState();
+  State<AddOrEditPerson2> createState() => _AddOrEditPerson2State();
 }
 
-class _AddOrEditPersonState extends State<AddOrEditPerson> {
+class _AddOrEditPerson2State extends State<AddOrEditPerson2> {
   late final personController _pc;
   final List<SelectedImage> _selectedImages = [];
   bool _isSubmitting = false;

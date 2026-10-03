@@ -69,75 +69,75 @@ class DetailsBox extends StatelessWidget {
         person.name == "unknown"
             ? IconButton(
                 onPressed: () async {
-                  try {
-                    final hasCropped =
-                        person.croppedFrame?.isNotEmpty ?? false;
-                    final imageFile = hasCropped
-                        ? person.croppedFrame!
-                        : (person.frame ?? '');
-                    if (imageFile.isEmpty) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('تصویری موجود نیست')),
-                        );
-                      }
-                      return;
-                    }
+                  // try {
+                  //   final hasCropped =
+                  //       person.croppedFrame?.isNotEmpty ?? false;
+                  //   final imageFile = hasCropped
+                  //       ? person.croppedFrame!
+                  //       : (person.frame ?? '');
+                  //   if (imageFile.isEmpty) {
+                  //     if (context.mounted) {
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         SnackBar(content: Text('تصویری موجود نیست')),
+                  //       );
+                  //     }
+                  //     return;
+                  //   }
 
-                    final imageUrl =
-                        'http://${url}:8091/api/files/collection/${person.id}/$imageFile';
-                    final imageResponse =
-                        await http.get(Uri.parse(imageUrl));
+                  //   final imageUrl =
+                  //       'http://${url}:8091/api/files/collection/${person.id}/$imageFile';
+                  //   final imageResponse =
+                  //       await http.get(Uri.parse(imageUrl));
 
-                    if (imageResponse.statusCode == 200 &&
-                        imageResponse.bodyBytes.isNotEmpty) {
-                      final detectionResult =
-                          await ApiService.detectFaces(
-                        imageResponse.bodyBytes,
-                        'face_${person.id}.jpg',
-                      );
+                  //   if (imageResponse.statusCode == 200 &&
+                  //       imageResponse.bodyBytes.isNotEmpty) {
+                  //     final detectionResult =
+                  //         await ApiService.detectFaces(
+                  //       imageResponse.bodyBytes,
+                  //       'face_${person.id}.jpg',
+                  //     );
 
-                      if (detectionResult != null &&
-                          detectionResult.faces.isNotEmpty &&
-                          context.mounted) {
-                        final selection = await FaceSelectionWidget.show(
-                            context, detectionResult);
+                  //     if (detectionResult != null &&
+                  //         detectionResult.faces.isNotEmpty &&
+                  //         context.mounted) {
+                  //       final selection = await FaceSelectionWidget.show(
+                  //           context, detectionResult);
 
-                        if (selection != null && context.mounted) {
-                          await showAdaptiveDialog(
-                              context: context,
-                              builder: (context) {
-                                return AddOrEditPerson(
-                                    filename: selection.filePath,
-                                    filepath:
-                                        selection.face.cropBytes,
-                                    pcontroller:
-                                        Get.find<personController>(),
-                                    name: '',
-                                    lastName: '',
-                                    age: person.age ?? '',
-                                    gender: person.gender ?? 'male',
-                                    role: 'approve',
-                                    socialnumber: '',
-                                    selectedRole: '',
-                                    isEditing: false);
-                              });
-                        }
-                      } else if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content:
-                                  Text('چهره‌ای در تصویر یافت نشد')),
-                        );
-                      }
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('خطا: $e')),
-                      );
-                    }
-                  }
+                  //       if (selection != null && context.mounted) {
+                  //         await showAdaptiveDialog(
+                  //             context: context,
+                  //             builder: (context) {
+                  //               return AddOrEditPerson(
+                  //                   filename: selection.filePath,
+                  //                   filepath:
+                  //                       selection.face.cropBytes,
+                  //                   pcontroller:
+                  //                       Get.find<personController>(),
+                  //                   name: '',
+                  //                   lastName: '',
+                  //                   age: person.age ?? '',
+                  //                   gender: person.gender ?? 'male',
+                  //                   role: 'approve',
+                  //                   socialnumber: '',
+                  //                   selectedRole: '',
+                  //                   isEditing: false);
+                  //             });
+                  //       }
+                  //     } else if (context.mounted) {
+                  //       ScaffoldMessenger.of(context).showSnackBar(
+                  //         SnackBar(
+                  //             content:
+                  //                 Text('چهره‌ای در تصویر یافت نشد')),
+                  //       );
+                  //     }
+                  //   }
+                  // } catch (e) {
+                  //   if (context.mounted) {
+                  //     ScaffoldMessenger.of(context).showSnackBar(
+                  //       SnackBar(content: Text('خطا: $e')),
+                  //     );
+                  //   }
+                  // }
                 },
                 icon: Icon(
                   Icons.info_outline,

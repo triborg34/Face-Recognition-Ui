@@ -7,7 +7,7 @@ import 'package:faceui/widgets/add_or_edit_person.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:faceui/utils/consts.dart';
-
+import 'package:http/http.dart' as http;
 class PersonScreen extends StatelessWidget {
   const PersonScreen({super.key});
 
@@ -36,25 +36,33 @@ class PersonScreen extends StatelessWidget {
                     children: [
                       ElevatedButton(
                         onPressed: () async {
-                          await showAdaptiveDialog(
-                            context: context,
-                            builder: (context) => AddOrEditPerson(
-                              pcontroller: pcontroller,
-                              name: '',
-                              lastName: '',
-                              age: '',
-                              filename: '',
-                              filepath: null,
-                              gender: 'male',
-                              role: 'approve',
-                              isEditing: false,
-                              description: '',
-                              socialnumber: '',
-                             selectedRole: '',
-                            ),
-                          );
-                          // Refresh list and embedding counts after dialog closes
-                          await pcontroller.fetchFirstData();
+                          try{
+                            var res= await  http.get(Uri.parse('http://${url}:${port}/util/openApp'));
+                            print(res.body);
+                          }
+                          catch (e){
+                              print(e);
+                          }
+                        // await  http.get(Uri.parse('http://${url}:${port}/util/openApp'));
+                          // await showAdaptiveDialog(
+                          //   context: context,
+                          //   builder: (context) => AddOrEditPerson2(
+                          //     pcontroller: pcontroller,
+                          //     name: '',
+                          //     lastName: '',
+                          //     age: '',
+                          //     filename: '',
+                          //     filepath: null,
+                          //     gender: 'male',
+                          //     role: 'approve',
+                          //     isEditing: false,
+                          //     description: '',
+                          //     socialnumber: '',
+                          //    selectedRole: '',
+                          //   ),
+                          // );
+                          // // Refresh list and embedding counts after dialog closes
+                          // await pcontroller.fetchFirstData();
                         },
                         style: TextButton.styleFrom(
                           backgroundColor: primaryColor,
@@ -209,38 +217,43 @@ class PersonCard extends StatelessWidget {
             ),
           ),
           // Edit button (top-left in RTL)
-          Align(
-            alignment: Alignment.topLeft,
-            child: InkWell(
-              onTap: () async {
-                final nameParts = (person.name ?? '').split(' ');
-                await showAdaptiveDialog(
-                  context: context,
-                  builder: (context) => AddOrEditPerson(
-                    id: person.id,
-                    imagePath: person.image,
-                    pcontroller: pcontroller,
-                    name: nameParts.isNotEmpty ? nameParts[0] : '',
-                    lastName: nameParts.length > 1 ? nameParts[1] : '',
-                    age: person.age ?? '',
-                    gender: person.gender ?? 'male',
-                    role: person.role ?? 'approve',
-                    socialnumber: person.socialNumber ?? '',
-                    description: person.description ?? '',
-                    isEditing: true,
-                    selectedRole: person.userwhom ?? '',
+          Visibility(
+            visible: false,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: InkWell(
+                onTap: () async {
+            
+                  
+                  // final nameParts = (person.name ?? '').split(' ');
+                  // await showAdaptiveDialog(
+                  //   context: context,
+                  //   builder: (context) => AddOrEditPerson2(
+                  //     id: person.id,
+                  //     imagePath: person.image,
+                  //     pcontroller: pcontroller,
+                  //     name: nameParts.isNotEmpty ? nameParts[0] : '',
+                  //     lastName: nameParts.length > 1 ? nameParts[1] : '',
+                  //     age: person.age ?? '',
+                  //     gender: person.gender ?? 'male',
+                  //     role: person.role ?? 'approve',
+                  //     socialnumber: person.socialNumber ?? '',
+                  //     description: person.description ?? '',
+                  //     isEditing: true,
+                  //     selectedRole: person.userwhom ?? '',
+                  //   ),
+                  // );
+                  // // Refresh after edit dialog closes
+                  // await pcontroller.fetchFirstData();
+                },
+                child: Container(
+                  padding: EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black45,
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                );
-                // Refresh after edit dialog closes
-                await pcontroller.fetchFirstData();
-              },
-              child: Container(
-                padding: EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black45,
-                  borderRadius: BorderRadius.circular(8),
+                  child: Icon(Icons.edit, size: 16, color: Colors.white70),
                 ),
-                child: Icon(Icons.edit, size: 16, color: Colors.white70),
               ),
             ),
           ),
