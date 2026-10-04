@@ -158,22 +158,23 @@ class _AddOrEditPerson2State extends State<AddOrEditPerson2> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  isCapturing
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
-                            ),
-                            SizedBox(width: 8),
-                            Text('در حال پردازش چهره...',
-                                style: TextStyle(color: Colors.white70)),
-                          ],
-                        )
-                      : ElevatedButton.icon(
+                  // isCapturing
+                  //     ? Row(
+                  //         mainAxisAlignment: MainAxisAlignment.center,
+                  //         children: [
+                  //           SizedBox(
+                  //             width: 18,
+                  //             height: 18,
+                  //             child: CircularProgressIndicator(
+                  //                 strokeWidth: 2, color: Colors.white),
+                  //           ),
+                  //           SizedBox(width: 8),
+                  //           Text('در حال پردازش چهره...',
+                  //               style: TextStyle(color: Colors.white70)),
+                  //         ],
+                  //       )
+                  //     : 
+                  ElevatedButton.icon(
                           icon: Icon(Icons.camera_alt, color: Colors.white),
                           label: Text('عکس بگیر',
                               style: TextStyle(color: Colors.white)),

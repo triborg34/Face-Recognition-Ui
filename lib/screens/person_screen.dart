@@ -2,7 +2,7 @@ import 'package:faceui/models/knownPModels.dart';
 import 'package:faceui/screens/person_detail_screen.dart';
 import 'package:faceui/utils/api_service.dart';
 import 'package:faceui/utils/controller.dart';
-import 'package:faceui/widgets/add_or_edit_person.dart';
+// import 'package:faceui/widgets/add_or_edit_person.dart';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
